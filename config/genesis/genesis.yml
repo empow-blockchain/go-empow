@@ -1,0 +1,22 @@
+creategenesis: true
+tokeninfo:
+  foundationaccount: foundation
+  iosttotalsupply: 90000000000
+  iostdecimal: 8
+witnessinfo:
+  - address: EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB
+    owner: GPsg8fF73PcWjwxM7DyahvjZSk1cbNSMG9kq4bCMWNn7 
+    active: GPsg8fF73PcWjwxM7DyahvjZSk1cbNSMG9kq4bCMWNn7
+    signatureblock: GPsg8fF73PcWjwxM7DyahvjZSk1cbNSMG9kq4bCMWNn7
+    balance: 0
+admininfo:
+  address: EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas
+  owner: Gcv8c2tH8qZrUYnKdEEdTtASsxivic2834MQW6mgxqto 
+  active: Gcv8c2tH8qZrUYnKdEEdTtASsxivic2834MQW6mgxqto
+  balance: 21000000000
+foundationinfo:
+  address: EM2ZsFENubSHxLVjCkuFAmiG5reWvd8oXi29vErvjDVnazwmC
+  owner: 4vBcgvzDTBk3WruafcnxfkY7FgQqEsib3L6dNGuw9J58
+  active: 4vBcgvzDTBk3WruafcnxfkY7FgQqEsib3L6dNGuw9J58
+  balance: 0
+initialtimestamp: "2018-11-10T11:04:05Z"
