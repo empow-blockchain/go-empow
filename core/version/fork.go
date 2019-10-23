@@ -1,6 +1,6 @@
 package version
 
-import "github.com/iost-official/go-iost/common"
+import "github.com/empow-blockchain/go-empow/common"
 
 // ChainIDs
 const (

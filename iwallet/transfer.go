@@ -23,7 +23,7 @@ var transferCmd = &cobra.Command{
 		return checkAccount(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return saveOrSendAction("token.iost", "transfer", "iost", accountName, args[0], args[1], memo)
+		return saveOrSendAction("token.empow", "transfer", "em", accountName, args[0], args[1], memo)
 	},
 }
 

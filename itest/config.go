@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/ilog"
 )
 
 // Constant of itest config

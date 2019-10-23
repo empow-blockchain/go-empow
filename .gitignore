@@ -227,8 +227,8 @@ test/data
 /core/block/serviDb/
 scripts/sendtx/iwallet
 
-/go-iost/core/txpool/BlockChainDB/
-/go-iost/core/txpool/StatePoolDB/
+/go-empow/core/txpool/BlockChainDB/
+/go-empow/core/txpool/StatePoolDB/
 /consensus/pob/BlockChainDB/
 /consensus/pob/StateDB/
 /consensus/pob/txDB/

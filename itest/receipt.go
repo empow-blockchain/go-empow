@@ -1,9 +1,9 @@
 package itest
 
 import (
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
 )
 
 // Receipt is the transaction receipt object

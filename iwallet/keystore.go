@@ -13,9 +13,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/sdk"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/sdk"
 	"golang.org/x/crypto/scrypt"
 	"golang.org/x/crypto/ssh/terminal"
 )

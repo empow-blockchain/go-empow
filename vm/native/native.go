@@ -2,9 +2,9 @@ package native
 
 import (
 	"fmt"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/vm/host"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/vm/host"
 )
 
 type abi struct {

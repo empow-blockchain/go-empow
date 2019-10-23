@@ -6,12 +6,12 @@ import (
 	"testing"
 
 	. "github.com/golang/mock/gomock"
-	core_mock "github.com/iost-official/go-iost/core/mocks"
-	db_mock "github.com/iost-official/go-iost/db/mocks"
+	core_mock "github.com/empow-blockchain/go-empow/core/mocks"
+	db_mock "github.com/empow-blockchain/go-empow/db/mocks"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/vm/database"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -67,26 +67,26 @@ func TestBlockCache(t *testing.T) {
 	statedb.EXPECT().Checkout(Any()).AnyTimes().Return(true)
 	statedb.EXPECT().Size().AnyTimes().Return(int64(10000), nil)
 
-	statedb.EXPECT().Get("state", "b-vote_producer.iost-"+"pendingProducerList").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
+	statedb.EXPECT().Get("state", "b-vote_producer.empow-"+"pendingProducerList").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
 		return database.MustMarshal("[\"aaaa\",\"bbbbb\"]"), nil
 	})
-	statedb.EXPECT().Get("state", "m-vote_producer.iost-"+"producerKeyToId-"+"aaaa").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
+	statedb.EXPECT().Get("state", "m-vote_producer.empow-"+"producerKeyToId-"+"aaaa").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
 		return database.MustMarshal("\"accaaaa\""), nil
 	})
-	statedb.EXPECT().Get("state", "m-vote_producer.iost-"+"producerKeyToId-"+"bbbbb").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
+	statedb.EXPECT().Get("state", "m-vote_producer.empow-"+"producerKeyToId-"+"bbbbb").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
 		return database.MustMarshal("\"accbbbbb\""), nil
 	})
-	statedb.EXPECT().Get("state", "m-vote_producer.iost-"+"producerTable-"+"accaaaa").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
+	statedb.EXPECT().Get("state", "m-vote_producer.empow-"+"producerTable-"+"accaaaa").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
 		return database.MustMarshal(`{"pubkey":"aaaaaa7PV2SFzqCBtQUcQYJGGoU7XaB6R4xuCQVXNZe6b","loc":"aaloc","url":"aaurl","netId":"accaaaaNetId","isProducer":true,"status":1,"online":true}`), nil
 	})
-	statedb.EXPECT().Get("state", "m-vote_producer.iost-"+"producerTable-"+"accbbbbb").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
+	statedb.EXPECT().Get("state", "m-vote_producer.empow-"+"producerTable-"+"accbbbbb").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
 		return database.MustMarshal(`{"pubkey":"bbbbbbPV2SFzqCBtQUcQYJGGoU7XaB6R4xuCQVXNZe6b","loc":"aaloc","url":"aaurl","netId":"accbbbbbNetId","isProducer":true,"status":1,"online":true}`), nil
 	})
 	statedb.EXPECT().Get("snapshot", "blockHead").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
 		bhJson, _ := json.Marshal(b0.Head)
 		return string(bhJson), nil
 	})
-	//"m-vote_producer.iost-producerTable"
+	//"m-vote_producer.empow-producerTable"
 	statedb.EXPECT().Get("state", Any()).AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
 		return database.MustMarshal(`{"loc":"11","url":"22","netId":"33","online":true,"score":0,"votes":0}`), nil
 	})
@@ -229,7 +229,7 @@ func TestVote(t *testing.T) {
 
 	tpl := "[\"a1\",\"a2\",\"a3\",\"a4\",\"a5\"]"
 	//tpl1 := "[\"b1\",\"b2\",\"b3\",\"b4\",\"b5\"]"
-	statedb.EXPECT().Get("state", "b-vote_producer.iost-"+"pendingProducerList").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
+	statedb.EXPECT().Get("state", "b-vote_producer.empow-"+"pendingProducerList").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
 		return database.MustMarshal(tpl), nil
 	})
 	statedb.EXPECT().Get("snapshot", "blockHead").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {

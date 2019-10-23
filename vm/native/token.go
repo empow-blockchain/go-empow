@@ -8,11 +8,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/vm/database"
-	"github.com/iost-official/go-iost/vm/host"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/vm/database"
+	"github.com/empow-blockchain/go-empow/vm/host"
 )
 
 var tokenABIs *abiSet
@@ -55,7 +55,7 @@ func setBalance(h *host.Host, tokenSym string, from string, balance int64, ramPa
 	if ok {
 		cost0, _ := h.MapPut(TokenBalanceMapPrefix+from, tokenSym, balance)
 		cost.AddAssign(cost0)
-	} else if (tokenSym == "iost" || tokenSym == "ram") && !strings.HasPrefix(from, "Contract") {
+	} else if (tokenSym == "em" || tokenSym == "ram") && !strings.HasPrefix(from, "Contract") {
 		cost0, _ := h.MapPut(TokenBalanceMapPrefix+from, tokenSym, balance)
 		cost.AddAssign(cost0)
 	} else {
@@ -430,10 +430,10 @@ var (
 
 			if !h.IsValidAccount(to) {
 				// check if transfer to username
-				isExistUsername := h.DB().MHas("auth.iost"+"-username", to)
+				isExistUsername := h.DB().MHas("auth.empow"+"-username", to)
 				if !isExistUsername {
 					// create address if not exist address and not exist username
-					if tokenSym == "iost" && h.IsValidAddress(to) {
+					if tokenSym == "em" && h.IsValidAddress(to) {
 						pubkey, err := account.AddressToPubkey(to)
 
 						if err != nil {
@@ -442,7 +442,7 @@ var (
 
 						pubkeyString := common.Base58Encode(pubkey)
 
-						_, cost, err = h.CallWithAuth("auth.iost", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, to, pubkeyString, pubkeyString))
+						_, cost, err = h.CallWithAuth("auth.empow", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, to, pubkeyString, pubkeyString))
 
 						if err != nil {
 							return nil, cost, err
@@ -451,13 +451,13 @@ var (
 						return nil, cost, fmt.Errorf("invalid account %v", to)
 					}
 				} else {
-					addressOnDatabase := h.DB().MGet("auth.iost"+"-username", to)
+					addressOnDatabase := h.DB().MGet("auth.empow"+"-username", to)
 					to = strings.Split(addressOnDatabase, "@")[1]
 					args[2] = to
 				}
 			}
 
-			fmt.Printf("transfer %v -> %v : %v IOST %v\n", from, to, amountStr, memo)
+			fmt.Printf("transfer %v -> %v : %v %v (%v)\n", from, to, amountStr, tokenSym, memo)
 
 			if from == to {
 				return []interface{}{}, cost, nil

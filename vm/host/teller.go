@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"github.com/bitly/go-simplejson"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/vm/database"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/contract"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/contract"
 )
 
 // Teller handler of iost
@@ -111,7 +111,7 @@ func (t *Teller) PayCost(c contract.Cost, who string) {
 
 // IsProducer check account is producer
 func (t *Teller) IsProducer(acc string) bool {
-	pm := t.h.DB().Get("vote_producer.iost-producerMap")
+	pm := t.h.DB().Get("vote_producer.empow-producerMap")
 	pmStr := database.Unmarshal(pm)
 	if _, ok := pmStr.(error); ok {
 		return false
@@ -157,11 +157,11 @@ func (t *Teller) DoPay(witness string, gasRatio int64) (paidGas *common.Fixed, e
 		if payer == t.h.Context().Value("publisher").(string) {
 			paidGas = gas
 		}
-		// contracts in "iost" domain will not pay for ram
-		if !strings.HasSuffix(payer, ".iost") {
+		// contracts in "em" domain will not pay for ram
+		if !strings.HasSuffix(payer, ".empow") {
 			var ramPayer string
 			if t.h.IsContract(payer) {
-				p, _ := t.h.GlobalMapGet("system.iost", "contract_owner", payer)
+				p, _ := t.h.GlobalMapGet("system.empow", "contract_owner", payer)
 				var ok bool
 				ramPayer, ok = p.(string)
 				if !ok {

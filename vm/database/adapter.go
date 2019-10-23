@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/iost-official/go-iost/core/version"
+	"github.com/empow-blockchain/go-empow/core/version"
 )
 
 type database interface {

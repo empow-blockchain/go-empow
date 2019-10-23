@@ -6,9 +6,9 @@ import (
 )
 
 // Token721ContractName name of basic token contract
-const Token721ContractName = "token721.iost"
+const Token721ContractName = "token721.empow"
 
-// Token721Handler easy to get balance of token.iost
+// Token721Handler easy to get balance of token.empow
 type Token721Handler struct {
 	db database
 }

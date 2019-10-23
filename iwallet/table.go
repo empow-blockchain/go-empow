@@ -3,8 +3,8 @@ package iwallet
 import (
 	"fmt"
 
-	"github.com/iost-official/go-iost/rpc/pb"
-	"github.com/iost-official/go-iost/sdk"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
+	"github.com/empow-blockchain/go-empow/sdk"
 	"github.com/spf13/cobra"
 )
 
@@ -21,8 +21,8 @@ var tableCmd = &cobra.Command{
 	Use:   "table contract key [field]",
 	Short: "Fetch stored info of given contract",
 	Long:  `Fetch stored info of given contract`,
-	Example: `  iwallet table vote_producer.iost currentProducerList
-  iwallet table vote_producer.iost producerTable producer000`,
+	Example: `  iwallet table vote_producer.empow currentProducerList
+  iwallet table vote_producer.empow producerTable producer000`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := checkArgsNumber(cmd, args, "contract", "key"); err != nil {
 			return err

@@ -8,12 +8,12 @@ import (
 
 	"encoding/json"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/core/version"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/core/version"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/vm/database"
 )
 
 // Monitor monitor interface
@@ -359,7 +359,7 @@ func (h *Host) IsValidAccount(name string) bool {
 	if h.Context().Value("number") == int64(0) {
 		return true
 	}
-	return strings.HasPrefix(name, "Contract") || strings.HasSuffix(name, ".iost") || database.Unmarshal(h.DB().MGet("auth.iost"+"-auth", name)) != nil
+	return strings.HasPrefix(name, "Contract") || strings.HasSuffix(name, ".empow") || database.Unmarshal(h.DB().MGet("auth.empow"+"-auth", name)) != nil
 }
 
 // IsValidAddress check address
@@ -369,7 +369,7 @@ func (h *Host) IsValidAddress(address string) bool {
 
 // ReadSettings read settings from db
 func (h *Host) ReadSettings() {
-	j, _ := h.DBHandler.GlobalMapGet("system.iost", "settings", "host")
+	j, _ := h.DBHandler.GlobalMapGet("system.empow", "settings", "host")
 	if j == nil {
 		return
 	}

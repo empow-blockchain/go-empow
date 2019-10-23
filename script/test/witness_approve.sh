@@ -13,5 +13,5 @@ producer000
 iwallet account --import ${APPROVER_ACCOUNT} ${APPROVER_ACCOUNT_SECKEY}
 for (( i = 0; i < ${WITNESS_NUM}; i++ ))
 do
-    iwallet -s ${GRPC_URL} --account ${APPROVER_ACCOUNT} call 'vote_producer.iost' 'approveRegister' '["'${WITNESS_NAME[i]}'"]'
+    iwallet -s ${GRPC_URL} --account ${APPROVER_ACCOUNT} call 'vote_producer.empow' 'approveRegister' '["'${WITNESS_NAME[i]}'"]'
 done

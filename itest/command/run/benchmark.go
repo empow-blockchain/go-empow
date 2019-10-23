@@ -7,8 +7,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/itest"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/itest"
 	"github.com/urfave/cli"
 )
 

@@ -1,14 +1,14 @@
 package database
 
 import (
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/ilog"
 	"strconv"
 )
 
 // RAMContractName name of basic token contract
-const RAMContractName = "ram.iost"
+const RAMContractName = "ram.empow"
 
-// RAMHandler easy to get balance of token.iost
+// RAMHandler easy to get balance of token.empow
 type RAMHandler struct {
 	BasicHandler
 }

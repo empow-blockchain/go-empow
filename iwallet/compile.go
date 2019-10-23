@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/iost-official/go-iost/iwallet/contract"
+	"github.com/empow-blockchain/go-empow/iwallet/contract"
 	"github.com/spf13/cobra"
 )
 

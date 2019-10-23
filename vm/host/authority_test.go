@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/vm/database"
 )
 
 func TestRequireAuth_ByKey(t *testing.T) {
@@ -18,7 +18,7 @@ func TestRequireAuth_ByKey(t *testing.T) {
 	db, host := myinit(t, ctx)
 
 	db.EXPECT().Commit().Return()
-	db.EXPECT().Get("state", "m-auth.iost-auth-a").DoAndReturn(func(a, b string) (string, error) {
+	db.EXPECT().Get("state", "m-auth.empow-auth-a").DoAndReturn(func(a, b string) (string, error) {
 		ac := account.NewAccount("a")
 		ac.Permissions["pa"] = &account.Permission{
 			Name:   "pa",
@@ -64,7 +64,7 @@ func TestAuthority_ByUser(t *testing.T) {
 	db, host := myinit(t, ctx)
 
 	db.EXPECT().Commit().Return()
-	db.EXPECT().Get("state", "m-auth.iost-auth-a").DoAndReturn(func(a, b string) (string, error) {
+	db.EXPECT().Get("state", "m-auth.empow-auth-a").DoAndReturn(func(a, b string) (string, error) {
 		ac := account.NewAccount("a")
 		ac.Permissions["pa"] = &account.Permission{
 			Name:   "pa",
@@ -91,7 +91,7 @@ func TestAuthority_ByUser(t *testing.T) {
 		}
 		return database.MustMarshal(string(j)), nil
 	})
-	db.EXPECT().Get("state", "m-auth.iost-auth-b").DoAndReturn(func(a, b string) (string, error) {
+	db.EXPECT().Get("state", "m-auth.empow-auth-b").DoAndReturn(func(a, b string) (string, error) {
 		ac := account.NewAccount("b")
 		ac.Permissions["active"] = &account.Permission{
 			Name:   "active",
@@ -130,7 +130,7 @@ func TestAuthority_Active(t *testing.T) {
 	db, host := myinit(t, ctx)
 
 	db.EXPECT().Commit().Return()
-	db.EXPECT().Get("state", "m-auth.iost-auth-a").AnyTimes().DoAndReturn(func(a, b string) (string, error) {
+	db.EXPECT().Get("state", "m-auth.empow-auth-a").AnyTimes().DoAndReturn(func(a, b string) (string, error) {
 		ac := account.NewAccount("a")
 		ac.Permissions["owner"] = &account.Permission{
 			Name:   "owner",
@@ -201,7 +201,7 @@ func TestAuthority_Owner(t *testing.T) {
 	db, host := myinit(t, ctx)
 
 	db.EXPECT().Commit().Return()
-	db.EXPECT().Get("state", "m-auth.iost-auth-a").DoAndReturn(func(a, b string) (string, error) {
+	db.EXPECT().Get("state", "m-auth.empow-auth-a").DoAndReturn(func(a, b string) (string, error) {
 		ac := account.NewAccount("a")
 		ac.Permissions["owner"] = &account.Permission{
 			Name:   "owner",

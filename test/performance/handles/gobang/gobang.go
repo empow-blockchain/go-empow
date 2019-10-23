@@ -3,23 +3,23 @@ package gobang
 import (
 	"context"
 	"fmt"
-	"github.com/iost-official/go-iost/sdk"
+	"github.com/empow-blockchain/go-empow/sdk"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/iost-official/go-iost/test/performance/call"
+	"github.com/empow-blockchain/go-empow/test/performance/call"
 
 	"encoding/json"
 
 	"math/rand"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/crypto"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/crypto"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
 )
 
 var rootKey = "2yquS3ySrGWPEKywCPzX4RTJugqRh7kJSo5aehsLYPEWkUxBWA39oMrZ7ZxuM4fgyXYs2cPwh5n8aNNpH5x2VyK1"
@@ -46,7 +46,7 @@ func init() {
 func (t *gobangHandle) Prepare() error {
 	var err error
 	rootAcc, _ = account.NewKeyPair(common.Base58Decode(rootKey), crypto.Ed25519)
-	codePath := os.Getenv("GOPATH") + "/src/github.com/iost-official/go-iost/test/performance/handles/gobang/gobang.js"
+	codePath := os.Getenv("GOPATH") + "/src/github.com/empow-blockchain/go-empow/test/performance/handles/gobang/gobang.js"
 	abiPath := codePath + ".abi"
 	iostSDK.SetServer(call.GetClient(0).Addr())
 	iostSDK.SetAccount("admin", rootAcc)

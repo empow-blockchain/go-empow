@@ -6,7 +6,7 @@
       "name": "getResult",
       "args": ["string"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "0"
       }]
     }

@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/iost-official/go-iost/common"
+	"github.com/empow-blockchain/go-empow/common"
 	"gopkg.in/yaml.v2"
 )
 
@@ -88,8 +88,8 @@ func genconfig() {
 
 	tokenInfo := &common.TokenInfo{
 		FoundationAccount: "foundation",
-		IOSTTotalSupply:   90000000000,
-		IOSTDecimal:       8,
+		EMTotalSupply:   90000000000,
+		EMDecimal:       8,
 	}
 
 	foundationInfo := &common.Witness{

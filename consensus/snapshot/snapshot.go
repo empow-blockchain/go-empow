@@ -12,8 +12,8 @@ import (
 
 	"compress/gzip"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/db/kv/leveldb"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/db/kv/leveldb"
 )
 
 /*

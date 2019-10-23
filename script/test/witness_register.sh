@@ -18,5 +18,5 @@ readonly WITNESS_SECKEY=(
 for (( i = 0; i < ${WITNESS_NUM}; i++ ))
 do
     iwallet -s ${GRPC_URL} account --import ${WITNESS_NAME[i]} ${WITNESS_SECKEY[i]}
-    iwallet -s ${GRPC_URL} --account ${WITNESS_NAME[i]} call "vote_producer.iost" "applyRegister" '["'${WITNESS_NAME[i]}'","'${WITNESS_PUBKEY[i]}'","location","url","",true]'
+    iwallet -s ${GRPC_URL} --account ${WITNESS_NAME[i]} call "vote_producer.empow" "applyRegister" '["'${WITNESS_NAME[i]}'","'${WITNESS_PUBKEY[i]}'","location","url","",true]'
 done

@@ -6,16 +6,16 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/crypto"
-	"github.com/iost-official/go-iost/db"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/verifier"
-	"github.com/iost-official/go-iost/vm/native"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/crypto"
+	"github.com/empow-blockchain/go-empow/db"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/verifier"
+	"github.com/empow-blockchain/go-empow/vm/native"
 )
 
 // GenesisTxExecTime is the maximum execution time of a transaction in genesis block
@@ -47,20 +47,20 @@ func genGenesisTx(gConf *common.GenesisConfig) (*tx.Tx, *account.Account, error)
 	var acts []*tx.Action
 	adminInfo := gConf.AdminInfo
 
-	// deploy token.iost
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode",
-		fmt.Sprintf(`["%v", "%v"]`, "token.iost", native.SystemContractABI("token.iost", "1.0.0").B64Encode())))
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode",
-		fmt.Sprintf(`["%v", "%v"]`, "token721.iost", native.SystemContractABI("token721.iost", "1.0.0").B64Encode())))
+	// deploy token.empow
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode",
+		fmt.Sprintf(`["%v", "%v"]`, "token.empow", native.SystemContractABI("token.empow", "1.0.0").B64Encode())))
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode",
+		fmt.Sprintf(`["%v", "%v"]`, "token721.empow", native.SystemContractABI("token721.empow", "1.0.0").B64Encode())))
 	// deploy iost.gas
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode",
-		fmt.Sprintf(`["%v", "%v"]`, "gas.iost", native.SystemContractABI("gas.iost", "1.0.0").B64Encode())))
-	// deploy issue.iost and create iost
-	code, err := compile("issue.iost", gConf.ContractPath, "issue.js")
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode",
+		fmt.Sprintf(`["%v", "%v"]`, "gas.empow", native.SystemContractABI("gas.empow", "1.0.0").B64Encode())))
+	// deploy issue.empow and create iost
+	code, err := compile("issue.empow", gConf.ContractPath, "issue.js")
 	if err != nil {
 		return nil, nil, err
 	}
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "issue.iost", code.B64Encode())))
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "issue.empow", code.B64Encode())))
 	tokenInfo := gConf.TokenInfo
 	tokenHolder := append(witnessInfo, adminInfo)
 	params := []interface{}{
@@ -69,103 +69,103 @@ func genGenesisTx(gConf *common.GenesisConfig) (*tx.Tx, *account.Account, error)
 		tokenHolder,
 	}
 	b, _ := json.Marshal(params)
-	acts = append(acts, tx.NewAction("issue.iost", "initGenesis", string(b)))
-	// deploy account.iost
-	code, err = compile("auth.iost", gConf.ContractPath, "account.js")
+	acts = append(acts, tx.NewAction("issue.empow", "initGenesis", string(b)))
+	// deploy auth.empow
+	code, err = compile("auth.empow", gConf.ContractPath, "account.js")
 	if err != nil {
 		return nil, nil, err
 	}
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "auth.iost", code.B64Encode())))
-	acts = append(acts, tx.NewAction("auth.iost", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "auth.empow", code.B64Encode())))
+	acts = append(acts, tx.NewAction("auth.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 
-	// deploy domain.iost
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode",
-		fmt.Sprintf(`["%v", "%v"]`, "domain.iost", native.SystemContractABI("domain.iost", "0.0.0").B64Encode())))
+	// deploy domain.empow
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode",
+		fmt.Sprintf(`["%v", "%v"]`, "domain.empow", native.SystemContractABI("domain.empow", "0.0.0").B64Encode())))
 
 	// new account
-	acts = append(acts, tx.NewAction("auth.iost", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, adminInfo.Address, adminInfo.Owner, adminInfo.Active)))
+	acts = append(acts, tx.NewAction("auth.empow", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, adminInfo.Address, adminInfo.Owner, adminInfo.Active)))
 	// new account
 	foundationInfo := gConf.FoundationInfo
-	acts = append(acts, tx.NewAction("auth.iost", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, foundationInfo.Address, foundationInfo.Owner, foundationInfo.Active)))
+	acts = append(acts, tx.NewAction("auth.empow", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, foundationInfo.Address, foundationInfo.Owner, foundationInfo.Active)))
 
 	for _, v := range witnessInfo {
-		acts = append(acts, tx.NewAction("auth.iost", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, v.Address, v.Owner, v.Active)))
+		acts = append(acts, tx.NewAction("auth.empow", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, v.Address, v.Owner, v.Active)))
 	}
 	invalidPubKey := "0"
 	deadAccount := account.NewAccount("deadaddr")
-	acts = append(acts, tx.NewAction("auth.iost", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, deadAccount.Address, invalidPubKey, invalidPubKey)))
+	acts = append(acts, tx.NewAction("auth.empow", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, deadAccount.Address, invalidPubKey, invalidPubKey)))
 
-	// deploy bonus.iost
-	code, err = compile("bonus.iost", gConf.ContractPath, "bonus.js")
+	// deploy bonus.empow
+	code, err = compile("bonus.empow", gConf.ContractPath, "bonus.js")
 	if err != nil {
 		return nil, nil, err
 	}
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "bonus.iost", code.B64Encode())))
-	acts = append(acts, tx.NewAction("bonus.iost", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "bonus.empow", code.B64Encode())))
+	acts = append(acts, tx.NewAction("bonus.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 
-	// deploy vote.iost
-	code, err = compile("vote.iost", gConf.ContractPath, "vote_common.js")
+	// deploy vote.empow
+	code, err = compile("vote.empow", gConf.ContractPath, "vote_common.js")
 	if err != nil {
 		return nil, nil, err
 	}
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "vote.iost", code.B64Encode())))
-	acts = append(acts, tx.NewAction("vote.iost", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "vote.empow", code.B64Encode())))
+	acts = append(acts, tx.NewAction("vote.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 
-	// deploy vote_producer.iost
-	code, err = compile("vote_producer.iost", gConf.ContractPath, "vote_producer.js")
+	// deploy vote_producer.empow
+	code, err = compile("vote_producer.empow", gConf.ContractPath, "vote_producer.js")
 	if err != nil {
 		return nil, nil, err
 	}
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "vote_producer.iost", code.B64Encode())))
-	acts = append(acts, tx.NewAction("vote_producer.iost", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "vote_producer.empow", code.B64Encode())))
+	acts = append(acts, tx.NewAction("vote_producer.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 
-	// deploy base.iost
-	code, err = compile("base.iost", gConf.ContractPath, "base.js")
+	// deploy base.empow
+	code, err = compile("base.empow", gConf.ContractPath, "base.js")
 	if err != nil {
 		return nil, nil, err
 	}
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "base.iost", code.B64Encode())))
-	acts = append(acts, tx.NewAction("base.iost", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "base.empow", code.B64Encode())))
+	acts = append(acts, tx.NewAction("base.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 
-	// deploy exchange.iost
-	code, err = compile("exchange.iost", gConf.ContractPath, "exchange.js")
+	// deploy exchange.empow
+	code, err = compile("exchange.empow", gConf.ContractPath, "exchange.js")
 	if err != nil {
 		return nil, nil, err
 	}
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "exchange.iost", code.B64Encode())))
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "exchange.empow", code.B64Encode())))
 
 	for _, v := range witnessInfo {
-		acts = append(acts, tx.NewAction("vote_producer.iost", "initProducer", fmt.Sprintf(`["%v", "%v"]`, v.Address, v.SignatureBlock)))
+		acts = append(acts, tx.NewAction("vote_producer.empow", "initProducer", fmt.Sprintf(`["%v", "%v"]`, v.Address, v.SignatureBlock)))
 	}
 
 	// pledge gas for admin
 	gasPledgeAmount := 100
-	acts = append(acts, tx.NewAction("gas.iost", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, adminInfo.Address, adminInfo.Address, gasPledgeAmount)))
+	acts = append(acts, tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, adminInfo.Address, adminInfo.Address, gasPledgeAmount)))
 
-	// deploy ram.iost
-	code, err = compile("ram.iost", gConf.ContractPath, "ram.js")
+	// deploy ram.empow
+	code, err = compile("ram.empow", gConf.ContractPath, "ram.js")
 	if err != nil {
 		return nil, nil, err
 	}
-	acts = append(acts, tx.NewAction("system.iost", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "ram.iost", code.B64Encode())))
-	acts = append(acts, tx.NewAction("ram.iost", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "ram.empow", code.B64Encode())))
+	acts = append(acts, tx.NewAction("ram.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 	var initialTotal int64 = 128 * 1024 * 1024 * 1024                           // 128GB at first
 	var increaseInterval int64 = 10 * 60                                        // increase every 10 mins
 	var increaseAmount int64 = 10 * (64 * 1024 * 1024 * 1024) / (365 * 24 * 60) // 64GB per year
 	var reserveRAM = initialTotal * 3 / 10                                      // reserve for foundation
-	acts = append(acts, tx.NewAction("ram.iost", "issue", fmt.Sprintf(`[%v, %v, %v, %v]`, initialTotal, increaseInterval, increaseAmount, reserveRAM)))
+	acts = append(acts, tx.NewAction("ram.empow", "issue", fmt.Sprintf(`[%v, %v, %v, %v]`, initialTotal, increaseInterval, increaseAmount, reserveRAM)))
 
 	adminInitialRAM := 100000
-	acts = append(acts, tx.NewAction("ram.iost", "buy", fmt.Sprintf(`["%v", "%v", %v]`, adminInfo.Address, adminInfo.Address, adminInitialRAM)))
-	acts = append(acts, tx.NewAction("token.iost", "transfer", fmt.Sprintf(`["ram","ram.iost", "%v", "%v", ""]`, foundationInfo.Address, reserveRAM)))
+	acts = append(acts, tx.NewAction("ram.empow", "buy", fmt.Sprintf(`["%v", "%v", %v]`, adminInfo.Address, adminInfo.Address, adminInitialRAM)))
+	acts = append(acts, tx.NewAction("token.empow", "transfer", fmt.Sprintf(`["ram","ram.empow", "%v", "%v", ""]`, foundationInfo.Address, reserveRAM)))
 
 	for _, v := range witnessInfo {
-		acts = append(acts, tx.NewAction("ram.iost", "buy", fmt.Sprintf(`["%v", "%v", %v]`, adminInfo.Address, v.Address, adminInitialRAM)))
+		acts = append(acts, tx.NewAction("ram.empow", "buy", fmt.Sprintf(`["%v", "%v", %v]`, adminInfo.Address, v.Address, adminInitialRAM)))
 	}
 
-	acts = append(acts, tx.NewAction("gas.iost", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, adminInfo.Address, foundationInfo.Address, gasPledgeAmount)))
+	acts = append(acts, tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, adminInfo.Address, foundationInfo.Address, gasPledgeAmount)))
 	for _, v := range witnessInfo {
-		acts = append(acts, tx.NewAction("gas.iost", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, adminInfo.Address, v.Address, gasPledgeAmount)))
+		acts = append(acts, tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, adminInfo.Address, v.Address, gasPledgeAmount)))
 	}
 
 	trx := tx.NewTx(acts, nil, 1000000000, 100, 0, 0, tx.ChainID)

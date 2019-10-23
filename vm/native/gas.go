@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/vm/database"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/vm/host"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/vm/host"
 )
 
 // UnpledgeFreezeSeconds coins will be frozen for 3 days after being unpledged
@@ -18,7 +18,7 @@ const UnpledgeFreezeSeconds int64 = 3 * 24 * 3600
 var gasABIs *abiSet
 
 // GasContractName the contract name
-const GasContractName = "gas.iost"
+const GasContractName = "gas.empow"
 
 func init() {
 	gasABIs = newAbiSet()
@@ -196,8 +196,8 @@ var ( // nolint: deadcode
 			contractName, cost0 := h.ContractName()
 			cost.AddAssign(cost0)
 
-			if pledger != "auth.iost" {
-				_, cost0, err = h.Call("token.iost", "transfer", fmt.Sprintf(`["iost", "%v", "%v", "%v", ""]`, pledger, contractName, pledgeAmountStr))
+			if pledger != "auth.empow" {
+				_, cost0, err = h.Call("token.empow", "transfer", fmt.Sprintf(`["em", "%v", "%v", "%v", ""]`, pledger, contractName, pledgeAmountStr))
 				cost.AddAssign(cost0)
 				if err != nil {
 					return nil, cost, err
@@ -262,8 +262,8 @@ var ( // nolint: deadcode
 			contractName, cost0 := h.ContractName()
 			cost.AddAssign(cost0)
 			freezeTime := h.Context().Value("time").(int64) + UnpledgeFreezeSeconds*1e9
-			_, cost0, err = h.CallWithAuth("token.iost", "transferFreeze",
-				fmt.Sprintf(`["iost", "%v", "%v", "%v", %v, ""]`, contractName, pledger, unpledgeAmount.ToString(), freezeTime))
+			_, cost0, err = h.CallWithAuth("token.empow", "transferFreeze",
+				fmt.Sprintf(`["em", "%v", "%v", "%v", %v, ""]`, contractName, pledger, unpledgeAmount.ToString(), freezeTime))
 			cost.AddAssign(cost0)
 
 			if err != nil {

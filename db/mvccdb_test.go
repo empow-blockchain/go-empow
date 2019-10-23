@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/ilog"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )

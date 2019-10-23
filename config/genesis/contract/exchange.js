@@ -24,15 +24,15 @@ class Exchange {
      * @param memo      {string}  command:args, e.g. create:userName:ownerKey:activeKey
      *
      * // 1. normal transfer
-     * transfer("iost", "user1", "100.1", "")
+     * transfer("em", "user1", "100.1", "")
      * // 2. create an account, buy initialRAM and pledge initialGas, then transfer
-     * transfer("iost", "", "100.1", "create:newUser2:OWNERKEY:ACTIVEKEY")
+     * transfer("em", "", "100.1", "create:newUser2:OWNERKEY:ACTIVEKEY")
      */
     transfer(tokenSym, to, amount, memo) {
         let from = blockchain.publisher();
         if (to !== "") {
             // transfer to an exist account
-            blockchain.call("token.iost", "transfer", [tokenSym, from, to, amount, memo]);
+            blockchain.call("token.empow", "transfer", [tokenSym, from, to, amount, memo]);
 
         } else if (to == "") {
             const minAmount = 100;
@@ -44,7 +44,7 @@ class Exchange {
             }
 
             if (memo.startsWith("create:")) {
-                if (tokenSym !== "iost") {
+                if (tokenSym !== "em") {
                     throw new Error("must transfer iost if you want to create a new account");
                 }
                 // create account and then transfer to account
@@ -52,8 +52,8 @@ class Exchange {
                 if (args.length !== 3) {
                     throw new Error("memo of transferring to a new account should be of format create:name:ownerKey:activeKey");
                 }
-                blockchain.call("auth.iost", "signUp", args);
-                let rets = blockchain.call("ram.iost", "buy", [from, args[0], initialRAM]);
+                blockchain.call("auth.empow", "signUp", args);
+                let rets = blockchain.call("ram.empow", "buy", [from, args[0], initialRAM]);
                 let price = rets[0];
 
                 let paid = new BigNumber(price).plus(new BigNumber(initialGasPledged));

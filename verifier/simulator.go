@@ -8,16 +8,16 @@ import (
 	"os"
 	"time"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/core/version"
-	"github.com/iost-official/go-iost/db"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/vm"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/core/version"
+	"github.com/empow-blockchain/go-empow/db"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/vm"
+	"github.com/empow-blockchain/go-empow/vm/database"
 )
 
 // Simulator of txs and contract
@@ -65,7 +65,7 @@ func (s *Simulator) SetAccount(acc *account.Account) {
 	if err != nil {
 		panic(err)
 	}
-	s.Visitor.MPut("auth.iost"+"-auth", acc.Address, database.MustMarshal(string(buf)))
+	s.Visitor.MPut("auth.empow"+"-auth", acc.Address, database.MustMarshal(string(buf)))
 }
 
 // SetGas to id
@@ -102,7 +102,7 @@ func (s *Simulator) SetContract(c *contract.Contract) {
 	s.Visitor.SetContract(c)
 }
 
-// DeployContract via system.iost/setCode
+// DeployContract via system.empow/setCode
 func (s *Simulator) DeployContract(c *contract.Contract, publisher string, kp *account.KeyPair) (string, *tx.TxReceipt, error) {
 	sc, err := json.Marshal(c)
 	if err != nil {
@@ -115,7 +115,7 @@ func (s *Simulator) DeployContract(c *contract.Contract, publisher string, kp *a
 	}
 
 	trx := tx.NewTx([]*tx.Action{{
-		Contract:   "system.iost",
+		Contract:   "system.empow",
 		ActionName: "setCode",
 		Data:       string(jargs),
 	}}, nil, 400000000, 100, s.Head.Time+10000000, 0, 0)

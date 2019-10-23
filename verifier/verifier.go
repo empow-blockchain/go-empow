@@ -6,16 +6,16 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/iost-official/go-iost/core/blockcache"
-	"github.com/iost-official/go-iost/core/global"
+	"github.com/empow-blockchain/go-empow/core/blockcache"
+	"github.com/empow-blockchain/go-empow/core/global"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/core/txpool"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/vm"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/core/txpool"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/vm"
+	"github.com/empow-blockchain/go-empow/vm/database"
 )
 
 // values

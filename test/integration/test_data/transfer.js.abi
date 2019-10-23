@@ -6,7 +6,7 @@
       "name": "transfer",
       "args": ["string", "string", "string"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "100"
       }]
     },
@@ -14,7 +14,7 @@
       "name": "transferFreeze",
       "args": ["string", "string", "string"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "100"
       }]
     },
@@ -22,7 +22,7 @@
       "name": "destroy",
       "args": ["string", "string"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "100"
       }]
     },
@@ -30,7 +30,7 @@
       "name": "transfer1",
       "args": ["string", "string", "string"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "unlimited"
       },{
         "token": "*",
@@ -57,7 +57,7 @@
       "name": "transfer4",
       "args": ["string", "string", "string"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "9.9"
       },{
         "token": "*",
@@ -68,7 +68,7 @@
       "name": "transfermulti",
       "args": ["string", "string", "string", "string"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "120"
       }]
     },
@@ -76,7 +76,7 @@
       "name": "withdraw",
       "args": ["string", "string"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "100"
       }]
     },
@@ -84,7 +84,7 @@
       "name": "withdrawWithoutAuth",
       "args": ["string", "string"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "100"
       }]
     },
@@ -92,7 +92,7 @@
       "name": "withdrawWithoutAuthAfterWithAuth",
       "args": ["string", "string"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "100"
       }]
     }

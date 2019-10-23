@@ -31,7 +31,7 @@
                 "number"
             ],
             "amountLimit": [{
-                "token": "iost",
+                "token": "em",
                 "val": "unlimited"
             }]
         },

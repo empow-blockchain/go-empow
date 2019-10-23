@@ -15,7 +15,7 @@ class Func {
     }
 
     func4() {
-        const a = ["i", "love", "iost"];
+        const a = ["i", "love", "em"];
         let b = a.map(w => (w.length));
         return b.map(w => function () {
             return w + 1

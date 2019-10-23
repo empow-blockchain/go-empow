@@ -10,5 +10,5 @@ producer000
 
 for (( i = 0; i < ${WITNESS_NUM}; i++ ))
 do
-    echo "$i: $(curl -s -X POST ${HTTP_URL}/getContractStorage -d '{"id":"vote.iost","owner":"","field":"'${WITNESS_NAME[i]}'","key":"v_1"}')"
+    echo "$i: $(curl -s -X POST ${HTTP_URL}/getContractStorage -d '{"id":"vote.empow","owner":"","field":"'${WITNESS_NAME[i]}'","key":"v_1"}')"
 done

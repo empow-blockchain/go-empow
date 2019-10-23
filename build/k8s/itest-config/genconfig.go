@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/iost-official/go-iost/itest"
+	"github.com/empow-blockchain/go-empow/itest"
 )
 
 var (

@@ -2,7 +2,7 @@ GO = go
 
 VERSION = 3.1.1
 COMMIT = $(shell git rev-parse --short HEAD)
-PROJECT = github.com/iost-official/go-iost
+PROJECT = github.com/empow-blockchain/go-empow
 DOCKER_IMAGE = iostio/iost-node:$(VERSION)-$(COMMIT)
 DOCKER_RELEASE_IMAGE = iostio/iost-node:$(VERSION)
 DOCKER_DEVIMAGE = iostio/iost-dev:$(VERSION)
@@ -21,7 +21,7 @@ ifeq ($(shell uname),Linux)
 	export LD_LIBRARY_PATH=$(shell pwd)/vm/v8vm/v8/libv8/_linux_amd64
 endif
 BUILD_TIME := $(shell date +%Y%m%d_%H%M%S%z)
-LD_FLAGS := -X github.com/iost-official/go-iost/core/global.BuildTime=$(BUILD_TIME) -X github.com/iost-official/go-iost/core/global.GitHash=$(shell git rev-parse HEAD) -X github.com/iost-official/go-iost/core/global.CodeVersion=$(VERSION)
+LD_FLAGS := -X github.com/empow-blockchain/go-empow/core/global.BuildTime=$(BUILD_TIME) -X github.com/empow-blockchain/go-empow/core/global.GitHash=$(shell git rev-parse HEAD) -X github.com/empow-blockchain/go-empow/core/global.CodeVersion=$(VERSION)
 
 .PHONY: all build iserver iwallet itest lint test e2e_test k8s_test image push devimage swagger protobuf install clean debug clear_debug_file
 
@@ -45,7 +45,7 @@ vmlib:
 	(cd vm/v8vm/v8/; make clean js_bin vm install deploy; cd ../../..)
 
 vmlib_linux:
-	docker run --rm -v `pwd`:/gopath/src/github.com/iost-official/go-iost $(DOCKER_DEVIMAGE) bash -c 'cd vm/v8vm/v8/ && make clean js_bin vm install'
+	docker run --rm -v `pwd`:/gopath/src/github.com/empow-blockchain/go-empow $(DOCKER_DEVIMAGE) bash -c 'cd vm/v8vm/v8/ && make clean js_bin vm install'
 
 test:
 ifeq ($(origin VERBOSE),undefined)
@@ -71,7 +71,7 @@ k8s_test: image push
 	kubectl exec -it itest -n $(CLUSTER) -- ./itest run -c /etc/itest/itest.json c_case
 
 image:
-	docker run --rm -v `pwd`:/gopath/src/github.com/iost-official/go-iost $(DOCKER_DEVIMAGE) make BUILD_TIME=$(BUILD_TIME)
+	docker run --rm -v `pwd`:/gopath/src/github.com/empow-blockchain/go-empow $(DOCKER_DEVIMAGE) make BUILD_TIME=$(BUILD_TIME)
 	docker build -f Dockerfile.run -t $(DOCKER_IMAGE) .
 
 push:
@@ -84,7 +84,7 @@ devpush:
 	docker push $(DOCKER_DEVIMAGE)
 
 release: devimage devpush
-	docker run --rm -v `pwd`:/gopath/src/github.com/iost-official/go-iost $(DOCKER_DEVIMAGE) make BUILD_TIME=$(BUILD_TIME)
+	docker run --rm -v `pwd`:/gopath/src/github.com/empow-blockchain/go-empow $(DOCKER_DEVIMAGE) make BUILD_TIME=$(BUILD_TIME)
 	docker build -f Dockerfile -t $(DOCKER_RELEASE_IMAGE) .
 	docker push $(DOCKER_RELEASE_IMAGE)
 

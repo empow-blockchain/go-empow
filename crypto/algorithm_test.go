@@ -2,7 +2,7 @@ package crypto
 
 import (
 	"crypto/rand"
-	"github.com/iost-official/go-iost/common"
+	"github.com/empow-blockchain/go-empow/common"
 	"reflect"
 	"testing"
 

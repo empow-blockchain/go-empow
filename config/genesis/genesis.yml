@@ -1,8 +1,8 @@
 creategenesis: true
 tokeninfo:
   foundationaccount: foundation
-  iosttotalsupply: 90000000000
-  iostdecimal: 8
+  EMTotalSupply: 90000000000
+  EMDecimal: 8
 witnessinfo:
   - address: EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB
     owner: GPsg8fF73PcWjwxM7DyahvjZSk1cbNSMG9kq4bCMWNn7 

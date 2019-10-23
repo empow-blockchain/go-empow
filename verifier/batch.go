@@ -7,14 +7,14 @@ import (
 
 	"fmt"
 
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/vm"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/vm"
+	"github.com/empow-blockchain/go-empow/vm/database"
 )
 
-//go:generate mockgen -destination mock/batcher_mock.go -package mock github.com/iost-official/go-iost/vm Batcher
+//go:generate mockgen -destination mock/batcher_mock.go -package mock github.com/empow-blockchain/go-empow/vm Batcher
 
 // Batcher batch generator and verifier
 type Batcher interface {
@@ -36,7 +36,7 @@ func NewBatch() *Batch {
 	}
 }
 
-//go:generate mockgen -destination mock/provider_mock.go -package mock github.com/iost-official/go-iost/vm Provider
+//go:generate mockgen -destination mock/provider_mock.go -package mock github.com/empow-blockchain/go-empow/vm Provider
 
 // Provider of tx
 type Provider interface {

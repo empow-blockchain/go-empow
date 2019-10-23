@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/iost-official/go-iost/core/block"
+	"github.com/empow-blockchain/go-empow/core/block"
 )
 
 var (

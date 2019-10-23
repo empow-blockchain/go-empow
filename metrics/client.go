@@ -5,7 +5,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/ilog"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
 )
@@ -40,7 +40,7 @@ func NewClient() *Client {
 
 // SetPusher sets the pusher with the given addr.
 func (c *Client) SetPusher(addr, username, password string) error {
-	c.pusher = push.New(addr, "iost")
+	c.pusher = push.New(addr, "em")
 	c.pusher.BasicAuth(username, password)
 	for _, colloctor := range c.collectorCache {
 		c.pusher.Collector(colloctor)

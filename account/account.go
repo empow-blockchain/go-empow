@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/crypto"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/crypto"
 )
 
 // KeyPair account of the ios

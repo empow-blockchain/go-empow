@@ -6,12 +6,12 @@ import (
 
 	"time"
 
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/core/version"
-	"github.com/iost-official/go-iost/vm"
-	"github.com/iost-official/go-iost/vm/database"
-	"github.com/iost-official/go-iost/vm/host"
-	"github.com/iost-official/go-iost/vm/native"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/core/version"
+	"github.com/empow-blockchain/go-empow/vm"
+	"github.com/empow-blockchain/go-empow/vm/database"
+	"github.com/empow-blockchain/go-empow/vm/host"
+	"github.com/empow-blockchain/go-empow/vm/native"
 )
 
 var testDataPath = "./test_data/"
@@ -38,7 +38,7 @@ func InitVMWithMonitor(t *testing.T, conName string, optional ...interface{}) (*
 	h.Context().Set("stack0", "direct_call")
 
 	code := &contract.Contract{
-		ID:   "system.iost",
+		ID:   "system.empow",
 		Info: &contract.Info{Version: "1.0.0"},
 	}
 
@@ -53,7 +53,7 @@ func TestEngine_SetCode(t *testing.T) {
 
 	e, host, code := InitVMWithMonitor(t, "setcode", int64(400000000))
 	host.Context().Set("tx_hash", "iamhash")
-	host.Context().Set("contract_name", "system.iost")
+	host.Context().Set("contract_name", "system.empow")
 	host.Context().Set("auth_contract_list", make(map[string]int))
 	host.SetDeadline(time.Now().Add(10 * time.Second))
 	hash := "Contractiamhash"

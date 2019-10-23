@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/ilog"
-	p2pb "github.com/iost-official/go-iost/p2p/pb"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/ilog"
+	p2pb "github.com/empow-blockchain/go-empow/p2p/pb"
 
 	host "github.com/libp2p/go-libp2p-host"
 	kbucket "github.com/libp2p/go-libp2p-kbucket"

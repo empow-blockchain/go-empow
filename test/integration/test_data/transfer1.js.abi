@@ -6,7 +6,7 @@
       "name": "transfer",
       "args": ["string", "string", "string"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "120"
       }]
     }

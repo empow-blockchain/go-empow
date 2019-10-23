@@ -3,8 +3,8 @@ package call
 import (
 	"context"
 
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
 )
 
 // ToTxRequest ...

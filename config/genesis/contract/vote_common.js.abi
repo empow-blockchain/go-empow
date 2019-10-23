@@ -20,7 +20,7 @@
                 "json"
             ],
             "amountLimit": [{
-                "token": "iost",
+                "token": "em",
                 "val": "unlimited"
             }]
         },
@@ -63,7 +63,7 @@
                 "string"
             ],
             "amountLimit": [{
-                "token": "iost",
+                "token": "em",
                 "val": "unlimited"
             }]
         },

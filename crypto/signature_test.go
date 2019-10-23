@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/iost-official/go-iost/common"
+	"github.com/empow-blockchain/go-empow/common"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

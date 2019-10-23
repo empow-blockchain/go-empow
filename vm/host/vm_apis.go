@@ -1,9 +1,9 @@
 package host
 
 import (
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/core/event"
-	"github.com/iost-official/go-iost/core/tx"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/core/event"
+	"github.com/empow-blockchain/go-empow/core/tx"
 )
 
 // APIDelegate ...

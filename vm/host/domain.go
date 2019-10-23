@@ -3,7 +3,7 @@ package host
 import (
 	"strings"
 
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/ilog"
 )
 
 // const table name
@@ -27,7 +27,7 @@ func NewDNS(h *Host) DNS {
 
 // ContractID find cid from url
 func (d *DNS) ContractID(url string) string {
-	cid, _ := d.h.GlobalMapGet("domain.iost", DNSTable, url)
+	cid, _ := d.h.GlobalMapGet("domain.empow", DNSTable, url)
 	if s, ok := cid.(string); ok {
 		return s
 	}
@@ -36,7 +36,7 @@ func (d *DNS) ContractID(url string) string {
 
 // URLOwner find owner of url
 func (d *DNS) URLOwner(url string) string {
-	owner, _ := d.h.GlobalMapGet("domain.iost", DNSOwnerTable, url)
+	owner, _ := d.h.GlobalMapGet("domain.empow", DNSOwnerTable, url)
 	if s, ok := owner.(string); ok {
 		return s
 	}
@@ -53,7 +53,7 @@ func (d *DNS) URLTransfer(url, to string) {
 
 // URL get url of cid
 func (d *DNS) URL(cid string) string {
-	domain, _ := d.h.GlobalMapGet("domain.iost", DNSRTable, cid)
+	domain, _ := d.h.GlobalMapGet("domain.empow", DNSRTable, cid)
 	if s, ok := domain.(string); ok {
 		return s
 	}

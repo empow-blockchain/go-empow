@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/iost-official/go-iost/core/event"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/core/event"
+	"github.com/empow-blockchain/go-empow/ilog"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,7 +15,7 @@ func TestEventCollectorPost(t *testing.T) {
 	ec := event.GetCollector()
 
 	ch1 := ec.Subscribe(1, []event.Topic{event.ContractEvent}, nil)
-	ch2 := ec.Subscribe(2, []event.Topic{event.ContractEvent}, &event.Meta{ContractID: "base.iost"})
+	ch2 := ec.Subscribe(2, []event.Topic{event.ContractEvent}, &event.Meta{ContractID: "base.empow"})
 	ch3 := ec.Subscribe(3, []event.Topic{event.ContractReceipt, event.ContractEvent}, nil)
 
 	count1 := int32(0)
@@ -61,9 +61,9 @@ func TestEventCollectorPost(t *testing.T) {
 		}
 	}(ch3)
 
-	ec.Post(event.NewEvent(event.ContractEvent, "test1"), &event.Meta{ContractID: "token.iost"})
-	ec.Post(event.NewEvent(event.ContractEvent, "test2"), &event.Meta{ContractID: "base.iost"})
-	ec.Post(event.NewEvent(event.ContractReceipt, "test3"), &event.Meta{ContractID: "base.iost"})
+	ec.Post(event.NewEvent(event.ContractEvent, "test1"), &event.Meta{ContractID: "token.empow"})
+	ec.Post(event.NewEvent(event.ContractEvent, "test2"), &event.Meta{ContractID: "base.empow"})
+	ec.Post(event.NewEvent(event.ContractReceipt, "test3"), &event.Meta{ContractID: "base.empow"})
 
 	time.Sleep(time.Millisecond * 100)
 
@@ -72,7 +72,7 @@ func TestEventCollectorPost(t *testing.T) {
 	assert.EqualValues(t, 3, atomic.LoadInt32(&count3))
 
 	ec.Unsubscribe(1, []event.Topic{event.ContractEvent})
-	ec.Post(event.NewEvent(event.ContractEvent, "test2"), &event.Meta{ContractID: "base.iost"})
+	ec.Post(event.NewEvent(event.ContractEvent, "test2"), &event.Meta{ContractID: "base.empow"})
 
 	time.Sleep(time.Millisecond * 100)
 
@@ -90,7 +90,7 @@ func TestEventCollectorFullPost(t *testing.T) {
 	count := int32(0)
 
 	for i := 0; i < event.EventChSize+100; i++ {
-		ec.Post(event.NewEvent(event.ContractEvent, "test1"), &event.Meta{ContractID: "token.iost"})
+		ec.Post(event.NewEvent(event.ContractEvent, "test1"), &event.Meta{ContractID: "token.empow"})
 	}
 
 	time.Sleep(time.Millisecond * 100)

@@ -11,8 +11,8 @@ import (
 
 	"runtime/pprof"
 
-	"github.com/iost-official/go-iost/core/version"
-	"github.com/iost-official/go-iost/db"
+	"github.com/empow-blockchain/go-empow/core/version"
+	"github.com/empow-blockchain/go-empow/db"
 )
 
 func watchTimeout(t *testing.T, f func()) {

@@ -9,7 +9,7 @@
             ],
             "amountLimit": [
                 {
-                    "token": "iost",
+                    "token": "em",
                     "val": "100000"
                 }
             ]
@@ -24,7 +24,7 @@
             ],
             "amountLimit": [
                 {
-                    "token": "iost",
+                    "token": "em",
                     "val": "100000"
                 }
             ]
@@ -36,7 +36,7 @@
             ],
             "amountLimit": [
                 {
-                    "token": "iost",
+                    "token": "em",
                     "val": "100000"
                 }
             ]

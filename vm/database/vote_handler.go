@@ -4,16 +4,16 @@ import (
 	"errors"
 
 	"github.com/bitly/go-simplejson"
-	"github.com/iost-official/go-iost/common"
+	"github.com/empow-blockchain/go-empow/common"
 )
 
 // VoteProducerContractName name of vote producer contract
-const VoteProducerContractName = "vote_producer.iost"
+const VoteProducerContractName = "vote_producer.empow"
 
 // VoteContractName name of common vote contract
-const VoteContractName = "vote.iost"
+const VoteContractName = "vote.empow"
 
-// VoteHandler easy to get info of vote.iost and vote_producer.iost
+// VoteHandler easy to get info of vote.empow and vote_producer.empow
 type VoteHandler struct {
 	BasicHandler
 	MapHandler

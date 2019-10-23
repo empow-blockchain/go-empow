@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/iost-official/go-iost/account"
+	"github.com/empow-blockchain/go-empow/account"
 	"os"
 
 	"io/ioutil"
@@ -15,10 +15,10 @@ import (
 	"errors"
 
 	"github.com/bitly/go-simplejson"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/crypto"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/crypto"
 )
 
 // SimpleDB implements simple database interface
@@ -106,7 +106,7 @@ func (d *SimpleDB) Keys(table string, prefix string) ([]string, error) {
 // Save save db data to json file
 func (d *SimpleDB) Save(path string) error {
 
-	d.json.Del("c-system.iost")
+	d.json.Del("c-system.empow")
 
 	f, err := os.Create(path)
 	if err != nil {
@@ -220,13 +220,13 @@ func (d *SimpleDB) AddSystem(path string) {
 		panic(err)
 	}
 
-	c, err := cp.Parse("system.iost", "", string(fd))
+	c, err := cp.Parse("system.empow", "", string(fd))
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(c)
 
-	d.json.Set("c-system.iost", c.Encode())
+	d.json.Set("c-system.empow", c.Encode())
 }
 
 // Commit do nothing

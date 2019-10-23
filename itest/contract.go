@@ -3,7 +3,7 @@ package itest
 import (
 	"io/ioutil"
 
-	"github.com/iost-official/go-iost/core/contract"
+	"github.com/empow-blockchain/go-empow/core/contract"
 )
 
 // Constant of Contract
@@ -36,7 +36,7 @@ const (
 				],
 				"amountLimit": [
 					{
-						"token": "iost",
+						"token": "em",
 						"val": "100"
 					}
 				]

@@ -6,11 +6,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/blockcache"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/blockcache"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/ilog"
 )
 
 // TxPImpl defines all the API of txpool package.

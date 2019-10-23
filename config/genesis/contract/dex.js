@@ -7,7 +7,7 @@ class DexContract {
         }
     }
     can_update(data) {
-        const owner = storage.globalMapGet("system.iost", "contract_owner", blockchain.contractName());
+        const owner = storage.globalMapGet("system.empow", "contract_owner", blockchain.contractName());
         return blockchain.requireAuth(owner, "active");
     }
     _new_order_id() {
@@ -28,7 +28,7 @@ class DexContract {
     }
     place_order(sellType, sellAmount, buyType, buyAmount) {
         let orderID = this._new_order_id();
-        blockchain.callWithAuth("token.iost", "transfer",
+        blockchain.callWithAuth("token.empow", "transfer",
             [sellType, blockchain.publisher(), blockchain.contractName(), sellAmount, "put" + orderID]);
         this._put_order(orderID, {"sell_type": sellType,
             "sell_amount": sellAmount,
@@ -44,7 +44,7 @@ class DexContract {
             throw new Error("not a valid order");
         }
         this._requireAuth(orderJSON["seller"], "active");
-        blockchain.callWithAuth("token.iost", "transfer",
+        blockchain.callWithAuth("token.empow", "transfer",
             [orderJSON["sell_type"], blockchain.contractName(), orderJSON["seller"], orderJSON["sell_amount"], "cancel" + orderID]);
         this._del_order(orderID);
     }
@@ -53,9 +53,9 @@ class DexContract {
         if (orderJSON === null) {
             throw new Error("not a valid order");
         }
-        blockchain.callWithAuth("token.iost", "transfer",
+        blockchain.callWithAuth("token.empow", "transfer",
             [orderJSON["buy_type"], blockchain.publisher(), orderJSON["seller"], orderJSON["buy_amount"], "take" + orderID]);
-        blockchain.callWithAuth("token.iost", "transfer",
+        blockchain.callWithAuth("token.empow", "transfer",
             [orderJSON["sell_type"], blockchain.contractName(), blockchain.publisher(), orderJSON["sell_amount"], "finish" + orderID]);
         this._del_order(orderID);
     }

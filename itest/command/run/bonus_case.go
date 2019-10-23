@@ -8,9 +8,9 @@ import (
 
 	"github.com/bitly/go-simplejson"
 
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/ilog"
 
-	"github.com/iost-official/go-iost/itest"
+	"github.com/empow-blockchain/go-empow/itest"
 	"github.com/urfave/cli"
 )
 
@@ -23,7 +23,7 @@ var BonusCaseCommand = cli.Command{
 }
 
 func countBlockProducedBy(it *itest.ITest, acc string, number int64) (cnt int64, err error) {
-	data, _, _, err := it.GetContractStorage("vote_producer.iost", "producerTable", acc)
+	data, _, _, err := it.GetContractStorage("vote_producer.empow", "producerTable", acc)
 	if data == "" || err != nil {
 		return
 	}
@@ -84,7 +84,7 @@ var BonusCaseAction = func(c *cli.Context) error {
 		return err
 	}
 
-	data, _, number, err := it.GetContractStorage("token.iost", "TB"+acc, "contribute")
+	data, _, number, err := it.GetContractStorage("token.empow", "TB"+acc, "contribute")
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ var BonusCaseAction = func(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	data1, _, _, err := it.GetContractStorage("bonus.iost", "blockContrib", "")
+	data1, _, _, err := it.GetContractStorage("bonus.empow", "blockContrib", "")
 	if err != nil {
 		return err
 	}

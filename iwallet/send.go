@@ -3,8 +3,8 @@ package iwallet
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/iost-official/go-iost/rpc/pb"
-	"github.com/iost-official/go-iost/sdk"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
+	"github.com/empow-blockchain/go-empow/sdk"
 )
 
 // sendCmd represents the send command that send a contract with given actions.

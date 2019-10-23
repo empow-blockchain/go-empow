@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/iost-official/go-iost/core/tx"
+	"github.com/empow-blockchain/go-empow/core/tx"
 )
 
 // Build return the merkle tree

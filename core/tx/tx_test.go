@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/core/tx/pb"
-	"github.com/iost-official/go-iost/crypto"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/core/tx/pb"
+	"github.com/empow-blockchain/go-empow/crypto"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -209,7 +209,7 @@ func TestTx_Platform(t *testing.T) {
 	}
 	txx.AmountLimit = []*contract.Amount{
 		{
-			Token: "iost",
+			Token: "em",
 			Val:   "123",
 		},
 	}

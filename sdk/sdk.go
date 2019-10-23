@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/contract"
-	rpcpb "github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
 	"google.golang.org/grpc"
 )
 
@@ -478,9 +478,9 @@ func (s *IOSTDevSDK) SendTxFromActions(actions []*rpcpb.Action) (txHash string, 
 // PledgeForGasAndRAM ...
 func (s *IOSTDevSDK) PledgeForGasAndRAM(gasPledged int64, ram int64) error {
 	var acts []*rpcpb.Action
-	acts = append(acts, NewAction("gas.iost", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, s.accountName, s.accountName, gasPledged)))
+	acts = append(acts, NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, s.accountName, s.accountName, gasPledged)))
 	if ram > 0 {
-		acts = append(acts, NewAction("ram.iost", "buy", fmt.Sprintf(`["%v", "%v", %v]`, s.accountName, s.accountName, ram)))
+		acts = append(acts, NewAction("ram.empow", "buy", fmt.Sprintf(`["%v", "%v", %v]`, s.accountName, s.accountName, ram)))
 	}
 	_, err := s.SendTxFromActions(acts)
 	if err != nil {
@@ -492,9 +492,9 @@ func (s *IOSTDevSDK) PledgeForGasAndRAM(gasPledged int64, ram int64) error {
 // CreateNewAccountActions makes actions for creating new account.
 func (s *IOSTDevSDK) CreateNewAccountActions(newID string, ownerKey string, activeKey string, initialGasPledge int64, initialRAM int64, initialCoins int64) ([]*rpcpb.Action, error) {
 	var acts []*rpcpb.Action
-	acts = append(acts, NewAction("auth.iost", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, newID, ownerKey, activeKey)))
+	acts = append(acts, NewAction("auth.empow", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, newID, ownerKey, activeKey)))
 	if initialRAM > 0 {
-		acts = append(acts, NewAction("ram.iost", "buy", fmt.Sprintf(`["%v", "%v", %v]`, s.accountName, newID, initialRAM)))
+		acts = append(acts, NewAction("ram.empow", "buy", fmt.Sprintf(`["%v", "%v", %v]`, s.accountName, newID, initialRAM)))
 	}
 	var registerInitialPledge int64 = 10
 	initialGasPledge -= registerInitialPledge
@@ -502,10 +502,10 @@ func (s *IOSTDevSDK) CreateNewAccountActions(newID string, ownerKey string, acti
 		return nil, fmt.Errorf("min gas pledge is 10")
 	}
 	if initialGasPledge > 0 {
-		acts = append(acts, NewAction("gas.iost", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, s.accountName, newID, initialGasPledge)))
+		acts = append(acts, NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, s.accountName, newID, initialGasPledge)))
 	}
 	if initialCoins > 0 {
-		acts = append(acts, NewAction("token.iost", "transfer", fmt.Sprintf(`["iost", "%v", "%v", "%v", ""]`, s.accountName, newID, initialCoins)))
+		acts = append(acts, NewAction("token.empow", "transfer", fmt.Sprintf(`["em", "%v", "%v", "%v", ""]`, s.accountName, newID, initialCoins)))
 	}
 	return acts, nil
 }
@@ -574,7 +574,7 @@ func (s *IOSTDevSDK) PublishContractActions(codePath string, abiPath string, con
 	if err != nil {
 		return nil, err
 	}
-	action := NewAction("system.iost", methodName, string(data))
+	action := NewAction("system.empow", methodName, string(data))
 	return []*rpcpb.Action{action}, nil
 }
 

@@ -4,9 +4,9 @@ import (
 	"sort"
 
 	"fmt"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/vm/host"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/vm/host"
 	"strconv"
 )
 
@@ -21,29 +21,29 @@ var (
 	}
 )
 
-// SystemABI generate system.iost abi and contract
+// SystemABI generate system.empow abi and contract
 func SystemABI() *contract.Contract {
-	return SystemContractABI("system.iost", "1.0.0")
+	return SystemContractABI("system.empow", "1.0.0")
 }
 
-// GasABI generate gas.iost abi and contract
+// GasABI generate gas.empow abi and contract
 func GasABI() *contract.Contract {
-	return SystemContractABI("gas.iost", "1.0.0")
+	return SystemContractABI("gas.empow", "1.0.0")
 }
 
-// TokenABI generate token.iost abi and contract
+// TokenABI generate token.empow abi and contract
 func TokenABI() *contract.Contract {
-	return SystemContractABI("token.iost", "1.0.0")
+	return SystemContractABI("token.empow", "1.0.0")
 }
 
-// Token721ABI generate token.iost abi and contract
+// Token721ABI generate token.empow abi and contract
 func Token721ABI() *contract.Contract {
-	return SystemContractABI("token721.iost", "1.0.0")
+	return SystemContractABI("token721.empow", "1.0.0")
 }
 
-// DomainABI generate domain.iost abi and contract
+// DomainABI generate domain.empow abi and contract
 func DomainABI() *contract.Contract {
-	return SystemContractABI("domain.iost", "1.0.0")
+	return SystemContractABI("domain.empow", "1.0.0")
 }
 
 // SystemContractABI return system contract abi
@@ -58,19 +58,19 @@ func SystemContractABI(conID, version string) *contract.Contract {
 // GetABISetByVersion return the corrent abi set according to contract ID and version
 func getABISetByVersion(conID string, version string) (aset *abiSet, err error) {
 	abiMap := make(map[string]map[string]*abiSet)
-	abiMap["system.iost"] = make(map[string]*abiSet)
-	abiMap["system.iost"]["1.0.0"] = systemABIs
-	abiMap["domain.iost"] = make(map[string]*abiSet)
-	abiMap["domain.iost"]["0.0.0"] = domain0ABIs
-	abiMap["domain.iost"]["1.0.0"] = domainABIs
-	abiMap["gas.iost"] = make(map[string]*abiSet)
-	abiMap["gas.iost"]["1.0.0"] = gasABIs
-	abiMap["token.iost"] = make(map[string]*abiSet)
-	abiMap["token.iost"]["1.0.0"] = tokenABIs
-	abiMap["token.iost"]["1.0.2"] = tokenABIsV2
-	abiMap["token.iost"]["1.0.3"] = tokenABIsV3
-	abiMap["token721.iost"] = make(map[string]*abiSet)
-	abiMap["token721.iost"]["1.0.0"] = token721ABIs
+	abiMap["system.empow"] = make(map[string]*abiSet)
+	abiMap["system.empow"]["1.0.0"] = systemABIs
+	abiMap["domain.empow"] = make(map[string]*abiSet)
+	abiMap["domain.empow"]["0.0.0"] = domain0ABIs
+	abiMap["domain.empow"]["1.0.0"] = domainABIs
+	abiMap["gas.empow"] = make(map[string]*abiSet)
+	abiMap["gas.empow"]["1.0.0"] = gasABIs
+	abiMap["token.empow"] = make(map[string]*abiSet)
+	abiMap["token.empow"]["1.0.0"] = tokenABIs
+	abiMap["token.empow"]["1.0.2"] = tokenABIsV2
+	abiMap["token.empow"]["1.0.3"] = tokenABIsV3
+	abiMap["token721.empow"] = make(map[string]*abiSet)
+	abiMap["token721.empow"]["1.0.0"] = token721ABIs
 
 	var amap map[string]*abiSet
 	var ok bool

@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/db"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/db"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

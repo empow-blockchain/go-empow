@@ -10,13 +10,13 @@ import (
 	"math/rand"
 	"sync"
 
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/itest"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/itest"
 	"github.com/urfave/cli"
 )
 
-// BenchmarkSystemCommand is the subcommand for benchmark system.iost.
+// BenchmarkSystemCommand is the subcommand for benchmark system.empow.
 var BenchmarkSystemCommand = cli.Command{
 	Name:      "benchmarkSystem",
 	ShortName: "benchS",
@@ -142,7 +142,7 @@ var BenchmarkSystemAction = func(c *cli.Context) error {
 	}
 
 	check := c.Bool("check")
-	contractName := "system.iost"
+	contractName := "system.empow"
 	for {
 		trxs := make([]*itest.Transaction, 0)
 		errList := []error{}
@@ -156,8 +156,8 @@ var BenchmarkSystemAction = func(c *cli.Context) error {
 				abiName = setCode
 				from := accounts[rand.Intn(len(accounts))]
 
-				act0 := tx.NewAction("ram.iost", "buy", fmt.Sprintf(`["%v", "%v", %v]`, "admin", from.ID, 3000))
-				act1 := tx.NewAction("gas.iost", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 100))
+				act0 := tx.NewAction("ram.empow", "buy", fmt.Sprintf(`["%v", "%v", %v]`, "admin", from.ID, 3000))
+				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 100))
 				tx0 := itest.NewTransaction([]*tx.Action{act0, act1})
 				trx, err := it.GetDefaultAccount().Sign(tx0)
 				if err != nil {
@@ -186,7 +186,7 @@ var BenchmarkSystemAction = func(c *cli.Context) error {
 				abiName = updateCode
 				contractID := contractList[rand.Intn(len(contractList))]
 				owner := accountMap[contractMap[contractID]]
-				act1 := tx.NewAction("gas.iost", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", owner.ID, 100))
+				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", owner.ID, 100))
 				tx0 := itest.NewTransaction([]*tx.Action{act1})
 				trx, err := it.GetDefaultAccount().Sign(tx0)
 				if err != nil {
@@ -209,7 +209,7 @@ var BenchmarkSystemAction = func(c *cli.Context) error {
 				abiName = cancelDelaytx
 				if len(delayTxList) == 0 {
 					from := accounts[rand.Intn(len(accounts))]
-					act1 := tx.NewAction("gas.iost", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
+					act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
 					tx0 := itest.NewTransaction([]*tx.Action{act1})
 					tx0.Delay = 90 * 1e9
 					trx, err := it.GetDefaultAccount().Sign(tx0)
@@ -239,7 +239,7 @@ var BenchmarkSystemAction = func(c *cli.Context) error {
 			case tIndex <= 3:
 				abiName = receipt
 				from := accounts[rand.Intn(len(accounts))]
-				act1 := tx.NewAction("gas.iost", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
+				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
 				tx0 := itest.NewTransaction([]*tx.Action{act1})
 				trx, err := it.GetDefaultAccount().Sign(tx0)
 				if err != nil {
@@ -260,7 +260,7 @@ var BenchmarkSystemAction = func(c *cli.Context) error {
 			case tIndex <= 4:
 				abiName = requireAuth
 				from := accounts[rand.Intn(len(accounts))]
-				act1 := tx.NewAction("gas.iost", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
+				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
 				tx0 := itest.NewTransaction([]*tx.Action{act1})
 				trx, err := it.GetDefaultAccount().Sign(tx0)
 				if err != nil {

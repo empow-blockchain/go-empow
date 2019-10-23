@@ -11,11 +11,11 @@ class Base {
     }
 
     stat() {
-        blockchain.callWithAuth("vote_producer.iost", "stat", '[]');
+        blockchain.callWithAuth("vote_producer.empow", "stat", '[]');
     }
 
     issueContribute(data) {
-        blockchain.callWithAuth("bonus.iost", "issueContribute", JSON.stringify([data]));
+        blockchain.callWithAuth("bonus.empow", "issueContribute", JSON.stringify([data]));
     }
 }
 

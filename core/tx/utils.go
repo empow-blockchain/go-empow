@@ -3,7 +3,7 @@ package tx
 import (
 	"fmt"
 	"github.com/bitly/go-simplejson"
-	"github.com/iost-official/go-iost/common"
+	"github.com/empow-blockchain/go-empow/common"
 	"math"
 	"regexp"
 	"strconv"
@@ -25,7 +25,7 @@ func checkAmount(amount string, token string) error {
 	if math.Abs(f1.ToFloat()-f2) > 1e-4 {
 		return fmt.Errorf("invalid amount: %v, %v", err, amount)
 	}
-	if token == "iost" && f1.Decimal > 8 {
+	if token == "em" && f1.Decimal > 8 {
 		return fmt.Errorf("invalid decimal: %v", amount)
 	}
 	return nil
@@ -41,7 +41,7 @@ func checkBadAction(action *Action) error { // nolint:gocyclo
 	if err != nil {
 		return fmt.Errorf("invalid json array: %v, %v", err, data)
 	}
-	if action.Contract == "token.iost" && action.ActionName == "transfer" {
+	if action.Contract == "token.empow" && action.ActionName == "transfer" {
 		if len(arr) != 5 {
 			return fmt.Errorf("wrong args num: %v", data)
 		}
@@ -59,7 +59,7 @@ func checkBadAction(action *Action) error { // nolint:gocyclo
 		}
 		return nil
 	}
-	if action.Contract == "gas.iost" && (action.ActionName == "pledge" || action.ActionName == "unpledge") {
+	if action.Contract == "gas.empow" && (action.ActionName == "pledge" || action.ActionName == "unpledge") {
 		if len(arr) != 3 {
 			return fmt.Errorf("wrong args num: %v", data)
 		}
@@ -67,7 +67,7 @@ func checkBadAction(action *Action) error { // nolint:gocyclo
 		if err != nil {
 			return fmt.Errorf("invalid amount: %v, %v", err, data)
 		}
-		err = checkAmount(amount, "iost")
+		err = checkAmount(amount, "em")
 		if err != nil {
 			return fmt.Errorf("invalid amount: %v, %v", err, data)
 		}

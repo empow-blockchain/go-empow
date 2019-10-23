@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/contract"
-	txpb "github.com/iost-official/go-iost/core/tx/pb"
-	"github.com/iost-official/go-iost/crypto"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	txpb "github.com/empow-blockchain/go-empow/core/tx/pb"
+	"github.com/empow-blockchain/go-empow/crypto"
 )
 
 const (

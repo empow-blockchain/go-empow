@@ -16,11 +16,11 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/crypto"
-	rpcpb "github.com/iost-official/go-iost/rpc/pb"
-	"github.com/iost-official/go-iost/sdk"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/crypto"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
+	"github.com/empow-blockchain/go-empow/sdk"
 )
 
 func errorWithHelp(cmd *cobra.Command, format string, a ...interface{}) error {

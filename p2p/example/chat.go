@@ -7,8 +7,8 @@ import (
 	"os"
 	"sync"
 
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/p2p"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/p2p"
 	uuid "github.com/satori/go.uuid"
 )
 

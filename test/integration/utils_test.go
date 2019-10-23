@@ -3,14 +3,14 @@ package integration
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/crypto"
-	. "github.com/iost-official/go-iost/verifier"
-	"github.com/iost-official/go-iost/vm/native"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/crypto"
+	. "github.com/empow-blockchain/go-empow/verifier"
+	"github.com/empow-blockchain/go-empow/vm/native"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -71,7 +71,7 @@ func init() {
 	acc9 = testAccounts[9]
 }
 
-var ContractPath = os.Getenv("GOPATH") + "/src/github.com/iost-official/go-iost/config/genesis/contract/"
+var ContractPath = os.Getenv("GOPATH") + "/src/github.com/empow-blockchain/go-empow/config/genesis/contract/"
 
 type fataler interface {
 	Fatal(args ...interface{})
@@ -91,26 +91,26 @@ func createAccountsWithResource(s *Simulator) {
 		s.SetGas(acc.ID, 100000000)
 		s.SetRAM(acc.ID, 10000)
 	}
-	// deploy token.iost
+	// deploy token.empow
 	s.SetContract(native.TokenABI())
 	// used in ram contract
 	s.SetAccount(account.NewInitAccount("deadaddr", "hahaha", "hahaha"))
-	s.Visitor.SetTokenBalance("iost", "deadaddr", 0)
+	s.Visitor.SetTokenBalance("em", "deadaddr", 0)
 	s.Visitor.Commit()
 }
 
 func createToken(t fataler, s *Simulator, acc *TestAccount) error {
 	// create token
-	r, err := s.Call("token.iost", "create", fmt.Sprintf(`["%v", "%v", %v, {}]`, "iost", acc0.ID, 1000000), acc.ID, acc.KeyPair)
+	r, err := s.Call("token.empow", "create", fmt.Sprintf(`["%v", "%v", %v, {}]`, "em", acc0.ID, 1000000), acc.ID, acc.KeyPair)
 	if err != nil || r.Status.Code != tx.Success {
 		return fmt.Errorf("err %v, receipt: %v", err, r)
 	}
 	// issue token
-	r, err = s.Call("token.iost", "issue", fmt.Sprintf(`["%v", "%v", "%v"]`, "iost", acc0.ID, "1000"), acc.ID, acc.KeyPair)
+	r, err = s.Call("token.empow", "issue", fmt.Sprintf(`["%v", "%v", "%v"]`, "em", acc0.ID, "1000"), acc.ID, acc.KeyPair)
 	if err != nil || r.Status.Code != tx.Success {
 		return fmt.Errorf("err %v, receipt: %v", err, r)
 	}
-	if 1e11 != s.Visitor.TokenBalance("iost", acc0.ID) {
+	if 1e11 != s.Visitor.TokenBalance("em", acc0.ID) {
 		return fmt.Errorf("err %v, receipt: %v", err, r)
 	}
 	s.Visitor.Commit()

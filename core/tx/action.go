@@ -2,8 +2,8 @@ package tx
 
 import (
 	"github.com/golang/protobuf/proto"
-	"github.com/iost-official/go-iost/common"
-	txpb "github.com/iost-official/go-iost/core/tx/pb"
+	"github.com/empow-blockchain/go-empow/common"
+	txpb "github.com/empow-blockchain/go-empow/core/tx/pb"
 )
 
 // Action implement

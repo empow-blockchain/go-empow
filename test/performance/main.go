@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/iost-official/go-iost/test/performance/call"
-	_ "github.com/iost-official/go-iost/test/performance/handles/gobang"
-	_ "github.com/iost-official/go-iost/test/performance/handles/luckyBet"
-	_ "github.com/iost-official/go-iost/test/performance/handles/transfer"
+	"github.com/empow-blockchain/go-empow/test/performance/call"
+	_ "github.com/empow-blockchain/go-empow/test/performance/handles/gobang"
+	_ "github.com/empow-blockchain/go-empow/test/performance/handles/luckyBet"
+	_ "github.com/empow-blockchain/go-empow/test/performance/handles/transfer"
 )
 
 func init() {

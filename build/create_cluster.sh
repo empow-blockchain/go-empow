@@ -13,12 +13,12 @@ cd build/k8s/
 echo "Generate iserver config"
 cd iserver-config/
 go run genconfig.go -c $NAME -m 3 -s 1
-cp -r ${GOPATH}/src/github.com/iost-official/go-iost/config/genesis/contract .
+cp -r ${GOPATH}/src/github.com/empow-blockchain/go-empow/config/genesis/contract .
 cd -
 
 echo "Generate itest config"
 cd itest-config/
-export DYLD_LIBRARY_PATH=${GOPATH}/src/github.com/iost-official/go-iost/vm/v8vm/v8/libv8/_darwin_amd64
+export DYLD_LIBRARY_PATH=${GOPATH}/src/github.com/empow-blockchain/go-empow/vm/v8vm/v8/libv8/_darwin_amd64
 go run genconfig.go -c $NAME -s "3"
 cd -
 

@@ -10,13 +10,13 @@ import (
 
 	"github.com/bitly/go-simplejson"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/vm/host"
-	"github.com/iost-official/go-iost/vm/native"
-	v8 "github.com/iost-official/go-iost/vm/v8vm"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/vm/host"
+	"github.com/empow-blockchain/go-empow/vm/native"
+	v8 "github.com/empow-blockchain/go-empow/vm/v8vm"
 )
 
 // Monitor ...
@@ -175,7 +175,7 @@ func (m *Monitor) Call(h *host.Host, contractName, api string, jarg string) (rtn
 			token := ""
 			amount, _ := common.NewFixed("0", 0)
 			args := []interface{}{}
-			if receipt.FuncName == "token.iost/transfer" || receipt.FuncName == "token.iost/transferFreeze" {
+			if receipt.FuncName == "token.empow/transfer" || receipt.FuncName == "token.empow/transferFreeze" {
 				_ = json.Unmarshal([]byte(receipt.Content), &args)
 				token = args[0].(string)
 				from := args[1].(string)
@@ -189,7 +189,7 @@ func (m *Monitor) Call(h *host.Host, contractName, api string, jarg string) (rtn
 						amount, _ = common.NewFixed(args[3].(string), h.DB().Decimal(token))
 					}
 				}
-			} else if receipt.FuncName == "token.iost/destroy" {
+			} else if receipt.FuncName == "token.empow/destroy" {
 				_ = json.Unmarshal([]byte(receipt.Content), &args)
 				token = args[0].(string)
 				from := args[1].(string)

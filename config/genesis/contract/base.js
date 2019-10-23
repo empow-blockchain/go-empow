@@ -40,15 +40,15 @@ class Base {
     }
 
     _vote() {
-        blockchain.callWithAuth("vote_producer.iost", "stat", `[]`);
+        blockchain.callWithAuth("vote_producer.empow", "stat", `[]`);
     }
 
     _bonus(data) {
-        blockchain.callWithAuth("bonus.iost", "issueContribute", [data]);
+        blockchain.callWithAuth("bonus.empow", "issueContribute", [data]);
     }
 
     _issue() {
-        blockchain.callWithAuth("issue.iost", "issueIOST", `[]`);
+        blockchain.callWithAuth("issue.empow", "issueIOST", `[]`);
     }
 
     _saveBlockInfo() {

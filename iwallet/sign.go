@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/iost-official/go-iost/rpc/pb"
-	"github.com/iost-official/go-iost/sdk"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
+	"github.com/empow-blockchain/go-empow/sdk"
 )
 
 // signCmd represents the command used to sign a transaction.

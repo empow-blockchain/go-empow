@@ -60,6 +60,10 @@ class Account {
         return storage.mapHas("auth", id);
     }
 
+    _hasUsername(username) {
+        return storage.mapHas("username", username);
+    }
+
     _ra(id) {
         if (!blockchain.requireAuth(id, "owner")) {
             throw new Error("require auth failed");
@@ -145,7 +149,7 @@ class Account {
         }
         this._checkAddressValid(address);
         if(block.number != 0) {
-            blockchain.requireAuth("token.iost", "active")
+            blockchain.requireAuth("token.empow", "active")
         }
         let account = {};
         account.address = address;
@@ -175,15 +179,15 @@ class Account {
         if (block.number !== 0) {
             const defaultGasPledge = "15";
             const defaultRamBuy = 200; // 200 bytes
-            blockchain.callWithAuth("gas.iost", "pledge", [blockchain.contractName(), address, defaultGasPledge]);
-            blockchain.callWithAuth("ram.iost", "buy", [blockchain.contractName(), address, defaultRamBuy]);
+            blockchain.callWithAuth("gas.empow", "pledge", [blockchain.contractName(), address, defaultGasPledge]);
+            blockchain.callWithAuth("ram.empow", "buy", [blockchain.contractName(), address, defaultRamBuy]);
 
             const enableReferrerReward = false;
             if (enableReferrerReward) {
                 const defaultRegisterReward = "3";
-                const producerMap = JSON.parse(storage.globalGet("vote_producer.iost", "producerMap") || "{}");
+                const producerMap = JSON.parse(storage.globalGet("vote_producer.empow", "producerMap") || "{}");
                 if (producerMap[referrer]) {
-                    blockchain.callWithAuth("issue.iost", "issueIOSTTo", [referrer, defaultRegisterReward]);
+                    blockchain.callWithAuth("issue.empow", "issueIOSTTo", [referrer, defaultRegisterReward]);
                 }
             }
         }
@@ -192,6 +196,9 @@ class Account {
     }
 
     addNormalUsername (address, username) {
+        if (this._hasUsername("newbie." + username)) {
+            throw new Error("username existed > " + "newbie." + username);
+        }
         // check isvailid username
         this._checkNormalUsername(username)
         // require auth address
@@ -201,12 +208,15 @@ class Account {
     }
 
     addPremiumUsername(address, username) {
+        if (this._hasUsername(username)) {
+            throw new Error("username existed > " + username);
+        }
         // check isvailid username
         this._checkPremiumUsername(username)
         // require auth address
         blockchain.requireAuth(address, 'active')
         // transfer EM to pay premium username
-        blockchain.callWithAuth("token.iost", "transfer", ["iost", address, blockchain.contractName(), premiumUsernamePrice, "pay premium username"]);
+        blockchain.callWithAuth("token.empow", "transfer", ["em", address, blockchain.contractName(), premiumUsernamePrice, "pay premium username"]);
         // save to storage
         storage.mapPut("username",username, address, address);
     }

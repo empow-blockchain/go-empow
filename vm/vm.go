@@ -1,11 +1,11 @@
 package vm
 
 import (
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/vm/host"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/vm/host"
 )
 
-//go:generate mockgen -destination vm_mock.go -package vm github.com/iost-official/go-iost/vm VM
+//go:generate mockgen -destination vm_mock.go -package vm github.com/empow-blockchain/go-empow/vm VM
 
 // VM ...
 type VM interface {

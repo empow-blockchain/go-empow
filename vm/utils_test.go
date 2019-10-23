@@ -7,16 +7,16 @@ import (
 	"encoding/json"
 
 	"github.com/golang/mock/gomock"
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/core/version"
-	"github.com/iost-official/go-iost/crypto"
-	"github.com/iost-official/go-iost/db"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/vm/database"
-	"github.com/iost-official/go-iost/vm/host"
-	"github.com/iost-official/go-iost/vm/native"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/core/version"
+	"github.com/empow-blockchain/go-empow/crypto"
+	"github.com/empow-blockchain/go-empow/db"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/vm/database"
+	"github.com/empow-blockchain/go-empow/vm/host"
+	"github.com/empow-blockchain/go-empow/vm/native"
 )
 
 var testKps = make([]*account.KeyPair, 0)
@@ -52,7 +52,7 @@ func ininit(t *testing.T) (*database.Visitor, db.MVCCDB) {
 	}
 	//mvccdb := replaceDB(t)
 	vi := database.NewVisitor(0, mvccdb, version.NewRules(0))
-	vi.SetTokenBalance("iost", testKps[0].ReadablePubkey(), 1000000)
+	vi.SetTokenBalance("em", testKps[0].ReadablePubkey(), 1000000)
 	vi.SetContract(systemContract)
 	vi.Commit()
 	return vi, mvccdb
@@ -65,7 +65,7 @@ func closeMVCCDB(m db.MVCCDB) {
 
 func TestCheckPublisher(t *testing.T) {
 	tr := tx.NewTx([]*tx.Action{{
-		"system.iost",
+		"system.empow",
 		"Transfer",
 		"[]",
 	}}, []string{}, 10000, 1, 10000, 0, 0)
@@ -85,7 +85,7 @@ func TestCheckPublisher(t *testing.T) {
 		t.Fatal(err)
 	}
 	mock := database.NewMockIMultiValue(ctl)
-	mock.EXPECT().Get("state", "m-auth.iost-auth-a").AnyTimes().Return("s"+string(ax), nil)
+	mock.EXPECT().Get("state", "m-auth.empow-auth-a").AnyTimes().Return("s"+string(ax), nil)
 
 	k1 := testKps[1].ReadablePubkey()
 	b := account.NewInitAccount("b", k1, k1)
@@ -93,7 +93,7 @@ func TestCheckPublisher(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	mock.EXPECT().Get("state", "m-auth.iost-auth-b").AnyTimes().Return("s"+string(bx), nil)
+	mock.EXPECT().Get("state", "m-auth.empow-auth-b").AnyTimes().Return("s"+string(bx), nil)
 
 	authList := make(map[string]int)
 	authList[kp.ReadablePubkey()] = 2
@@ -122,7 +122,7 @@ func TestCheckSigners(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	mock.EXPECT().Get("state", "m-auth.iost-auth-a").AnyTimes().Return("s"+string(ax), nil)
+	mock.EXPECT().Get("state", "m-auth.empow-auth-a").AnyTimes().Return("s"+string(ax), nil)
 
 	k1 := testKps[1].ReadablePubkey()
 	b := account.NewInitAccount("b", k1, k1)
@@ -130,13 +130,13 @@ func TestCheckSigners(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	mock.EXPECT().Get("state", "m-auth.iost-auth-b").AnyTimes().Return("s"+string(bx), nil)
+	mock.EXPECT().Get("state", "m-auth.empow-auth-b").AnyTimes().Return("s"+string(bx), nil)
 
 	kp := testKps[0]
 	kp2 := testKps[1]
 
 	tr := tx.NewTx([]*tx.Action{{
-		"system.iost",
+		"system.empow",
 		"Transfer",
 		"[]",
 	}}, []string{"a@acitve", "b@acitve"}, 10000, 1, 10000, 0, 0)

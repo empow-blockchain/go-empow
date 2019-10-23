@@ -3,14 +3,14 @@ package database
 import (
 	"encoding/json"
 	"errors"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/ilog"
 )
 
 // TokenContractName name of basic token contract
-const TokenContractName = "token.iost"
+const TokenContractName = "token.empow"
 
-// TokenHandler easy to get balance of token.iost
+// TokenHandler easy to get balance of token.empow
 type TokenHandler struct {
 	db database
 }

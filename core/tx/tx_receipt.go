@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/iost-official/go-iost/common"
-	txpb "github.com/iost-official/go-iost/core/tx/pb"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/common"
+	txpb "github.com/empow-blockchain/go-empow/core/tx/pb"
+	"github.com/empow-blockchain/go-empow/ilog"
 )
 
 // StatusCode status code of transaction execution result
@@ -223,7 +223,7 @@ func (r *TxReceipt) ParseCancelDelaytx() [][]byte {
 	}
 	var ret [][]byte
 	for _, receipt := range r.Receipts {
-		if receipt.FuncName == "system.iost/cancelDelaytx" {
+		if receipt.FuncName == "system.empow/cancelDelaytx" {
 			var params []string
 			err := json.Unmarshal([]byte(receipt.Content), &params)
 			if err != nil {

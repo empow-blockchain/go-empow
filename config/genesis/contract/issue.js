@@ -8,33 +8,33 @@ class IssueContract {
     }
 
     _initIOST(config, witnessInfo) {
-        blockchain.callWithAuth("token.iost", "create", [
-            "iost",
-            "issue.iost",
-            config.IOSTTotalSupply,
+        blockchain.callWithAuth("token.empow", "create", [
+            "em",
+            "issue.empow",
+            config.EMTotalSupply,
             {
                 "can_transfer": true,
-                "decimal": config.IOSTDecimal
+                "decimal": config.EMDecimal
             }
         ]);
         for (const info of witnessInfo) {
             if (info.Balance !== 0) {
-                blockchain.callWithAuth("token.iost", "issue", [
-                    "iost",
+                blockchain.callWithAuth("token.empow", "issue", [
+                    "em",
                     info.Address,
                     new Float64(info.Balance).toFixed()
                 ]);
             }
         }
-        storage.put("IOSTDecimal", new Int64(config.IOSTDecimal).toFixed());
+        storage.put("EMDecimal", new Int64(config.EMDecimal).toFixed());
         storage.put("IOSTLastIssueTime", this._getBlockTime().toFixed());
     }
 
     /**
      * genesisConfig = {
      *      FoundationAccount string
-     *      IOSTTotalSupply   int64
-     *      IOSTDecimal       int64
+     *      EMTotalSupply   int64
+     *      EMDecimal       int64
      * }
      * witnessInfo = [{
      *      Address      string
@@ -88,13 +88,13 @@ class IssueContract {
     }
 
     _issueIOST(account, amount) {
-        const amountStr = ((typeof amount === "string") ? amount : amount.toFixed(this._get("IOSTDecimal")));
-        const args = ["iost", account, amountStr];
-        blockchain.callWithAuth("token.iost", "issue", args);
+        const amountStr = ((typeof amount === "string") ? amount : amount.toFixed(this._get("EMDecimal")));
+        const args = ["em", account, amountStr];
+        blockchain.callWithAuth("token.empow", "issue", args);
     }
 
     issueIOSTTo(account, amount) {
-        const whitelist = ["auth.iost"];
+        const whitelist = ["auth.empow"];
         let auth = false;
         for (const c of whitelist) {
             if (blockchain.requireAuth(c, "active")) {
@@ -108,10 +108,10 @@ class IssueContract {
         this._issueIOST(account, amount);
     }
 
-    // issueIOST to bonus.iost and iost foundation
+    // issueIOST to bonus.empow and iost foundation
     issueIOST() {
         const admin = storage.get("adminAddress");
-        const whitelist = ["base.iost", admin];
+        const whitelist = ["base.empow", admin];
         let auth = false;
         for (const c of whitelist) {
             if (blockchain.requireAuth(c, "active")) {
@@ -133,7 +133,7 @@ class IssueContract {
         }
 
         const foundationAcc = storage.get("FoundationAccount");
-        const decimal = JSON.parse(storage.get("IOSTDecimal"));
+        const decimal = JSON.parse(storage.get("EMDecimal"));
         if (!foundationAcc) {
             throw new Error("FoundationAccount not set.");
         }
@@ -141,14 +141,14 @@ class IssueContract {
         storage.put("IOSTLastIssueTime", currentTime.toFixed());
 
         const contractName = blockchain.contractName();
-        const supply = new Float64(blockchain.callWithAuth("token.iost", "supply", ["iost"])[0]);
+        const supply = new Float64(blockchain.callWithAuth("token.empow", "supply", ["em"])[0]);
         const issueAmount = supply.multi(iostIssueRate).multi(gap);
         const bonus = issueAmount.multi("0.33333333");
         this._issueIOST(foundationAcc, issueAmount.minus(bonus).minus(bonus).toFixed(decimal));
-        this._issueIOST("bonus.iost", bonus.toFixed(decimal));
+        this._issueIOST("bonus.empow", bonus.toFixed(decimal));
         this._issueIOST(contractName, bonus.toFixed(decimal));
 
-        const succ = blockchain.callWithAuth("vote_producer.iost", "topupCandidateBonus", [
+        const succ = blockchain.callWithAuth("vote_producer.empow", "topupCandidateBonus", [
             bonus.toFixed(decimal),
             contractName
         ])[0];

@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/iost-official/go-iost/vm/host"
+	"github.com/empow-blockchain/go-empow/vm/host"
 )
 
 var (

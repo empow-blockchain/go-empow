@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/Jeffail/tunny"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/core/txpool"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/p2p"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/core/txpool"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/p2p"
 )
 
 var (

@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/blockcache"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/p2p"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/blockcache"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/p2p"
 )
 
 // DebugServer is a http server for debug

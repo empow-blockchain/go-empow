@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/blockcache"
-	"github.com/iost-official/go-iost/core/txpool"
-	"github.com/iost-official/go-iost/db"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/blockcache"
+	"github.com/empow-blockchain/go-empow/core/txpool"
+	"github.com/empow-blockchain/go-empow/db"
+	"github.com/empow-blockchain/go-empow/ilog"
 )
 
 // ChainBase will maintain blockchain data for memory and hard disk.

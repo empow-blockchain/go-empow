@@ -1,10 +1,10 @@
 package consensus
 
 import (
-	"github.com/iost-official/go-iost/chainbase"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/consensus/pob"
-	"github.com/iost-official/go-iost/p2p"
+	"github.com/empow-blockchain/go-empow/chainbase"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/consensus/pob"
+	"github.com/empow-blockchain/go-empow/p2p"
 )
 
 // Type is the type of consensus

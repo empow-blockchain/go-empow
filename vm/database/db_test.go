@@ -6,8 +6,8 @@ import (
 	"os"
 
 	. "github.com/golang/mock/gomock"
-	"github.com/iost-official/go-iost/core/version"
-	"github.com/iost-official/go-iost/db"
+	"github.com/empow-blockchain/go-empow/core/version"
+	"github.com/empow-blockchain/go-empow/db"
 )
 
 func sliceEqual(a, b []string) bool {

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/db/kv/leveldb"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/db/kv/leveldb"
+	"github.com/empow-blockchain/go-empow/vm/database"
 )
 
 func padTo(s string, ptn string, l int) string {
@@ -18,13 +18,13 @@ func padTo(s string, ptn string, l int) string {
 
 func printTokenBalance(db *leveldb.DB, tokenType string) {
 	fmt.Println("############# ", tokenType, " balance ##############")
-	prefix := "state/m-token.iost-TB"
+	prefix := "state/m-token.empow-TB"
 	keys, err := db.Keys([]byte(prefix))
 	if err != nil {
 		panic(err)
 	}
 	suffix := "-" + tokenType
-	decimalKey := "state/m-token.iost-TI" + tokenType + "-decimal"
+	decimalKey := "state/m-token.empow-TI" + tokenType + "-decimal"
 	decimalRaw, err := db.Get([]byte(decimalKey))
 	if err != nil {
 		panic(err)
@@ -77,13 +77,13 @@ func printRAMUsage(db *leveldb.DB) {
 		if strings.HasPrefix(k, "state/c-") {
 			cid := k[len("state/c-"):]
 			var err error
-			ownerRaw, err := db.Get([]byte("state/m-system.iost-contract_owner-" + cid))
+			ownerRaw, err := db.Get([]byte("state/m-system.empow-contract_owner-" + cid))
 			if err != nil {
 				panic(err)
 			}
 			owner = string(ownerRaw)
 			if owner == "" {
-				if !strings.HasSuffix(cid, "iost") {
+				if !strings.HasSuffix(cid, "em") {
 					panic("non iost contracts should have owner")
 				}
 				//owner = "OWNER_" + cid
@@ -103,7 +103,7 @@ func printRAMUsage(db *leveldb.DB) {
 			}
 			owner = v[(idx + 1):]
 			ramUse = idx
-			//if !strings.HasPrefix(k, "state/b-base.iost-chain_info_") {
+			//if !strings.HasPrefix(k, "state/b-base.empow-chain_info_") {
 			//	fmt.Printf("%v\t%v\t%v\n", owner, k, v)
 			//}
 		}
@@ -140,7 +140,7 @@ func main() {
 		panic(err)
 	}
 	printRAMUsage(db)
-	printTokenBalance(db, "iost")
+	printTokenBalance(db, "em")
 	printTokenBalance(db, "ram")
 	//printAll(db)
 }

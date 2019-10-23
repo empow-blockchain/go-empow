@@ -2,7 +2,7 @@ const newVoteFee = "1000";
 const descriptionMaxLength = 65536;
 const optionMaxNum = 65536;
 const resultMaxLength = 2048;
-const iostDecimal = 8;
+const EMDecimal = 8;
 
 const adminPermission = "active";
 const votePermission = "active";
@@ -207,7 +207,7 @@ class VoteCommonContract {
         const bn = block.number;
 
         if (bn > 0) {
-            blockchain.callWithAuth("token.iost", "transfer", ["iost", owner, "vote.iost", newVoteFee, ""]);
+            blockchain.callWithAuth("token.empow", "transfer", ["em", owner, "vote.empow", newVoteFee, ""]);
         }
 
         const voteId = this._nextId();
@@ -352,7 +352,7 @@ class VoteCommonContract {
     }
 
     _fixAmount(amount) {
-        amount = new Float64(new Float64(amount).toFixed(iostDecimal));
+        amount = new Float64(new Float64(amount).toFixed(EMDecimal));
         if (amount.lte("0")) {
             throw new Error("amount must be positive");
         }
@@ -455,7 +455,7 @@ class VoteCommonContract {
         if (info.deleted === FALSE) {
             freezeTime += info.freezeTime*1e9;
         }
-        blockchain.callWithAuth("token.iost", "transferFreeze", ["iost", "vote.iost", account, amount.toFixed(), freezeTime, ""]);
+        blockchain.callWithAuth("token.empow", "transferFreeze", ["em", "vote.empow", account, amount.toFixed(), freezeTime, ""]);
 
         const leftVoteNum = votes.minus(amount);
         userVotes[option][0] = leftVoteNum.toFixed();

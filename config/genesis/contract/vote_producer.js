@@ -28,8 +28,8 @@ class VoteContract {
     }
 
     _initVote() {
-        const voteId = blockchain.callWithAuth("vote.iost", "newVote", [
-            "vote_producer.iost",
+        const voteId = blockchain.callWithAuth("vote.empow", "newVote", [
+            "vote_producer.empow",
             "vote for producer",
             {
                 resultNumber: 2000,
@@ -68,7 +68,7 @@ initProducer(proID, proPubkey) {
         this._put("producerNumber", producerNumber);
 
         const voteId = this._getVoteId();
-        blockchain.callWithAuth("vote.iost", "addOption", [
+        blockchain.callWithAuth("vote.empow", "addOption", [
             voteId,
             proID,
             false
@@ -186,7 +186,7 @@ initProducer(proID, proPubkey) {
         this._mapPut("producerKeyToId", pubkey, account, publisher);
 
         const voteId = this._getVoteId();
-        blockchain.callWithAuth("vote.iost", "addOption", [
+        blockchain.callWithAuth("vote.empow", "addOption", [
             voteId,
             account,
             false
@@ -269,7 +269,7 @@ initProducer(proID, proPubkey) {
             throw new Error("producer in pending list or in current list, can't unregister");
         }
         const voteId = this._getVoteId();
-        blockchain.callWithAuth("vote.iost", "removeOption", [
+        blockchain.callWithAuth("vote.empow", "removeOption", [
             voteId,
             account,
             true,
@@ -384,7 +384,7 @@ initProducer(proID, proPubkey) {
         const pro = this._mapGet("producerTable", account);
         if (pro.status === STATUS_APPROVED || pro.status === STATUS_UNAPPLY) {
             const voteId = this._getVoteId();
-            pro["voteInfo"] = this._call("vote.iost", "getOption", [
+            pro["voteInfo"] = this._call("vote.empow", "getOption", [
                 voteId,
                 account
             ]);
@@ -480,7 +480,7 @@ initProducer(proID, proPubkey) {
     }
 
     _updateCandidateVars(account, amount, voteId, payer) {
-        let votes = new Float64(this._call("vote.iost", "getOption", [
+        let votes = new Float64(this._call("vote.empow", "getOption", [
             voteId,
             account,
         ]).votes);
@@ -537,7 +537,7 @@ initProducer(proID, proPubkey) {
         amount = this._fixAmount(amount);
 
         const voteId = this._getVoteId();
-        blockchain.callWithAuth("vote.iost", "vote", [
+        blockchain.callWithAuth("vote.empow", "vote", [
             voteId,
             voter,
             producer,
@@ -558,7 +558,7 @@ initProducer(proID, proPubkey) {
         amount = this._fixAmount(amount);
 
         const voteId = this._getVoteId();
-        blockchain.callWithAuth("vote.iost", "unvote", [
+        blockchain.callWithAuth("vote.empow", "unvote", [
             voteId,
             voter,
             producer,
@@ -572,7 +572,7 @@ initProducer(proID, proPubkey) {
 
     getVote(voter) {
         const voteId = this._getVoteId();
-        return this._call("vote.iost", "getVote", [
+        return this._call("vote.empow", "getVote", [
             voteId,
             voter
         ]);
@@ -580,7 +580,7 @@ initProducer(proID, proPubkey) {
 
     _topupVoterBonusInternal(account, amount, payer) {
         const voteId = this._getVoteId();
-        let votes = new Float64(this._call("vote.iost", "getOption", [
+        let votes = new Float64(this._call("vote.empow", "getOption", [
             voteId,
             account,
         ]).votes);
@@ -669,7 +669,7 @@ initProducer(proID, proPubkey) {
 
     _calCandidateBonus(account, updateMask) {
         const voteId = this._getVoteId();
-        let candKey = new Float64(this._call("vote.iost", "getOption", [
+        let candKey = new Float64(this._call("vote.empow", "getOption", [
             voteId,
             account,
         ]).votes);
@@ -767,16 +767,16 @@ initProducer(proID, proPubkey) {
 
     // calculate the vote result, modify pendingProducerList
     stat() {
-        this._requireAuth("base.iost", ACTIVE_PERMISSION);
+        this._requireAuth("base.empow", ACTIVE_PERMISSION);
         const bn = block.number;
         if (bn % VOTE_STAT_INTERVAL !== 0) {
             return;
         }
 
         const voteId = this._getVoteId();
-        const voteRes = this._call("vote.iost", "getResult", [voteId]);
+        const voteRes = this._call("vote.empow", "getResult", [voteId]);
         const preList = [];    // list of producers whose vote > threshold
-        const witnessProduced = JSON.parse(storage.globalGet("base.iost", "witness_produced") || '{}');
+        const witnessProduced = JSON.parse(storage.globalGet("base.empow", "witness_produced") || '{}');
         const witnessWatched = this._getWitnessWatched();
         const witnessPenality = this._getWitnessPenality();
         const pendingProducerList = this._get("pendingProducerList");

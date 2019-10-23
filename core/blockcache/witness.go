@@ -5,9 +5,9 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/iost-official/go-iost/core/version"
-	"github.com/iost-official/go-iost/db"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/core/version"
+	"github.com/empow-blockchain/go-empow/db"
+	"github.com/empow-blockchain/go-empow/vm/database"
 )
 
 // SetPending set pending witness list
@@ -40,7 +40,7 @@ func (wl *WitnessList) UpdatePending(mv db.MVCCDB, rules *version.Rules) error {
 
 	vi := database.NewVisitor(0, mv, rules)
 
-	jwl := database.MustUnmarshal(vi.Get("vote_producer.iost-" + "pendingProducerList"))
+	jwl := database.MustUnmarshal(vi.Get("vote_producer.empow-" + "pendingProducerList"))
 	if jwl == nil {
 		return errors.New("failed to get pending list")
 	}
@@ -60,12 +60,12 @@ func (wl *WitnessList) UpdateInfo(mv db.MVCCDB, rules *version.Rules) error {
 	wl.WitnessInfo = make([]string, 0, 0)
 	vi := database.NewVisitor(0, mv, rules)
 	for _, v := range wl.PendingWitnessList {
-		iAcc := database.MustUnmarshal(vi.MGet("vote_producer.iost-producerKeyToId", v))
+		iAcc := database.MustUnmarshal(vi.MGet("vote_producer.empow-producerKeyToId", v))
 		if iAcc == nil {
 			continue
 		}
 		acc := strings.Trim(iAcc.(string), "\"")
-		jwl := database.MustUnmarshal(vi.MGet("vote_producer.iost-producerTable", acc))
+		jwl := database.MustUnmarshal(vi.MGet("vote_producer.empow-producerTable", acc))
 		if jwl == nil {
 			continue
 		}

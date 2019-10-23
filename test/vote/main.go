@@ -3,17 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/iost-official/go-iost/sdk"
+	"github.com/empow-blockchain/go-empow/sdk"
 	"log"
 	"math/rand"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
 
-	"github.com/iost-official/go-iost/iwallet"
+	"github.com/empow-blockchain/go-empow/iwallet"
 )
 
 var (
@@ -129,7 +129,7 @@ func run() {
 }
 
 func publish() {
-	codePath := os.Getenv("GOPATH") + "/src/github.com/iost-official/go-iost/test/vote/test_data/vote_checker.js"
+	codePath := os.Getenv("GOPATH") + "/src/github.com/empow-blockchain/go-empow/test/vote/test_data/vote_checker.js"
 	abiPath := codePath + ".abi"
 	_, txHash, err := iostSDKs["admin"].PublishContract(codePath, abiPath, "", false, "")
 	if err != nil {

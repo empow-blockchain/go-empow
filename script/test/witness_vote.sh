@@ -13,5 +13,5 @@ producer000
 iwallet account --import ${VOTER_ACCOUNT} ${VOTER_ACCOUNT_SECKEY}
 for (( i = 0; i < ${WITNESS_NUM}; i++ ))
 do
-    iwallet -s ${GRPC_URL} --account ${VOTER_ACCOUNT} call "vote_producer.iost" "vote" '["'${VOTER_ACCOUNT}'", "'${WITNESS_NAME[i]}'", "3000000"]'
+    iwallet -s ${GRPC_URL} --account ${VOTER_ACCOUNT} call "vote_producer.empow" "vote" '["'${VOTER_ACCOUNT}'", "'${WITNESS_NAME[i]}'", "3000000"]'
 done

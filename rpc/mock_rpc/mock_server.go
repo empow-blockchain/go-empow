@@ -11,8 +11,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
 	"google.golang.org/grpc"
 )
 
@@ -67,7 +67,7 @@ func newMockAPI() rpcpb.ApiServiceServer {
 			Publisher:  "publisher",
 			ReferredTx: "ccc",
 			AmountLimit: []*rpcpb.AmountLimit{
-				{Token: "iost", Value: "12.2"},
+				{Token: "em", Value: "12.2"},
 				{Token: "10st", Value: "21.1"},
 			},
 			TxReceipt: &rpcpb.TxReceipt{
@@ -132,7 +132,7 @@ func newMockAPI() rpcpb.ApiServiceServer {
 					Publisher:  "publisher",
 					ReferredTx: "ccc",
 					AmountLimit: []*rpcpb.AmountLimit{
-						{Token: "iost", Value: "12.2"},
+						{Token: "em", Value: "12.2"},
 						{Token: "10st", Value: "21.1"},
 					},
 					TxReceipt: &rpcpb.TxReceipt{
@@ -186,7 +186,7 @@ func newMockAPI() rpcpb.ApiServiceServer {
 					Publisher:  "publisher",
 					ReferredTx: "ccc",
 					AmountLimit: []*rpcpb.AmountLimit{
-						{Token: "iost", Value: "12.2"},
+						{Token: "em", Value: "12.2"},
 						{Token: "10st", Value: "21.1"},
 					},
 					TxReceipt: &rpcpb.TxReceipt{
@@ -282,7 +282,7 @@ func newMockAPI() rpcpb.ApiServiceServer {
 				Name: "echo",
 				Args: []string{"a1", "a2"},
 				AmountLimit: []*rpcpb.AmountLimit{
-					{Token: "iost", Value: "1212.2"},
+					{Token: "em", Value: "1212.2"},
 				},
 			},
 		},

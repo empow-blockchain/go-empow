@@ -3,22 +3,22 @@ package luckyBet
 import (
 	"context"
 	"fmt"
-	"github.com/iost-official/go-iost/sdk"
+	"github.com/empow-blockchain/go-empow/sdk"
 	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 
-	"github.com/iost-official/go-iost/test/performance/call"
+	"github.com/empow-blockchain/go-empow/test/performance/call"
 
 	"time"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/crypto"
-	"github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/crypto"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
 )
 
 func init() {
@@ -75,7 +75,7 @@ func (t *luckyBetHandler) writeCache() {
 func (t *luckyBetHandler) Prepare() error {
 	log.Println("lucky bet Prepare")
 	acc, _ := account.NewKeyPair(common.Base58Decode(rootKey), crypto.Ed25519)
-	codePath := os.Getenv("GOPATH") + "/src/github.com/iost-official/go-iost/vm/test_data/lucky_bet.js"
+	codePath := os.Getenv("GOPATH") + "/src/github.com/empow-blockchain/go-empow/vm/test_data/lucky_bet.js"
 	abiPath := codePath + ".abi"
 	client := call.GetClient(0)
 	iostSDK.SetServer(client.Addr())

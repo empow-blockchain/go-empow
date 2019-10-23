@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/iost-official/go-iost/sdk"
+	"github.com/empow-blockchain/go-empow/sdk"
 
-	"github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
 	"github.com/spf13/cobra"
 )
 

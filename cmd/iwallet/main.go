@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/iost-official/go-iost/iwallet"
+	"github.com/empow-blockchain/go-empow/iwallet"
 )
 
 func main() {

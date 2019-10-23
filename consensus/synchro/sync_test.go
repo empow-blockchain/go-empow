@@ -11,16 +11,16 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/golang/protobuf/proto"
-	"github.com/iost-official/go-iost/chainbase"
-	"github.com/iost-official/go-iost/consensus/synchro/pb"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/blockcache"
-	"github.com/iost-official/go-iost/core/blockcache/mock"
-	core_mock "github.com/iost-official/go-iost/core/mocks"
-	"github.com/iost-official/go-iost/crypto"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/p2p"
-	p2p_mock "github.com/iost-official/go-iost/p2p/mocks"
+	"github.com/empow-blockchain/go-empow/chainbase"
+	"github.com/empow-blockchain/go-empow/consensus/synchro/pb"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/blockcache"
+	"github.com/empow-blockchain/go-empow/core/blockcache/mock"
+	core_mock "github.com/empow-blockchain/go-empow/core/mocks"
+	"github.com/empow-blockchain/go-empow/crypto"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/p2p"
+	p2p_mock "github.com/empow-blockchain/go-empow/p2p/mocks"
 )
 
 type registerInfo struct {

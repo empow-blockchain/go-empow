@@ -5,12 +5,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/crypto"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/crypto"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/db"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/db"
+	"github.com/empow-blockchain/go-empow/ilog"
 )
 
 func randWitness(idx int) *common.Witness {
@@ -42,11 +42,11 @@ func TestGenGenesis(t *testing.T) {
 		},
 		TokenInfo: &common.TokenInfo{
 			FoundationAccount: account.PubkeyToAddress(common.Base58Decode(k)),
-			IOSTTotalSupply:   90000000000,
-			IOSTDecimal:       8,
+			EMTotalSupply:   90000000000,
+			EMDecimal:       8,
 		},
 		InitialTimestamp: "2006-01-02T15:04:05Z",
-		ContractPath:     os.Getenv("GOPATH") + "/src/github.com/iost-official/go-iost/config/genesis/contract/",
+		ContractPath:     os.Getenv("GOPATH") + "/src/github.com/empow-blockchain/go-empow/config/genesis/contract/",
 		AdminInfo:        randWitness(8),
 		FoundationInfo:   &common.Witness{Address: account.PubkeyToAddress(common.Base58Decode(k)), Owner: k, Active: k, Balance: 0},
 	})

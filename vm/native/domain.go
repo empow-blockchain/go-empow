@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/bitly/go-simplejson"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/vm/host"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/vm/host"
 	"strings"
 )
 
@@ -61,7 +61,7 @@ var (
 			if err != nil {
 				return nil, cost, err
 			}
-			if strings.HasSuffix(url, ".iost") {
+			if strings.HasSuffix(url, ".empow") {
 				ok, c := h.RequireAuth(AdminAccount, DomainPermission)
 				cost.AddAssign(c)
 				if !ok {

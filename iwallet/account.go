@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
 	"github.com/spf13/cobra"
 )
 

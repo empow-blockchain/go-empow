@@ -8,18 +8,18 @@ import (
 	"os"
 
 	. "github.com/golang/mock/gomock"
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/blockcache"
-	core_mock "github.com/iost-official/go-iost/core/mocks"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/crypto"
-	"github.com/iost-official/go-iost/db"
-	db_mock "github.com/iost-official/go-iost/db/mocks"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/p2p"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/blockcache"
+	core_mock "github.com/empow-blockchain/go-empow/core/mocks"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/crypto"
+	"github.com/empow-blockchain/go-empow/db"
+	db_mock "github.com/empow-blockchain/go-empow/db/mocks"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/p2p"
+	"github.com/empow-blockchain/go-empow/vm/database"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -90,7 +90,7 @@ func TestNewTxPImpl(t *testing.T) {
 		statedb.EXPECT().Checkout(Any()).AnyTimes().Return(true)
 		statedb.EXPECT().Close().AnyTimes()
 
-		statedb.EXPECT().Get("state", "b-vote_producer.iost-"+"pendingProducerList").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
+		statedb.EXPECT().Get("state", "b-vote_producer.empow-"+"pendingProducerList").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
 			return database.MustMarshal("[\"a1\",\"a2\",\"a3\",\"a4\"]"), nil
 		})
 		statedb.EXPECT().Get("snapshot", "blockHead").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
@@ -259,7 +259,7 @@ func TestNewTxPImplB(t *testing.T) {
 		statedb.EXPECT().Checkout(Any()).AnyTimes().Return(true)
 		statedb.EXPECT().Close().AnyTimes()
 
-		statedb.EXPECT().Get("state", "b-vote_producer.iost-"+"pendingProducerList").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
+		statedb.EXPECT().Get("state", "b-vote_producer.empow-"+"pendingProducerList").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {
 			return database.MustMarshal("[\"a1\",\"a2\",\"a3\",\"a4\"]"), nil
 		})
 		statedb.EXPECT().Get("snapshot", "blockHead").AnyTimes().DoAndReturn(func(table string, key string) (string, error) {

@@ -6,8 +6,8 @@ package blockpb
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	pb1 "github.com/iost-official/go-iost/core/tx/pb"
-	pb "github.com/iost-official/go-iost/crypto/pb"
+	pb1 "github.com/empow-blockchain/go-empow/core/tx/pb"
+	pb "github.com/empow-blockchain/go-empow/crypto/pb"
 	math "math"
 )
 

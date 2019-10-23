@@ -4,9 +4,9 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/iost-official/go-iost/core/global"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/metrics"
+	"github.com/empow-blockchain/go-empow/core/global"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/metrics"
 
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"

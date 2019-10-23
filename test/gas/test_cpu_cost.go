@@ -8,13 +8,13 @@ import (
 	"path"
 	"time"
 
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/core/version"
-	"github.com/iost-official/go-iost/db"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/vm/database"
-	"github.com/iost-official/go-iost/vm/host"
-	v8 "github.com/iost-official/go-iost/vm/v8vm"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/core/version"
+	"github.com/empow-blockchain/go-empow/db"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/vm/database"
+	"github.com/empow-blockchain/go-empow/vm/host"
+	v8 "github.com/empow-blockchain/go-empow/vm/v8vm"
 	"github.com/wcharczuk/go-chart"
 )
 

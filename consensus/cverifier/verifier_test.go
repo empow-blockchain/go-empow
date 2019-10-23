@@ -7,8 +7,8 @@ import (
 
 	"time"
 
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/tx"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/tx"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

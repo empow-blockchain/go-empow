@@ -7,9 +7,9 @@ import (
 
 	"strconv"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/db/kv"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/db/kv"
 )
 
 // BlockChain is the implementation of chain

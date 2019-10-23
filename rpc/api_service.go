@@ -12,27 +12,27 @@ import (
 	"time"
 
 	simplejson "github.com/bitly/go-simplejson"
-	"github.com/iost-official/go-iost/vm"
+	"github.com/empow-blockchain/go-empow/vm"
 
-	"github.com/iost-official/go-iost/chainbase"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/consensus/cverifier"
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/blockcache"
-	"github.com/iost-official/go-iost/core/event"
-	"github.com/iost-official/go-iost/core/global"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/core/txpool"
-	"github.com/iost-official/go-iost/db"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/p2p"
-	rpcpb "github.com/iost-official/go-iost/rpc/pb"
-	"github.com/iost-official/go-iost/verifier"
-	"github.com/iost-official/go-iost/vm/database"
-	"github.com/iost-official/go-iost/vm/host"
+	"github.com/empow-blockchain/go-empow/chainbase"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/consensus/cverifier"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/blockcache"
+	"github.com/empow-blockchain/go-empow/core/event"
+	"github.com/empow-blockchain/go-empow/core/global"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/core/txpool"
+	"github.com/empow-blockchain/go-empow/db"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/p2p"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
+	"github.com/empow-blockchain/go-empow/verifier"
+	"github.com/empow-blockchain/go-empow/vm/database"
+	"github.com/empow-blockchain/go-empow/vm/host"
 )
 
-//go:generate mockgen -destination mock_rpc/mock_api.go -package main github.com/iost-official/go-iost/rpc/pb ApiServiceServer
+//go:generate mockgen -destination mock_rpc/mock_api.go -package main github.com/empow-blockchain/go-empow/rpc/pb ApiServiceServer
 
 // APIService implements all rpc APIs.
 type APIService struct {
@@ -242,7 +242,7 @@ func (as *APIService) GetAccount(ctx context.Context, req *rpcpb.GetAccountReque
 	ret := toPbAccount(acc)
 
 	// pack balance and ram information
-	balance := dbVisitor.TokenBalanceFixed("iost", req.GetName()).ToFloat()
+	balance := dbVisitor.TokenBalanceFixed("em", req.GetName()).ToFloat()
 	ret.Balance = balance
 	ramInfo := dbVisitor.RAMHandler.GetAccountRAMInfo(req.GetName())
 	ret.RamInfo = &rpcpb.Account_RAMInfo{
@@ -279,7 +279,7 @@ func (as *APIService) GetAccount(ctx context.Context, req *rpcpb.GetAccountReque
 	}
 
 	// pack frozen balance information
-	frozen := dbVisitor.AllFreezedTokenBalanceFixed("iost", req.GetName())
+	frozen := dbVisitor.AllFreezedTokenBalanceFixed("em", req.GetName())
 	unfrozen, stillFrozen := as.getUnfrozenToken(frozen, req.ByLongestChain)
 	ret.FrozenBalances = stillFrozen
 	ret.Balance += unfrozen
@@ -412,7 +412,7 @@ func (as *APIService) GetContractVote(ctx context.Context, req *rpcpb.GetContrac
 func (as *APIService) GetGasRatio(ctx context.Context, req *rpcpb.EmptyRequest) (*rpcpb.GasRatioResponse, error) {
 	ratios := make([]float64, 0)
 	for _, tx := range as.bc.Head().Block.Txs {
-		if tx.Publisher != "base.iost" {
+		if tx.Publisher != "base.empow" {
 			ratios = append(ratios, float64(tx.GasRatio)/100.0)
 		}
 	}
@@ -677,7 +677,7 @@ func (as *APIService) GetVoterBonus(ctx context.Context, req *rpcpb.GetAccountRe
 	h := host.NewHost(host.NewContext(nil), dbVisitor, bcn.Head.Rules(), nil, nil)
 
 	voter := req.GetName()
-	value, _ := h.GlobalMapGet("vote.iost", "u_1", voter)
+	value, _ := h.GlobalMapGet("vote.empow", "u_1", voter)
 	if value == nil {
 		return ret, nil
 	}
@@ -695,7 +695,7 @@ func (as *APIService) GetVoterBonus(ctx context.Context, req *rpcpb.GetAccountRe
 			continue
 		}
 		voterCoef := float64(0)
-		value, _ := h.GlobalMapGet("vote_producer.iost", "voterCoef", k)
+		value, _ := h.GlobalMapGet("vote_producer.empow", "voterCoef", k)
 		if value != nil {
 			vc := value.(string)
 			if len(vc) > 1 {
@@ -708,7 +708,7 @@ func (as *APIService) GetVoterBonus(ctx context.Context, req *rpcpb.GetAccountRe
 			}
 		}
 		voterMask := float64(0)
-		value, _ = h.GlobalMapGet("vote_producer.iost", "v_"+k, voter)
+		value, _ = h.GlobalMapGet("vote_producer.empow", "v_"+k, voter)
 		if value != nil {
 			vm := value.(string)
 			if len(vm) > 1 {
@@ -746,7 +746,7 @@ func (as *APIService) GetCandidateBonus(ctx context.Context, req *rpcpb.GetAccou
 
 	candidate := req.GetName()
 	candCoef := float64(0)
-	value, _ := h.GlobalGet("vote_producer.iost", "candCoef")
+	value, _ := h.GlobalGet("vote_producer.empow", "candCoef")
 	if value != nil {
 		cc := value.(string)
 		if len(cc) > 1 {
@@ -759,7 +759,7 @@ func (as *APIService) GetCandidateBonus(ctx context.Context, req *rpcpb.GetAccou
 		}
 	}
 	candMask := float64(0)
-	value, _ = h.GlobalMapGet("vote_producer.iost", "candMask", candidate)
+	value, _ = h.GlobalMapGet("vote_producer.empow", "candMask", candidate)
 	if value != nil {
 		cm := value.(string)
 		if len(cm) > 1 {
@@ -771,7 +771,7 @@ func (as *APIService) GetCandidateBonus(ctx context.Context, req *rpcpb.GetAccou
 			return nil, err
 		}
 	}
-	value, _ = h.GlobalMapGet("vote.iost", "v_1", candidate)
+	value, _ = h.GlobalMapGet("vote.empow", "v_1", candidate)
 	if value == nil {
 		return ret, nil
 	}
@@ -811,31 +811,31 @@ func (as *APIService) GetTokenInfo(ctx context.Context, req *rpcpb.GetTokenInfoR
 	symbol := req.GetSymbol()
 	ret := &rpcpb.TokenInfo{Symbol: symbol}
 
-	value, _ := h.GlobalMapGet("token.iost", "TI"+symbol, "fullName")
+	value, _ := h.GlobalMapGet("token.empow", "TI"+symbol, "fullName")
 	if value == nil {
 		return nil, token404
 	}
 	ret.FullName = value.(string)
 
-	value, _ = h.GlobalMapGet("token.iost", "TI"+symbol, "issuer")
+	value, _ = h.GlobalMapGet("token.empow", "TI"+symbol, "issuer")
 	if value == nil {
 		return nil, token404
 	}
 	ret.Issuer = value.(string)
 
-	value, _ = h.GlobalMapGet("token.iost", "TI"+symbol, "supply")
+	value, _ = h.GlobalMapGet("token.empow", "TI"+symbol, "supply")
 	if value == nil {
 		return nil, token404
 	}
 	ret.CurrentSupply = value.(int64)
 
-	value, _ = h.GlobalMapGet("token.iost", "TI"+symbol, "totalSupply")
+	value, _ = h.GlobalMapGet("token.empow", "TI"+symbol, "totalSupply")
 	if value == nil {
 		return nil, token404
 	}
 	ret.TotalSupply = value.(int64)
 
-	value, _ = h.GlobalMapGet("token.iost", "TI"+symbol, "decimal")
+	value, _ = h.GlobalMapGet("token.empow", "TI"+symbol, "decimal")
 	if value == nil {
 		return nil, token404
 	}
@@ -844,13 +844,13 @@ func (as *APIService) GetTokenInfo(ctx context.Context, req *rpcpb.GetTokenInfoR
 	ret.TotalSupplyFloat = float64(ret.TotalSupply) / math.Pow10(int(ret.Decimal))
 	ret.CurrentSupplyFloat = float64(ret.CurrentSupply) / math.Pow10(int(ret.Decimal))
 
-	value, _ = h.GlobalMapGet("token.iost", "TI"+symbol, "canTransfer")
+	value, _ = h.GlobalMapGet("token.empow", "TI"+symbol, "canTransfer")
 	if value == nil {
 		return nil, token404
 	}
 	ret.CanTransfer = value.(bool)
 
-	value, _ = h.GlobalMapGet("token.iost", "TI"+symbol, "onlyIssuerCanTransfer")
+	value, _ = h.GlobalMapGet("token.empow", "TI"+symbol, "onlyIssuerCanTransfer")
 	if value == nil {
 		return nil, token404
 	}

@@ -2,10 +2,10 @@ package vm
 
 import (
 	"fmt"
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/vm/database"
-	"github.com/iost-official/go-iost/vm/native"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/vm/database"
+	"github.com/empow-blockchain/go-empow/vm/native"
 )
 
 // CheckTxGasLimitValid ...
@@ -26,7 +26,7 @@ func CheckTxGasLimitValid(t *tx.Tx, currentGas *common.Fixed, dbVisitor *databas
 	if !(args[0] == t.Publisher && args[1] == t.Publisher) {
 		return defaultErr
 	}
-	balance := dbVisitor.TokenBalanceFixed("iost", t.Publisher)
+	balance := dbVisitor.TokenBalanceFixed("em", t.Publisher)
 	pledgeAmount, err := common.NewFixed(args[2].(string), 8)
 	if err != nil {
 		return fmt.Errorf("invalid gas pledge amount %v %v", err, args[2].(string))

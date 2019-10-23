@@ -3,8 +3,8 @@ package host
 import (
 	"fmt"
 
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/vm/database"
 )
 
 // DBHandler is an application layer abstraction of our base basic_handler and map_handler.

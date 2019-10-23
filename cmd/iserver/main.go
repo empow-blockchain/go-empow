@@ -7,12 +7,12 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/global"
-	"github.com/iost-official/go-iost/core/version"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/iserver"
-	"github.com/iost-official/go-iost/metrics"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/global"
+	"github.com/empow-blockchain/go-empow/core/version"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/iserver"
+	"github.com/empow-blockchain/go-empow/metrics"
 	flag "github.com/spf13/pflag"
 )
 
@@ -61,7 +61,7 @@ func main() {
 	}
 
 	if *configFile == "" {
-		*configFile = os.Getenv("GOPATH") + "/src/github.com/iost-official/go-iost/config/iserver.yml"
+		*configFile = os.Getenv("GOPATH") + "/src/github.com/empow-blockchain/go-empow/config/iserver.yml"
 	}
 
 	conf := common.NewConfig(*configFile)

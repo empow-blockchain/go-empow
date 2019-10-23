@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/ilog"
 
 	peer "github.com/libp2p/go-libp2p-peer"
 )

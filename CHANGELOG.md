@@ -176,7 +176,7 @@ Mon Jan 28 16:54:43 CST 2019
 
 Sat Jan 19 18:32:18 CST 2019
 
-- Add can_update to exchange.iost contract.
+- Add can_update to exchange.empow contract.
 
 ## Everest v2.3.0
 
@@ -186,7 +186,7 @@ Sat Jan 19 17:25:28 CST 2019
 - RPC: add "voteInfos" to getAccount api.
 - Complete vote, dividend test.
 - iWallet remove npm package dependencies.
-- Add 'exchange.iost' system contract, used for creating accounts and transferring.
+- Add 'exchange.empow' system contract, used for creating accounts and transferring.
 
 ## Everest v2.2.1
 

@@ -6,10 +6,10 @@ import (
 
 	"os"
 
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/core/txpool"
-	"github.com/iost-official/go-iost/db"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/core/txpool"
+	"github.com/empow-blockchain/go-empow/db"
 )
 
 type mockTxIter struct {

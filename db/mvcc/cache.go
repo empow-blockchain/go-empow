@@ -1,8 +1,8 @@
 package mvcc
 
 import (
-	"github.com/iost-official/go-iost/db/mvcc/map"
-	"github.com/iost-official/go-iost/db/mvcc/trie"
+	"github.com/empow-blockchain/go-empow/db/mvcc/map"
+	"github.com/empow-blockchain/go-empow/db/mvcc/trie"
 )
 
 // CacheType is the cache type

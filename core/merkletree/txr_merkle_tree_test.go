@@ -12,7 +12,7 @@ import (
 
 	"os"
 
-	"github.com/iost-official/go-iost/core/tx"
+	"github.com/empow-blockchain/go-empow/core/tx"
 	"github.com/smartystreets/goconvey/convey"
 )
 

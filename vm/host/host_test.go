@@ -6,8 +6,8 @@ import (
 	"time"
 
 	. "github.com/golang/mock/gomock"
-	"github.com/iost-official/go-iost/core/version"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/core/version"
+	"github.com/empow-blockchain/go-empow/vm/database"
 )
 
 func watchTime(f func()) time.Duration {

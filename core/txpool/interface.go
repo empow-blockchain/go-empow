@@ -1,12 +1,12 @@
 package txpool
 
 import (
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/blockcache"
-	"github.com/iost-official/go-iost/core/tx"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/blockcache"
+	"github.com/empow-blockchain/go-empow/core/tx"
 )
 
-//go:generate mockgen -destination mock/mock_txpool.go -package txpool_mock github.com/iost-official/go-iost/core/txpool TxPool
+//go:generate mockgen -destination mock/mock_txpool.go -package txpool_mock github.com/empow-blockchain/go-empow/core/txpool TxPool
 
 // TxPool defines all the API of txpool package.
 type TxPool interface {

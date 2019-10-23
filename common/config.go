@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/ilog"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 )
@@ -35,8 +35,8 @@ type Witness struct {
 // TokenInfo config of the genesis block
 type TokenInfo struct {
 	FoundationAccount string
-	IOSTTotalSupply   int64
-	IOSTDecimal       int64
+	EMTotalSupply   int64
+	EMDecimal       int64
 }
 
 // GenesisConfig config of the genesis bloc

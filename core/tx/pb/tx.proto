@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-import "github.com/iost-official/go-iost/crypto/pb/signature.proto";
-import "github.com/iost-official/go-iost/core/contract/contract.proto";
+import "github.com/empow-blockchain/go-empow/crypto/pb/signature.proto";
+import "github.com/empow-blockchain/go-empow/core/contract/contract.proto";
 package txpb;
 
 message Action {

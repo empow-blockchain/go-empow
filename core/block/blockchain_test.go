@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/crypto"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/crypto"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

@@ -1,6 +1,6 @@
 package synchro
 
-import "github.com/iost-official/go-iost/metrics"
+import "github.com/empow-blockchain/go-empow/metrics"
 
 var (
 	neighborHeightGauge      = metrics.NewGauge("iost_synchro_neighbor_height", []string{})

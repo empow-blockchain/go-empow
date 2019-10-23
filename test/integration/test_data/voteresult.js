@@ -11,7 +11,7 @@ class voteresult {
     }
 
     getResult(voteId) {
-        let ret = this._call("vote.iost", "getResult",  [voteId]);
+        let ret = this._call("vote.empow", "getResult",  [voteId]);
         storage.mapPut("vote_result", voteId, JSON.stringify(ret));
     }
 }

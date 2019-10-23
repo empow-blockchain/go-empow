@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/iost-official/go-iost/chainbase"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/chainbase"
+	"github.com/empow-blockchain/go-empow/ilog"
 )
 
 // rangeController will control the sync range.

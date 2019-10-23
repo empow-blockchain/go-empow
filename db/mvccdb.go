@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/iost-official/go-iost/db/kv"
-	"github.com/iost-official/go-iost/db/mvcc"
+	"github.com/empow-blockchain/go-empow/db/kv"
+	"github.com/empow-blockchain/go-empow/db/mvcc"
 )
 
-//go:generate mockgen -destination mocks/mock_mvccdb.go -package db_mock github.com/iost-official/go-iost/db MVCCDB
+//go:generate mockgen -destination mocks/mock_mvccdb.go -package db_mock github.com/empow-blockchain/go-empow/db MVCCDB
 
 // constant of mvccdb
 const (

@@ -10,9 +10,9 @@ class BonusContract {
     }
 
     _initContribute() {
-        blockchain.callWithAuth("token.iost", "create", [
+        blockchain.callWithAuth("token.empow", "create", [
             "contribute",
-            "bonus.iost",
+            "bonus.empow",
             totalSupply,
             {
                 "can_transfer": false,
@@ -84,7 +84,7 @@ class BonusContract {
         if (block.time < lastTime + 604800000000000) {
             return;
         }
-        const supply = new Float64(blockchain.callWithAuth("token.iost", "supply", ["iost"])[0]);
+        const supply = new Float64(blockchain.callWithAuth("token.empow", "supply", ["em"])[0]);
         const blockContrib = supply.multi(blockContribRatio).toFixed(8);
         this._put("blockContrib", blockContrib);
         this._put("lastTime", block.time);
@@ -92,16 +92,16 @@ class BonusContract {
 
     // issueContribute to witness
     issueContribute(data) {
-        this._requireAuth("base.iost", activePermission);
+        this._requireAuth("base.empow", activePermission);
         this._updateRate();
         let witness = data.parent[0];
         const blockContrib = this._get("blockContrib");
         // get account name of the witness
-        const acc = this._globalMapGet("vote_producer.iost", "producerKeyToId", witness);
+        const acc = this._globalMapGet("vote_producer.empow", "producerKeyToId", witness);
         if (acc) {
             witness = acc;
         }
-        blockchain.callWithAuth("token.iost", "issue", [
+        blockchain.callWithAuth("token.empow", "issue", [
             "contribute",
             witness,
             blockContrib
@@ -112,7 +112,7 @@ class BonusContract {
     exchangeIOST(account, amount) {
         this._requireAuth(account, activePermission);
 
-        const contribute = blockchain.callWithAuth("token.iost", "balanceOf", [
+        const contribute = blockchain.callWithAuth("token.empow", "balanceOf", [
             "contribute",
             account
         ])[0];
@@ -125,8 +125,8 @@ class BonusContract {
             throw new Error("invalid amount: negative or greater than contribute");
         }
 
-        const totalBonus = new Float64(blockchain.callWithAuth("token.iost", "balanceOf", [
-            "iost",
+        const totalBonus = new Float64(blockchain.callWithAuth("token.empow", "balanceOf", [
+            "em",
             blockchain.contractName()
         ])[0]);
 
@@ -134,7 +134,7 @@ class BonusContract {
             throw new Error("left bonus not enough, please wait");
         }
 
-        blockchain.callWithAuth("token.iost", "destroy", [
+        blockchain.callWithAuth("token.empow", "destroy", [
             "contribute",
             account,
             amount.toFixed()

@@ -3,7 +3,7 @@ package run
 import (
 	"fmt"
 	"github.com/bitly/go-simplejson"
-	"github.com/iost-official/go-iost/itest"
+	"github.com/empow-blockchain/go-empow/itest"
 	"github.com/urfave/cli"
 )
 
@@ -47,7 +47,7 @@ var CommonVoteCaseAction = func(c *cli.Context) error {
 	newVoteConfig["anyOption"] = false
 	newVoteConfig["freezeTime"] = 0
 	bank := it.GetDefaultAccount()
-	hash, err := it.CallActionWithRandClient(it.GetDefaultAccount(), "vote.iost", "newVote", bank.ID, "test vote", newVoteConfig)
+	hash, err := it.CallActionWithRandClient(it.GetDefaultAccount(), "vote.empow", "newVote", bank.ID, "test vote", newVoteConfig)
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ var CommonVoteCaseAction = func(c *cli.Context) error {
 	go func() {
 		for idx := range allArgs {
 			go func(i int, res chan interface{}) {
-				_, err := it.CallActionWithRandClient(callingAccounts[i], "vote.iost", "vote", allArgs[i]...)
+				_, err := it.CallActionWithRandClient(callingAccounts[i], "vote.empow", "vote", allArgs[i]...)
 				res <- err
 			}(idx, res)
 		}
@@ -88,7 +88,7 @@ var CommonVoteCaseAction = func(c *cli.Context) error {
 	}
 
 	checkReturn := func(actionName string, expected string, args ...interface{}) error {
-		hash, err := client.CallAction(true, bank, "vote.iost", actionName, args...)
+		hash, err := client.CallAction(true, bank, "vote.empow", actionName, args...)
 		if err != nil {
 			return err
 		}

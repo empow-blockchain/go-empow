@@ -7,7 +7,7 @@ import (
 	"hash/crc32"
 
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/ilog"
 	"golang.org/x/crypto/sha3"
 )
 

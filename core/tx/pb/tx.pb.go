@@ -6,8 +6,8 @@ package txpb
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	contract "github.com/iost-official/go-iost/core/contract"
-	pb "github.com/iost-official/go-iost/crypto/pb"
+	contract "github.com/empow-blockchain/go-empow/core/contract"
+	pb "github.com/empow-blockchain/go-empow/crypto/pb"
 	math "math"
 )
 

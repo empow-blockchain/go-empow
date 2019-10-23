@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/iost-official/go-iost/account"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/vm/database"
 )
 
 // Authority module of ...
@@ -70,7 +70,7 @@ func (h *Authority) IsContract(id string) bool {
 
 // ReadAuth read auth
 func ReadAuth(vi *database.Visitor, id string) (*account.Account, contract.Cost) {
-	sa := vi.MGet("auth.iost"+"-auth", id)
+	sa := vi.MGet("auth.empow"+"-auth", id)
 	acc := database.MustUnmarshal(sa)
 	c := contract.NewCost(0, 0, int64(len(sa)))
 	if acc == nil {

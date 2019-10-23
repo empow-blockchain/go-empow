@@ -2,11 +2,11 @@ package verifier
 
 import (
 	"fmt"
-	"github.com/iost-official/go-iost/common"
+	"github.com/empow-blockchain/go-empow/common"
 
-	"github.com/iost-official/go-iost/core/block"
-	"github.com/iost-official/go-iost/core/blockcache"
-	"github.com/iost-official/go-iost/core/tx"
+	"github.com/empow-blockchain/go-empow/core/block"
+	"github.com/empow-blockchain/go-empow/core/blockcache"
+	"github.com/empow-blockchain/go-empow/core/tx"
 )
 
 // NewBaseTx is new baseTx
@@ -17,11 +17,11 @@ func NewBaseTx(blk, parent *block.Block, witnessList *blockcache.WitnessList) (*
 		if err != nil {
 			return nil, err
 		}
-		act := tx.NewAction("base.iost", "exec", txData)
+		act := tx.NewAction("base.empow", "exec", txData)
 		acts = append(acts, act)
 	}
 	tx := &tx.Tx{
-		Publisher: "base.iost",
+		Publisher: "base.empow",
 		GasLimit:  100000000,
 		GasRatio:  100,
 		Actions:   acts,

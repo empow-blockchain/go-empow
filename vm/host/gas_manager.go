@@ -2,11 +2,11 @@ package host
 
 import (
 	"fmt"
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/vm/database"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/ilog"
 )
 
 // GasManager handle the logic of gas. It should be called in a contract
@@ -147,7 +147,7 @@ func (g *GasManager) setTGasQuota(name string, value *common.Fixed) contract.Cos
 // ChangeTGas ...
 func (g *GasManager) ChangeTGas(name string, delta *common.Fixed, changeQuota bool) contract.Cost {
 	oldVal := g.h.ctx.Value("contract_name")
-	g.h.ctx.Set("contract_name", "gas.iost")
+	g.h.ctx.Set("contract_name", "gas.empow")
 	finalCost := contract.Cost0()
 	f, cost := g.TGas(name)
 	finalCost.AddAssign(cost)
@@ -248,7 +248,7 @@ func (g *GasManager) RefreshPGas(name string) (contract.Cost, error) {
 func (g *GasManager) CostGas(name string, gasCost *common.Fixed) error {
 	// todo modify CostGas
 	oldVal := g.h.ctx.Value("contract_name")
-	g.h.ctx.Set("contract_name", "gas.iost")
+	g.h.ctx.Set("contract_name", "gas.empow")
 	_, err := g.RefreshPGas(name)
 	if err != nil {
 		return err

@@ -108,9 +108,9 @@ class RAMContract {
         const veryLarge = 100 * 64 * 1024 * 1024 * 1024;
         const tokenInfo = {"decimal": 0, "fullName": "IOST system ram", "onlyIssuerCanTransfer": true};
         let data = [this._getTokenName(), blockchain.contractName(), veryLarge, tokenInfo];
-        blockchain.callWithAuth("token.iost", "create", data);
+        blockchain.callWithAuth("token.empow", "create", data);
         data = [this._getTokenName(), blockchain.contractName(), (initialTotal).toString()];
-        blockchain.callWithAuth("token.iost", "issue", data);
+        blockchain.callWithAuth("token.empow", "issue", data);
         this._put("lastUpdateBlockTime", block.time);
         this._put("increaseInterval", increaseInterval);
         this._put("increaseAmount", increaseAmount);
@@ -155,7 +155,7 @@ class RAMContract {
         if (slotNum > 0) {
             const increaseAmount = this._get("increaseAmount") * slotNum;
             const data = [this._getTokenName(), blockchain.contractName(), increaseAmount.toString()];
-            blockchain.callWithAuth("token.iost", "issue", data);
+            blockchain.callWithAuth("token.empow", "issue", data);
             this._put("lastUpdateBlockTime", block.time);
             this._changeLeftSpace(increaseAmount);
         }
@@ -187,24 +187,24 @@ class RAMContract {
 
         const enableReferrerReward = false;
         if (enableReferrerReward) {
-            const accObj = JSON.parse(storage.globalMapGet("auth.iost", "auth", acc));
+            const accObj = JSON.parse(storage.globalMapGet("auth.empow", "auth", acc));
             const referrer = accObj.referrer;
             if (referrer !== null) {
                 let rewardAmount = 0;
-                const producerMap = JSON.parse(storage.globalGet("vote_producer.iost", "producerMap") || "{}");
+                const producerMap = JSON.parse(storage.globalGet("vote_producer.empow", "producerMap") || "{}");
                 if (producerMap[referrer]) {
                     const rewardRatio = 0.3;
                     rewardAmount = fee * rewardRatio;
                     destroyAmount -= rewardAmount;
                     if (rewardAmount.toFixed(2) !== "0.00") {
-                        blockchain.callWithAuth("token.iost", "transfer", ["iost", blockchain.contractName(), referrer, rewardAmount.toFixed(2), ""]);
+                        blockchain.callWithAuth("token.empow", "transfer", ["em", blockchain.contractName(), referrer, rewardAmount.toFixed(2), ""]);
                     }
                 }
             }
         }
 
         if (destroyAmount.toFixed(2) !== "0.00") {
-            blockchain.callWithAuth("token.iost", "transfer", ["iost", blockchain.contractName(), "deadaddr", destroyAmount.toFixed(2), ""]);
+            blockchain.callWithAuth("token.empow", "transfer", ["em", blockchain.contractName(), "deadaddr", destroyAmount.toFixed(2), ""]);
         }
     }
 
@@ -222,13 +222,13 @@ class RAMContract {
         }
         const price = rawPrice + fee;
 
-        if (payer != 'auth.iost') {
-            blockchain.callWithAuth("token.iost", "transfer", ["iost", payer, blockchain.contractName(), price.toFixed(2), ""]);
+        if (payer != 'auth.empow') {
+            blockchain.callWithAuth("token.empow", "transfer", ["em", payer, blockchain.contractName(), price.toFixed(2), ""]);
             this._handle_fee(payer, fee);
         }
 
         const data = [this._getTokenName(), blockchain.contractName(), account, amount.toString(), ""];
-        blockchain.callWithAuth("token.iost", "transfer", data);
+        blockchain.callWithAuth("token.empow", "transfer", data);
         
         this._changeLeftSpace(-amount);
         this._changeBalance(rawPrice);
@@ -247,9 +247,9 @@ class RAMContract {
             throw new Error("self ram amount " + this._getAccountSelfRAM(account) + ", not enough for sell");
         }
         const data = [this._getTokenName(), account, blockchain.contractName(), amount.toString(), ""];
-        blockchain.callWithAuth("token.iost", "transfer", data);
+        blockchain.callWithAuth("token.empow", "transfer", data);
         const price = this._round(this._price("sell", amount));
-        blockchain.callWithAuth("token.iost", "transfer", ["iost", blockchain.contractName(), receiver, price.toFixed(2), ""]);
+        blockchain.callWithAuth("token.empow", "transfer", ["em", blockchain.contractName(), receiver, price.toFixed(2), ""]);
         this._changeLeftSpace(amount);
         this._changeBalance(-price);
         this._changeUsedSpace(-amount);
@@ -267,7 +267,7 @@ class RAMContract {
             throw new Error("self ram amount " + this._getAccountSelfRAM(from) + ", not enough for lend");
         }
         const data = [this._getTokenName(), from, to, amount.toString(), ""];
-        blockchain.callWithAuth("token.iost", "transfer", data);
+        blockchain.callWithAuth("token.empow", "transfer", data);
         this._changeAccountSelfRAM(from, -amount);
         this._changeAccountTotalRAM(from, -amount);
         this._changeAccountTotalRAM(to, amount);

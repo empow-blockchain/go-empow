@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/p2p"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/p2p"
 )
 
 func init() {

@@ -1,7 +1,7 @@
-const VPContract = "vote_producer.iost";
-const BonusContract = "bonus.iost";
-const IssueContract = "issue.iost";
-const TokenContract = "token.iost";
+const VPContract = "vote_producer.empow";
+const BonusContract = "bonus.empow";
+const IssueContract = "issue.empow";
+const TokenContract = "token.empow";
 
 class VoteChecker {
     init() {
@@ -58,9 +58,9 @@ class VoteChecker {
     }
 
     issueIOST() {
-        let total1 = blockchain.callWithAuth(TokenContract, "supply", ["iost"])[0];
+        let total1 = blockchain.callWithAuth(TokenContract, "supply", ["em"])[0];
         blockchain.callWithAuth(IssueContract, "issueIOST", []);
-        let total2 = blockchain.callWithAuth(TokenContract, "supply", ["iost"])[0];
+        let total2 = blockchain.callWithAuth(TokenContract, "supply", ["em"])[0];
         let data = this._get("issueIOST") || [];
         data.push(new Float64(total2).minus(total1).toFixed(8));
         this._put("issueIOST", data);
@@ -69,11 +69,11 @@ class VoteChecker {
 
     exchangeIOST() {
         let publisher = blockchain.publisher();
-        let balance10 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", BonusContract])[0];
-        let balance11 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", publisher])[0];
+        let balance10 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", BonusContract])[0];
+        let balance11 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", publisher])[0];
         blockchain.callWithAuth(BonusContract, "exchangeIOST", [publisher, "0"]);
-        let balance20 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", BonusContract])[0];
-        let balance21 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", publisher])[0];
+        let balance20 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", BonusContract])[0];
+        let balance21 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", publisher])[0];
         let data = this._get("exchangeIOST") || {};
         data[publisher] = {
             BonusContract: new Float64(balance20).minus(balance10).toFixed(8),
@@ -85,12 +85,12 @@ class VoteChecker {
 
     candidateWithdraw() {
         let publisher = blockchain.publisher();
-        let balance10 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", VPContract])[0];
-        let balance11 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", publisher])[0];
+        let balance10 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", VPContract])[0];
+        let balance11 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", publisher])[0];
         let bonus = blockchain.callWithAuth(VPContract, "getCandidateBonus", [publisher])[0];
         blockchain.callWithAuth(VPContract, "candidateWithdraw", [publisher]);
-        let balance20 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", VPContract])[0];
-        let balance21 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", publisher])[0];
+        let balance20 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", VPContract])[0];
+        let balance21 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", publisher])[0];
         let voteInfo =  this._call(VPContract, "getProducer", [publisher]);
         let vote = this._get("vote");
         let unvote = this._get("unvote");
@@ -117,11 +117,11 @@ class VoteChecker {
 
     topupVoterBonus(account, amount) {
         let publisher = blockchain.publisher();
-        let balance10 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", VPContract])[0];
-        let balance11 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", publisher])[0];
+        let balance10 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", VPContract])[0];
+        let balance11 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", publisher])[0];
         blockchain.callWithAuth(VPContract, "topupVoterBonus", [account, amount, publisher]);
-        let balance20 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", VPContract])[0];
-        let balance21 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", publisher])[0];
+        let balance20 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", VPContract])[0];
+        let balance21 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", publisher])[0];
         let voteInfo =  this._call(VPContract, "getProducer", [account]);
         let vote = this._get("vote");
         let unvote = this._get("unvote");
@@ -147,11 +147,11 @@ class VoteChecker {
 
     voterWithdraw() {
         let publisher = blockchain.publisher();
-        let balance10 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", VPContract])[0];
-        let balance11 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", publisher])[0];
+        let balance10 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", VPContract])[0];
+        let balance11 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", publisher])[0];
         blockchain.callWithAuth(VPContract, "voterWithdraw", [publisher]);
-        let balance20 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", VPContract])[0];
-        let balance21 = blockchain.callWithAuth(TokenContract, "balanceOf", ["iost", publisher])[0];
+        let balance20 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", VPContract])[0];
+        let balance21 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", publisher])[0];
         let data = this._get("voterWithdraw") || {};
         data[publisher] = {
             VPContract: new Float64(balance20).minus(balance10).toFixed(8),

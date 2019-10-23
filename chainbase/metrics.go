@@ -3,8 +3,8 @@ package chainbase
 import (
 	"time"
 
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/metrics"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/metrics"
 )
 
 var (

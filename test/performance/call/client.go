@@ -1,7 +1,7 @@
 package call
 
 import (
-	"github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
 	"google.golang.org/grpc"
 )
 

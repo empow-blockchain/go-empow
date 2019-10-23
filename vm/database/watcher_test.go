@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	. "github.com/golang/mock/gomock"
-	"github.com/iost-official/go-iost/core/version"
+	"github.com/empow-blockchain/go-empow/core/version"
 
 	"fmt"
 )

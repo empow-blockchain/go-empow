@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/iost-official/go-iost/core/tx"
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
 	"google.golang.org/grpc"
 )
 
@@ -20,7 +20,7 @@ import (
 var (
 	Interval   = 15 * time.Second
 	Timeout    = (90 + 30) * time.Second
-	InitToken  = "iost"
+	InitToken  = "em"
 	InitAmount = "1000000"
 	InitPledge = "1000000"
 	InitRAM    = "1000000"
@@ -247,25 +247,25 @@ func (c *Client) checkTransaction(hash string) error {
 func (c *Client) CreateAccount(creator *Account, name string, key *Key, check bool) (*Account, error) {
 	k := key.ReadablePubkey()
 	action1 := tx.NewAction(
-		"auth.iost",
+		"auth.empow",
 		"signUp",
 		fmt.Sprintf(`["%v", "%v", "%v"]`, name, k, k),
 	)
 
 	action2 := tx.NewAction(
-		"ram.iost",
+		"ram.empow",
 		"buy",
 		fmt.Sprintf(`["%v", "%v", %v]`, creator.ID, name, InitRAM),
 	)
 
 	action3 := tx.NewAction(
-		"gas.iost",
+		"gas.empow",
 		"pledge",
 		fmt.Sprintf(`["%v", "%v", "%v"]`, creator.ID, name, InitPledge),
 	)
 
 	action4 := tx.NewAction(
-		"token.iost",
+		"token.empow",
 		"transfer",
 		fmt.Sprintf(`["%v", "%v", "%v", "%v", ""]`, InitToken, creator.ID, name, InitAmount),
 	)
@@ -307,7 +307,7 @@ func (c *Client) ExchangeTransfer(sender, recipient *Account, token, amount stri
 	memo := make([]byte, memoSize)
 	rand.Read(memo)
 	memoStr := base64.StdEncoding.EncodeToString(memo)
-	_, err := c.CallAction(check, sender, "exchange.iost", "transfer", token, recipient.ID, amount, memoStr[:memoSize])
+	_, err := c.CallAction(check, sender, "exchange.empow", "transfer", token, recipient.ID, amount, memoStr[:memoSize])
 	return err
 }
 
@@ -341,37 +341,37 @@ func (c *Client) CallAction(check bool, sender *Account, contractName, actionNam
 
 // VoteProducer will vote producer by sending transaction
 func (c *Client) VoteProducer(sender *Account, recipient, amount string) error {
-	_, err := c.CallAction(true, sender, "vote_producer.iost", "vote", sender.ID, recipient, amount)
+	_, err := c.CallAction(true, sender, "vote_producer.empow", "vote", sender.ID, recipient, amount)
 	return err
 }
 
 // CancelVoteProducer will vote producer by sending transaction
 func (c *Client) CancelVoteProducer(sender *Account, recipient, amount string) error {
-	_, err := c.CallAction(true, sender, "vote_producer.iost", "unvote", sender.ID, recipient, amount)
+	_, err := c.CallAction(true, sender, "vote_producer.empow", "unvote", sender.ID, recipient, amount)
 	return err
 }
 
 // Pledge ...
 func (c *Client) Pledge(sender *Account, amount string, check bool) error {
-	_, err := c.CallAction(check, sender, "gas.iost", "pledge", sender.ID, sender.ID, amount)
+	_, err := c.CallAction(check, sender, "gas.empow", "pledge", sender.ID, sender.ID, amount)
 	return err
 }
 
 // Unpledge ...
 func (c *Client) Unpledge(sender *Account, amount string, check bool) error {
-	_, err := c.CallAction(check, sender, "gas.iost", "unpledge", sender.ID, sender.ID, amount)
+	_, err := c.CallAction(check, sender, "gas.empow", "unpledge", sender.ID, sender.ID, amount)
 	return err
 }
 
 // BuyRAM ...
 func (c *Client) BuyRAM(sender *Account, amount int64, check bool) error {
-	_, err := c.CallAction(check, sender, "ram.iost", "buy", sender.ID, sender.ID, amount)
+	_, err := c.CallAction(check, sender, "ram.empow", "buy", sender.ID, sender.ID, amount)
 	return err
 }
 
 // SellRAM ...
 func (c *Client) SellRAM(sender *Account, amount int64, check bool) error {
-	_, err := c.CallAction(check, sender, "ram.iost", "sell", sender.ID, sender.ID, amount)
+	_, err := c.CallAction(check, sender, "ram.empow", "sell", sender.ID, sender.ID, amount)
 	return err
 }
 
@@ -380,13 +380,13 @@ func (c *Client) Transfer(sender, recipient *Account, token, amount string, memo
 	memo := make([]byte, memoSize)
 	rand.Read(memo)
 	memoStr := base64.StdEncoding.EncodeToString(memo)
-	_, err := c.CallAction(check, sender, "token.iost", "transfer", token, sender.ID, recipient.ID, amount, memoStr[:memoSize])
+	_, err := c.CallAction(check, sender, "token.empow", "transfer", token, sender.ID, recipient.ID, amount, memoStr[:memoSize])
 	return err
 }
 
 // SetContract will set the contract by sending transaction
 func (c *Client) SetContract(creator *Account, contract *Contract) (string, error) {
-	hash, err := c.CallAction(true, creator, "system.iost", "setCode", contract.String())
+	hash, err := c.CallAction(true, creator, "system.empow", "setCode", contract.String())
 	if err != nil {
 		return "", err
 	}

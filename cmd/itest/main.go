@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/itest/command/create"
-	"github.com/iost-official/go-iost/itest/command/run"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/itest/command/create"
+	"github.com/empow-blockchain/go-empow/itest/command/run"
 	"github.com/urfave/cli"
 )
 

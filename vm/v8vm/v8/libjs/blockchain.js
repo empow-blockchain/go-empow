@@ -16,8 +16,8 @@ let BlockChain = (function () {
         if (!(amount instanceof Float64)) {
             amount = new Float64(amount);
         }
-        const args = ["iost", from, to, amount.toString(), memo.toString()];
-        return JSON.parse(bc.callWithAuth("token.iost", "transfer", JSON.stringify(args)));
+        const args = ["em", from, to, amount.toString(), memo.toString()];
+        return JSON.parse(bc.callWithAuth("token.empow", "transfer", JSON.stringify(args)));
     };
     return {
         // transfer IOSToken
@@ -48,7 +48,7 @@ let BlockChain = (function () {
         publisher: publisher,
         // get contractOwner
         contractOwner: function() {
-            return storage.globalMapGet("system.iost", "contract_owner", contractName(), "")
+            return storage.globalMapGet("system.empow", "contract_owner", contractName(), "")
         },
         // call contract's api using args
         call: function (contract, api, args) {

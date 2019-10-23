@@ -1,6 +1,6 @@
 package database
 
-import "github.com/iost-official/go-iost/core/version"
+import "github.com/empow-blockchain/go-empow/core/version"
 
 // WriteCache ...
 type WriteCache struct {

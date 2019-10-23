@@ -4,9 +4,9 @@ import (
 	"math"
 	"time"
 
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/core/tx"
-	rpcpb "github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/core/tx"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
 )
 
 // Constant of Transaction

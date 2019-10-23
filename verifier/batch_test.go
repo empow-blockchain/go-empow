@@ -6,7 +6,7 @@ import (
 
 	"time"
 
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/vm/database"
 	"github.com/smartystreets/goconvey/convey"
 )
 

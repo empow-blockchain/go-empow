@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/iost-official/go-iost/sdk"
+	"github.com/empow-blockchain/go-empow/sdk"
 	"github.com/spf13/cobra"
 )
 

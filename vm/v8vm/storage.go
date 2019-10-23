@@ -8,11 +8,11 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/iost-official/go-iost/vm/database"
+	"github.com/empow-blockchain/go-empow/vm/database"
 
 	"encoding/json"
 
-	"github.com/iost-official/go-iost/core/contract"
+	"github.com/empow-blockchain/go-empow/core/contract"
 )
 
 // ErrInvalidDbValType error

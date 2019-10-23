@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 
 	"github.com/bitly/go-simplejson"
-	"github.com/iost-official/go-iost/core/contract"
-	"github.com/iost-official/go-iost/vm/host"
+	"github.com/empow-blockchain/go-empow/core/contract"
+	"github.com/empow-blockchain/go-empow/vm/host"
 )
 
 var systemABIs *abiSet

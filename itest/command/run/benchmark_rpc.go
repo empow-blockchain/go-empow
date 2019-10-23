@@ -3,12 +3,12 @@ package run
 import (
 	"context"
 	"fmt"
-	"github.com/iost-official/go-iost/rpc/pb"
+	"github.com/empow-blockchain/go-empow/rpc/pb"
 	"math/rand"
 	"time"
 
-	"github.com/iost-official/go-iost/ilog"
-	"github.com/iost-official/go-iost/itest"
+	"github.com/empow-blockchain/go-empow/ilog"
+	"github.com/empow-blockchain/go-empow/itest"
 	"github.com/urfave/cli"
 )
 
@@ -82,15 +82,15 @@ func loopGetStorage(it *itest.ITest, interval float64) {
 		r := rand.Intn(5)
 		var err error
 		if r == 0 {
-			_, _, _, err = c.GetContractStorage("bonus.iost", "blockContrib", "")
+			_, _, _, err = c.GetContractStorage("bonus.empow", "blockContrib", "")
 		} else if r == 1 {
-			_, _, _, err = c.GetContractStorage("ram.iost", "leftSpace", "")
+			_, _, _, err = c.GetContractStorage("ram.empow", "leftSpace", "")
 		} else if r == 2 {
-			_, _, _, err = c.GetContractStorage("token.iost", "TIiost", "totalSupply")
+			_, _, _, err = c.GetContractStorage("token.empow", "TIiost", "totalSupply")
 		} else if r == 3 {
-			_, _, _, err = c.GetContractStorage("token.iost", "TBadmin", "iost")
+			_, _, _, err = c.GetContractStorage("token.empow", "TBadmin", "em")
 		} else if r == 4 {
-			_, _, _, err = c.GetContractStorage("vote_producer.iost", "producerTable", "admin")
+			_, _, _, err = c.GetContractStorage("vote_producer.empow", "producerTable", "admin")
 		}
 		if err != nil {
 			ilog.Errorf("cannot get contract storage %v", err)
@@ -108,7 +108,7 @@ func loopGetContract(it *itest.ITest, interval float64) {
 			continue
 		}
 		_, err = c.GetContract(context.Background(), &rpcpb.GetContractRequest{
-			Id:             "vote.iost",
+			Id:             "vote.empow",
 			ByLongestChain: rand.Int()%2 == 0,
 		})
 		if err != nil {

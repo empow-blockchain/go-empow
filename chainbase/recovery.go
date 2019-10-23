@@ -3,9 +3,9 @@ package chainbase
 import (
 	"fmt"
 
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/consensus/genesis"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/consensus/genesis"
+	"github.com/empow-blockchain/go-empow/ilog"
 )
 
 func (c *ChainBase) checkGenesis(conf *common.Config) error {

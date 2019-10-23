@@ -20,7 +20,7 @@ class BaseOp {
     }
 
     doTemplateLiteral(num) {
-        let person = "iost"
+        let person = "em"
         let age = "18"
         for (let i = 0; i < num; i++) {
             `that ${ person } is a ${ age }`
@@ -31,7 +31,7 @@ class BaseOp {
         function myTag(s, p, a) {
             return s
         }
-        let person = "iost"
+        let person = "em"
         let age = "18"
         for (let i = 0; i < num; i++) {
             myTag`that ${ person } is a ${ age }`

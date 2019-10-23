@@ -1,8 +1,8 @@
 package database
 
 import (
-	"github.com/iost-official/go-iost/common"
-	"github.com/iost-official/go-iost/ilog"
+	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/ilog"
 )
 
 const (
@@ -63,9 +63,9 @@ type PledgerInfo struct {
 }
 
 // GasContractName name of basic token contract
-const GasContractName = "gas.iost"
+const GasContractName = "gas.empow"
 
-// GasHandler easy to get balance of token.iost
+// GasHandler easy to get balance of token.empow
 type GasHandler struct {
 	BasicHandler
 	MapHandler

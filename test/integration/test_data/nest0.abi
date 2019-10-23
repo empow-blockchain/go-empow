@@ -6,7 +6,7 @@
       "name": "call",
       "args": ["string", "string", "json"],
       "amountLimit": [{
-        "token": "iost",
+        "token": "em",
         "val": "unlimited"
       }]
     },

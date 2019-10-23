@@ -14,7 +14,7 @@ func checkHashValid(hash string) error {
 }
 
 func checkIDValid(id string) error {
-	if strings.HasPrefix(id, "Contract") || strings.HasSuffix(id, ".iost") {
+	if strings.HasPrefix(id, "Contract") || strings.HasSuffix(id, ".empow") {
 		if len(id) >= 100 {
 			return fmt.Errorf("id invalid. ContractID length should be less then 100 - %v", len(id))
 		}
