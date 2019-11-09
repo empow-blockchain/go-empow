@@ -57,13 +57,13 @@ class VoteChecker {
         return data;
     }
 
-    issueIOST() {
+    issueEM() {
         let total1 = blockchain.callWithAuth(TokenContract, "supply", ["em"])[0];
-        blockchain.callWithAuth(IssueContract, "issueIOST", []);
+        blockchain.callWithAuth(IssueContract, "issueEM", []);
         let total2 = blockchain.callWithAuth(TokenContract, "supply", ["em"])[0];
-        let data = this._get("issueIOST") || [];
+        let data = this._get("issueEM") || [];
         data.push(new Float64(total2).minus(total1).toFixed(8));
-        this._put("issueIOST", data);
+        this._put("issueEM", data);
         return data;
     }
 
@@ -165,7 +165,7 @@ class VoteChecker {
         let data =  {
             vote: this._get("vote"),
             unvote: this._get("unvote"),
-            issueIOST: this._get("issueIOST"),
+            issueEM: this._get("issueEM"),
             exchangeIOST: this._get("exchangeIOST"),
             topupVoterBonus: this._get("topupVoterBonus"),
             candidateWithdraw: this._get("candidateWithdraw"),

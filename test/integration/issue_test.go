@@ -24,14 +24,14 @@ func prepareIssue(s *Simulator, acc *TestAccount) (*tx.TxReceipt, error) {
 		ID:      acc0.ID,
 		Owner:   acc0.KeyPair.ReadablePubkey(),
 		Active:  acc0.KeyPair.ReadablePubkey(),
-		Balance: 21000000000,
+		Balance: 55000000000,
 	}
 	params := []interface{}{
 		acc0.ID,
 		common.TokenInfo{
 			FoundationAccount: acc1.ID,
-			EMTotalSupply:   90000000000,
-			EMDecimal:       8,
+			EMTotalSupply:     90000000000,
+			EMDecimal:         8,
 		},
 		[]interface{}{witness},
 	}
@@ -59,9 +59,9 @@ func Test_IOSTIssue(t *testing.T) {
 		prepareNewProducerVote(t, s, acc0)
 		initProducer(t, s)
 
-		Convey("test issueIOST", func() {
+		Convey("test issueEM", func() {
 			s.Head.Time += 4 * 3 * 1e9
-			r, err := s.Call("issue.empow", "issueIOST", `[]`, acc0.ID, acc0.KeyPair)
+			r, err := s.Call("issue.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
 			s.Visitor.Commit()
 
 			So(err, ShouldBeNil)

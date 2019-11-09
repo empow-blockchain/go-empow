@@ -35,12 +35,6 @@
             ]
         },
         {
-            "name": "switchOff",
-            "args": [
-                "bool"
-            ]
-        },
-        {
             "name": "applyUnregister",
             "args": [
                 "string"
@@ -136,18 +130,6 @@
             }]
         },
         {
-            "name": "topupVoterBonus",
-            "args": [
-                "string",
-                "string",
-                "string"
-            ],
-            "amountLimit": [{
-                "token": "em",
-                "val": "unlimited"
-            }]
-        },
-        {
             "name": "stat",
             "args": []
         },
@@ -159,18 +141,6 @@
         },
         {
             "name": "candidateWithdraw",
-            "args": [
-                "string"
-            ]
-        },
-        {
-            "name": "getVoterBonus",
-            "args": [
-                "string"
-            ]
-        },
-        {
-            "name": "voterWithdraw",
             "args": [
                 "string"
             ]

@@ -15,13 +15,12 @@
             ]
         },
         {
-            "name": "issueIOST",
+            "name": "issueEM",
             "args": []
         },
         {
-            "name": "issueIOSTTo",
+            "name": "issueEMToSell",
             "args": [
-                "string",
                 "string"
             ]
         }

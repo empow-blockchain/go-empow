@@ -122,7 +122,7 @@ func Test_UpdateBonus(t *testing.T) {
 			So(database.MustUnmarshal(s.Visitor.Get("bonus.empow-blockContrib")), ShouldEqual, `"3.28513441"`)
 			for i := 0; i < 7; i++ {
 				s.Head.Time += 86400 * 1e9
-				r, err = s.Call("issue.empow", "issueIOST", `[]`, acc0.ID, acc0.KeyPair)
+				r, err = s.Call("issue.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
 				So(err, ShouldBeNil)
 				So(r.Status.Message, ShouldEqual, "")
 
@@ -137,7 +137,7 @@ func Test_UpdateBonus(t *testing.T) {
 
 			for i := 0; i < 7; i++ {
 				s.Head.Time += 86400 * 1e9
-				r, err = s.Call("issue.empow", "issueIOST", `[]`, acc0.ID, acc0.KeyPair)
+				r, err = s.Call("issue.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
 				So(err, ShouldBeNil)
 				So(r.Status.Message, ShouldEqual, "")
 

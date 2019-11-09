@@ -2,7 +2,9 @@ const newVoteFee = "1000";
 const descriptionMaxLength = 65536;
 const optionMaxNum = 65536;
 const resultMaxLength = 2048;
-const EMDecimal = 8;
+const voteDecimal = 8;
+const voteSymbol = 'vote';
+const voteTotalSupply = 90000000000;
 
 const adminPermission = "active";
 const votePermission = "active";
@@ -25,6 +27,27 @@ class VoteCommonContract {
         }
         storage.put("adminID", adminID);
         this._put("fundID", [adminID]);
+    }
+
+    initVotePoint(adminID) {
+        const bn = block.number;
+        if(bn !== 0) {
+            throw new Error("init out of genesis block");
+        }
+        blockchain.callWithAuth("token.empow", "create", [
+            voteSymbol,
+            "bonus.empow",
+            voteTotalSupply,
+            {
+                "can_transfer": false,
+                "decimal": voteDecimal
+            }
+        ]);
+    }
+
+    issueVotePoint() {
+        // when change like to EM
+        // when purchase premium account
     }
 
     can_update(data) {
@@ -352,7 +375,7 @@ class VoteCommonContract {
     }
 
     _fixAmount(amount) {
-        amount = new Float64(new Float64(amount).toFixed(EMDecimal));
+        amount = new Float64(new Float64(amount).toFixed(voteDecimal));
         if (amount.lte("0")) {
             throw new Error("amount must be positive");
         }
@@ -390,7 +413,7 @@ class VoteCommonContract {
         this._checkCanVote(voteId, info);
 
         amount = this._fixAmount(amount);
-        blockchain.deposit(payer, amount.toFixed(), "");
+        blockchain.callWithAuth("token.empow", "transfer", [voteSymbol, payer, "vote.empow", amount, ""]);
 
         const optionInfo = this._mapGet(optionPrefix + voteId, option);
         if (optionInfo.deleted === TRUE) {
@@ -455,7 +478,7 @@ class VoteCommonContract {
         if (info.deleted === FALSE) {
             freezeTime += info.freezeTime*1e9;
         }
-        blockchain.callWithAuth("token.empow", "transferFreeze", ["em", "vote.empow", account, amount.toFixed(), freezeTime, ""]);
+        blockchain.callWithAuth("token.empow", "transferFreeze", [voteSymbol, "vote.empow", account, amount.toFixed(), freezeTime, ""]);
 
         const leftVoteNum = votes.minus(amount);
         userVotes[option][0] = leftVoteNum.toFixed();
@@ -544,7 +567,7 @@ class VoteCommonContract {
 
         const deposit = new Float64(info.deposit);
         if (!deposit.isZero()) {
-            blockchain.withdraw(owner, deposit.toFixed(), "");
+            blockchain.callWithAuth("token.empow", "transfer", [voteSymbol, "vote.empow", owner, deposit.toFixed(), ""]);
         }
         this._delVote(voteId, info);
     }

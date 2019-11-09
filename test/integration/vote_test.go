@@ -14,12 +14,12 @@ import (
 )
 
 func prepareToken(t *testing.T, s *Simulator, pubAcc *TestAccount) {
-	r, err := s.Call("token.empow", "create", fmt.Sprintf(`["%v", "%v", %v, {}]`, "em", acc0.ID, "21000000000"), pubAcc.ID, pubAcc.KeyPair)
+	r, err := s.Call("token.empow", "create", fmt.Sprintf(`["%v", "%v", %v, {}]`, "em", acc0.ID, "90000000000"), pubAcc.ID, pubAcc.KeyPair)
 	if err != nil || r.Status.Code != tx.Success {
 		t.Fatal(err, r)
 	}
 	for _, acc := range testAccounts {
-		s.Call("token.empow", "issue", fmt.Sprintf(`["%v", "%v", "%v"]`, "em", acc.ID, "2000000000"), pubAcc.ID, pubAcc.KeyPair)
+		s.Call("token.empow", "issue", fmt.Sprintf(`["%v", "%v", "%v"]`, "em", acc.ID, "5500000000"), pubAcc.ID, pubAcc.KeyPair)
 	}
 	s.Visitor.Commit()
 }

@@ -350,7 +350,7 @@ func TestGas_Increase(t *testing.T) {
 		So(r.Status.Message, ShouldEqual, "")
 		oldGas := s.Visitor.PGasAtTime(acc0.ID, s.Head.Time)
 		var usage int64 = 0
-		for i := 0; i < 10; i += 1 {
+		for i := 0; i < 10; i++ {
 			s.Head.Time += 3 * 1e8
 			r, err = s.Call("token.empow", "transfer", array2json([]interface{}{"em", acc0.ID, acc1.ID, "1", ""}), acc0.ID, acc0.KeyPair)
 			So(err, ShouldBeNil)

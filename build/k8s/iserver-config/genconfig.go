@@ -83,13 +83,13 @@ func genconfig() {
 		ID:      "admin",
 		Owner:   "Gcv8c2tH8qZrUYnKdEEdTtASsxivic2834MQW6mgxqto",
 		Active:  "Gcv8c2tH8qZrUYnKdEEdTtASsxivic2834MQW6mgxqto",
-		Balance: int64(21000000000),
+		Balance: int64(55000000000),
 	}
 
 	tokenInfo := &common.TokenInfo{
 		FoundationAccount: "foundation",
-		EMTotalSupply:   90000000000,
-		EMDecimal:       8,
+		EMTotalSupply:     90000000000,
+		EMDecimal:         8,
 	}
 
 	foundationInfo := &common.Witness{

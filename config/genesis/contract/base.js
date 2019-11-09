@@ -48,7 +48,7 @@ class Base {
     }
 
     _issue() {
-        blockchain.callWithAuth("issue.empow", "issueIOST", `[]`);
+        blockchain.callWithAuth("issue.empow", "issueEM", `[]`);
     }
 
     _saveBlockInfo() {

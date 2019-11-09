@@ -7,7 +7,7 @@ class IssueContract {
         storage.put("FoundationAccount", "");
     }
 
-    _initIOST(config, witnessInfo) {
+    _initEM(config, witnessInfo) {
         blockchain.callWithAuth("token.empow", "create", [
             "em",
             "issue.empow",
@@ -51,7 +51,7 @@ class IssueContract {
         storage.put("adminAddress", adminAddress);
         storage.put("FoundationAccount", genesisConfig.FoundationAccount);
 
-        this._initIOST(genesisConfig, witnessInfo);
+        this._initEM(genesisConfig, witnessInfo);
     }
 
     can_update(data) {
@@ -87,29 +87,22 @@ class IssueContract {
         storage.mapDel(k, f);
     }
 
-    _issueIOST(account, amount) {
+    _issueEM(account, amount) {
         const amountStr = ((typeof amount === "string") ? amount : amount.toFixed(this._get("EMDecimal")));
         const args = ["em", account, amountStr];
         blockchain.callWithAuth("token.empow", "issue", args);
     }
 
-    issueIOSTTo(account, amount) {
-        const whitelist = ["auth.empow"];
-        let auth = false;
-        for (const c of whitelist) {
-            if (blockchain.requireAuth(c, "active")) {
-                auth = true;
-                break;
-            }
+    issueEMToSell(amount) {
+        const admin = storage.get("adminAddress");
+        if(!blockchain.requireAuth(admin, "active")) {
+            throw new Error("issue permission denied");
         }
-        if (!auth) {
-            throw new Error("issue iost permission denied");
-        }
-        this._issueIOST(account, amount);
+        this._issueEM(admin, amount);
     }
 
-    // issueIOST to bonus.empow and iost foundation
-    issueIOST() {
+    // issueEM to bonus.empow and iost foundation
+    issueEM() {
         const admin = storage.get("adminAddress");
         const whitelist = ["base.empow", admin];
         let auth = false;
@@ -144,9 +137,12 @@ class IssueContract {
         const supply = new Float64(blockchain.callWithAuth("token.empow", "supply", ["em"])[0]);
         const issueAmount = supply.multi(iostIssueRate).multi(gap);
         const bonus = issueAmount.multi("0.33333333");
-        this._issueIOST(foundationAcc, issueAmount.minus(bonus).minus(bonus).toFixed(decimal));
-        this._issueIOST("bonus.empow", bonus.toFixed(decimal));
-        this._issueIOST(contractName, bonus.toFixed(decimal));
+        // issue to foundation
+        this._issueEM(foundationAcc, issueAmount.minus(bonus).minus(bonus).toFixed(decimal));
+        // issue to producer with block reward
+        this._issueEM("bonus.empow", bonus.toFixed(decimal));
+        // issue to producer with vote percent
+        this._issueEM(contractName, bonus.toFixed(decimal));
 
         const succ = blockchain.callWithAuth("vote_producer.empow", "topupCandidateBonus", [
             bonus.toFixed(decimal),

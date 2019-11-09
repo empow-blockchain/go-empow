@@ -13,6 +13,12 @@
             ]
         },
         {
+            "name": "initVotePoint",
+            "args": [
+                "string"
+            ]
+        },
+        {
             "name": "newVote",
             "args": [
                 "string",

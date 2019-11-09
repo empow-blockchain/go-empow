@@ -1,8 +1,8 @@
-const premiumUsernamePrice = 1000 // 1000 EM/premium username
+const premiumUsernamePriceUSD = 10 // $10/premium username
 
 class Account {
     init() {
-
+        storage.put('EMPrice', "0.001")
     }
     initAdmin(adminAddress) {
         const bn = block.number;
@@ -124,7 +124,7 @@ class Account {
         }
     }
 
-    _checkNormalUsername(username) {
+    _checkPremiumUsername(username) {
         if (block.number === 0) {
             return
         }
@@ -181,15 +181,6 @@ class Account {
             const defaultRamBuy = 200; // 200 bytes
             blockchain.callWithAuth("gas.empow", "pledge", [blockchain.contractName(), address, defaultGasPledge]);
             blockchain.callWithAuth("ram.empow", "buy", [blockchain.contractName(), address, defaultRamBuy]);
-
-            const enableReferrerReward = false;
-            if (enableReferrerReward) {
-                const defaultRegisterReward = "3";
-                const producerMap = JSON.parse(storage.globalGet("vote_producer.empow", "producerMap") || "{}");
-                if (producerMap[referrer]) {
-                    blockchain.callWithAuth("issue.empow", "issueIOSTTo", [referrer, defaultRegisterReward]);
-                }
-            }
         }
 
         blockchain.receipt(JSON.stringify([address, owner, active]));
@@ -215,8 +206,16 @@ class Account {
         this._checkPremiumUsername(username)
         // require auth address
         blockchain.requireAuth(address, 'active')
-        // transfer EM to pay premium username
-        blockchain.callWithAuth("token.empow", "transfer", ["em", address, blockchain.contractName(), premiumUsernamePrice, "pay premium username"]);
+        const EMPrice = storage.get('EMPrice')
+        const EMneedToPay = new Float64(premiumUsernamePriceUSD).div(EMPrice)
+        blockchain.callWithAuth("token.empow", "transfer", ["em", address, "deadaddr", EMneedToPay, "pay premium username"]);
+        // pledge gas and buy ram
+        const halfEMAmount = EMneedToPay.div(2).toFixed(8)
+        const ramPrice = blockchain.callWithAuth("ram.empow", "getPrice", [])
+        const ramAmount = new Float64(halfEMAmount).div(ramPrice).toFixed(0)
+
+        blockchain.callWithAuth("gas.empow", "pledge", [blockchain.contractName(), address, halfEMAmount]);
+        blockchain.callWithAuth("ram.empow", "buy", [blockchain.contractName(), address, ramAmount * 1.00]);
         // save to storage
         storage.mapPut("username",username, address, address);
     }

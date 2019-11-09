@@ -1,4 +1,4 @@
-const VOTE_THRESHOLD = "2100000";
+const VOTE_THRESHOLD = "500000";
 const VOTE_LOCKTIME = 604800;
 const VOTE_STAT_INTERVAL = 1200;
 const SCORE_DECREASE_INTERVAL = 31104000;
@@ -43,7 +43,7 @@ class VoteContract {
         storage.put("voteId", voteId);
     }
 
-initProducer(proID, proPubkey) {
+    initProducer(proID, proPubkey) {
         const bn = block.number;
         if(bn !== 0) {
             throw new Error("init out of genesis block");
@@ -165,6 +165,9 @@ initProducer(proID, proPubkey) {
 
     // register account as a producer
     applyRegister(account, pubkey, loc, url, netId, isProducer) {
+        // can register partner node
+        isProducer = true;
+        // can register partner node
         this._requireAuthList(this._getAccountList(account), VOTE_PERMISSION);
         if (storage.mapHas("producerTable", account)) {
             throw new Error("producer exists");
@@ -578,36 +581,6 @@ initProducer(proID, proPubkey) {
         ]);
     }
 
-    _topupVoterBonusInternal(account, amount, payer) {
-        const voteId = this._getVoteId();
-        let votes = new Float64(this._call("vote.empow", "getOption", [
-            voteId,
-            account,
-        ]).votes);
-        if (votes.lte("0")) {
-            return false;
-        }
-
-        blockchain.deposit(payer, amount.toFixed(), "");
-
-        let voterCoef = this._getVoterCoef(account);
-        voterCoef = voterCoef.plus(amount.div(votes));
-        this._mapPut(voterCoefTable, account, voterCoef.toFixed(), payer);
-        return true;
-    }
-
-    topupVoterBonus(account, amount, payer) {
-        if (this._checkSwitchOff()) {
-            throw new Error("can't topup for now");
-        }
-        amount = this._fixAmount(amount);
-        if (this._topupVoterBonusInternal(account, amount, payer)) {
-            blockchain.receipt(JSON.stringify([account, amount, payer]));
-            return true;
-        }
-        return false;
-    }
-
     topupCandidateBonus(amount, payer) {
         let allKey = this._getCandidateAllKey();
         if (allKey.lte("0")) {
@@ -623,48 +596,6 @@ initProducer(proID, proPubkey) {
         this._put(candidateCoef, candCoef.toFixed(), payer);
         blockchain.receipt(JSON.stringify([amount, payer]));
         return true;
-    }
-
-    _calVoterBonus(voter, updateMask) {
-        let userVotes = this.getVote(voter);
-        let earnings = new Float64(0);
-        let receipt = {}
-        for (const v of userVotes) {
-            let voterCoef = this._getVoterCoef(v.option);
-            let voterMask = this._getVoterMask(voter, v.option);
-            let earning = voterCoef.multi(v.votes).minus(voterMask);
-            earnings = earnings.plus(earning);
-            if (updateMask) {
-                voterMask = voterMask.plus(earning);
-                this._mapPut(voterMaskPrefix + v.option, voter, voterMask.toFixed(), blockchain.publisher());
-            }
-            if (earning.gt("0")){
-                receipt[v.option] = earning.toFixed(IOST_DECIMAL);
-            }
-        }
-        let r = JSON.stringify(receipt)
-        if ( r !== '{}' ) {
-            blockchain.receipt(JSON.stringify(receipt))
-        }
-
-        return earnings;
-    }
-
-    getVoterBonus(voter) {
-        return this._calVoterBonus(voter, false).toFixed(IOST_DECIMAL);
-    }
-
-    voterWithdraw(voter) {
-        this._requireAuthList(this._getAccountList(voter), WITHDRAW_PERMISSION);
-        if (this._checkSwitchOff()) {
-            throw new Error("can't withdraw for now");
-        }
-
-        let earnings = this._calVoterBonus(voter, true);
-        if (earnings.lte("0")) {
-            return;
-        }
-        blockchain.withdraw(voter, earnings.toFixed(IOST_DECIMAL), "");
     }
 
     _calCandidateBonus(account, updateMask) {
@@ -698,17 +629,13 @@ initProducer(proID, proPubkey) {
             throw new Error("can't withdraw for now");
         }
 
-        let earnings = this._calCandidateBonus(account, true);
-        if (earnings.lte("0")) {
+        let candidateBonus = this._calCandidateBonus(account, true);
+        if (candidateBonus.lte("0")) {
             return;
         }
-        let halfEarning = earnings.div("2");
-        let candidateBonus = halfEarning.toFixed(IOST_DECIMAL);
-        let voterBonus = earnings.minus(candidateBonus).toFixed(IOST_DECIMAL);
-        blockchain.withdraw(account, candidateBonus, "");
 
-        this._topupVoterBonusInternal(account, new Float64(voterBonus), blockchain.contractName());
-        blockchain.receipt(JSON.stringify([account, candidateBonus, voterBonus]));
+        blockchain.withdraw(account, candidateBonus, "");
+        blockchain.receipt(JSON.stringify([account, candidateBonus]));
     }
 
     _getScores() {

@@ -110,6 +110,7 @@ func genGenesisTx(gConf *common.GenesisConfig) (*tx.Tx, *account.Account, error)
 	}
 	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "vote.empow", code.B64Encode())))
 	acts = append(acts, tx.NewAction("vote.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
+	acts = append(acts, tx.NewAction("vote.empow", "initVotePoint", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 
 	// deploy vote_producer.empow
 	code, err = compile("vote_producer.empow", gConf.ContractPath, "vote_producer.js")

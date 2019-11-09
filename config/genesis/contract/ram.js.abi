@@ -58,6 +58,10 @@
                 "token": "*",
                 "val": "unlimited"
             }]
+        },
+        {
+            "name": "getPrice",
+            "args": []
         }
     ]
 }

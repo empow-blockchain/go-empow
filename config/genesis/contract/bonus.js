@@ -5,7 +5,7 @@ const blockContribRatio = new Float64("1.564349722223e-10");
 class BonusContract {
     init() {
         this._initContribute();
-        this._put("blockContrib", "3.28513441");
+        this._put("blockContrib", "8.60392347");
         this._put("lastTime", block.time);
     }
 

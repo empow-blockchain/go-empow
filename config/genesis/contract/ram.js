@@ -125,7 +125,7 @@ class RAMContract {
         }
     }
     _getInitialPrice() {
-        return 0.005; // when RAM is empty, every byte worth `priceCoefficient` IOST
+        return 0.005; // when RAM is empty, every byte worth `priceCoefficient` EM
     }
     _getF() {
         return 1.0;
@@ -271,6 +271,10 @@ class RAMContract {
         this._changeAccountSelfRAM(from, -amount);
         this._changeAccountTotalRAM(from, -amount);
         this._changeAccountTotalRAM(to, amount);
+    }
+
+    getPrice () {
+        return this._round(this._price("buy", 1));
     }
 }
 

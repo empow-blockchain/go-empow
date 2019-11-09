@@ -119,7 +119,7 @@ func main() {
 func run() {
 	publish()
 	vote()
-	issueIOST()
+	issueEM()
 	withdrawBlockBonus()
 	withdrawVoteBonus()
 	unvote()
@@ -156,9 +156,9 @@ func unvote() {
 	}
 }
 
-func issueIOST() {
+func issueEM() {
 	iostSDKs["admin"].SendTxFromActions([]*rpcpb.Action{
-		sdk.NewAction(contractName, "issueIOST", `[]`),
+		sdk.NewAction(contractName, "issueEM", `[]`),
 	})
 }
 
