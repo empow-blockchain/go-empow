@@ -101,7 +101,7 @@ class IssueContract {
         this._issueEM(admin, amount);
     }
 
-    // issueEM to bonus.empow and foundation
+    // issueEM
     issueEM() {
         const admin = storage.get("adminAddress");
         const whitelist = ["base.empow", admin];
@@ -135,6 +135,7 @@ class IssueContract {
 
         const contractName = blockchain.contractName();
         const supply = new Float64(blockchain.callWithAuth("token.empow", "supply", ["em"])[0]);
+
         const issueAmount = supply.multi(issueRate).multi(gap);
         const onePercentAmount = issueAmount.multi("0.25");
         const halfOnePercentAmount = onePercentAmount.div("2");
@@ -143,8 +144,8 @@ class IssueContract {
         this._issueEM(foundationAcc, issueAmount.minus(onePointFivePercentAmount).minus(onePointFivePercentAmount).toFixed(decimal));
         // issue to producer with block reward
         this._issueEM("bonus.empow", onePointFivePercentAmount.toFixed(decimal));
-        
         this._issueEM(contractName, onePointFivePercentAmount.toFixed(decimal));
+
         // issue to producer with vote percent
         const succ = blockchain.callWithAuth("vote_producer.empow", "topupCandidateBonus", [
             onePercentAmount.toFixed(decimal),
@@ -154,14 +155,23 @@ class IssueContract {
             // transfer bonus to foundation if topup failed
             blockchain.transfer(contractName, foundationAcc, onePercentAmount.toFixed(decimal), "");
         }
-        // issue to stake
-        const succ = blockchain.callWithAuth("stake.empow", "topup", [
-            halfOnePercentAmount.toFixed(decimal)
-        ])[0];
-        if (!succ) {
-            // transfer bonus to foundation if topup failed
-            blockchain.transfer(contractName, foundationAcc, halfOnePercentAmount.toFixed(decimal), "");
+
+        const balance = new Float64(blockchain.callWithAuth("token.empow", "balanceOf", ["em", contractName])[0])
+
+        if(balance.gte(halfOnePercentAmount)) {
+            // issue to stake
+            const succ2 = blockchain.callWithAuth("stake.empow", "topup", [
+                halfOnePercentAmount.toFixed(decimal)
+            ])[0];
+            if (!succ2) {
+                // transfer bonus to foundation if topup failed
+                blockchain.transfer(contractName, foundationAcc, halfOnePercentAmount.toFixed(decimal), "");
+            }
+        } else {
+            throw new Error("not enough balance")
         }
+
+        
     }
 }
 

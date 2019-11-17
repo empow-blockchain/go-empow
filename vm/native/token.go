@@ -457,7 +457,7 @@ var (
 				}
 			}
 
-			fmt.Printf("transfer %v -> %v : %v %v (%v)\n", from, to, amountStr, tokenSym, memo)
+			// fmt.Printf("transfer %v -> %v : %v %v (%v)\n", from, to, amountStr, tokenSym, memo)
 
 			if from == to {
 				return []interface{}{}, cost, nil

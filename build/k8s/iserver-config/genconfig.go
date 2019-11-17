@@ -83,7 +83,7 @@ func genconfig() {
 		ID:      "admin",
 		Owner:   "Gcv8c2tH8qZrUYnKdEEdTtASsxivic2834MQW6mgxqto",
 		Active:  "Gcv8c2tH8qZrUYnKdEEdTtASsxivic2834MQW6mgxqto",
-		Balance: int64(55000000000),
+		Balance: int64(5000000000),
 	}
 
 	tokenInfo := &common.TokenInfo{

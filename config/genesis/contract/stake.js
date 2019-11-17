@@ -99,6 +99,7 @@ class Stake {
     topup(amount) {
         blockchain.requireAuth("issue.empow", "active")
         amount = this._fixAmount(amount);
+
         blockchain.deposit("issue.empow", amount.toFixed(), "");
 
         // calc interest per 1 EM stake
@@ -114,7 +115,9 @@ class Stake {
         if(interestArray.length > 30) {
             interestArray.shift()
         }
-        storage.put(JSON.stringify(interestArray))
+        storage.put(INTEREST_ARRAY, JSON.stringify(interestArray))
+
+        return true
     }
 
     withdraw(address, packageNumber) {

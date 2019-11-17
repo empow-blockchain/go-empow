@@ -21,6 +21,7 @@ func Test_VoteBonus(t *testing.T) {
 	createAccountsWithResource(s)
 	prepareFakeBase(t, s)
 	prepareIssue(s, acc0)
+	prepareStake(t, s, acc0)
 	prepareNewProducerVote(t, s, acc0)
 	initProducer(t, s)
 
@@ -40,7 +41,10 @@ func Test_VoteBonus(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, tx.Success, r.Status.Code)
 	}
-	s.Visitor.SetTokenBalance("em", acc2.ID, 1e17)
+
+	s.Visitor.SetTokenBalance("vote", acc0.ID, 1e17)
+	s.Visitor.SetTokenBalance("vote", acc2.ID, 1e17)
+
 	for idx, acc := range testAccounts {
 		voter := acc0
 		if idx > 0 {
@@ -64,16 +68,18 @@ func Test_VoteBonus(t *testing.T) {
 			assert.Nil(t, err)
 			assert.Empty(t, r.Status.Message)
 		}
-		assert.Equal(t, int64(328513441*(idx+1)), s.Visitor.TokenBalance("contribute", acc.ID))
+		assert.Equal(t, int64(78217486*(idx+1)), s.Visitor.TokenBalance("contribute", acc.ID))
 	}
 	assert.Equal(t, `{"user_1":["20000000",1,"0"],"user_2":["40000000",1,"0"],"user_3":["60000000",1,"0"],"user_4":["80000000",1,"0"],"user_5":["100000000",1,"0"],"user_6":["120000000",1,"0"],"user_7":["140000000",1,"0"],"user_8":["160000000",1,"0"],"user_9":["180000000",1,"0"]}`, database.MustUnmarshal(s.Visitor.MGet("vote.empow-u_1", acc0.ID)))
 	assert.Equal(t, `{"user_0":["20000000",1,"0"],"user_1":["20000000",1,"0"],"user_2":["20000000",1,"0"],"user_3":["20000000",1,"0"],"user_4":["20000000",1,"0"],"user_5":["20000000",1,"0"],"user_6":["20000000",1,"0"],"user_7":["20000000",1,"0"],"user_8":["20000000",1,"0"],"user_9":["20000000",1,"0"]}`, database.MustUnmarshal(s.Visitor.MGet("vote.empow-u_1", acc2.ID)))
 	s.Head.Time += 5073358980
+
 	r, err := s.Call("issue.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
+
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(103333333410), s.Visitor.TokenBalance("em", "vote_producer.empow"))
-	assert.Equal(t, int64(3333333410), s.Visitor.TokenBalance("em", "bonus.empow"))
+	assert.Equal(t, int64(100804375953), s.Visitor.TokenBalance("em", "vote_producer.empow"))
+	assert.Equal(t, int64(1206563930), s.Visitor.TokenBalance("em", "bonus.empow"))
 
 	for i := 0; i < 10; i++ {
 		s.Visitor.SetTokenBalance("em", testAccounts[i].ID, 0)
@@ -84,8 +90,8 @@ func Test_VoteBonus(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
 	assert.Equal(t, int64(0), s.Visitor.TokenBalance("contribute", acc1.ID))
-	assert.Equal(t, int64(657026882), s.Visitor.TokenBalance("em", acc1.ID))
-	assert.Equal(t, int64(103333333410), s.Visitor.TokenBalance("em", "vote_producer.empow"))
+	assert.Equal(t, int64(156434972), s.Visitor.TokenBalance("em", acc1.ID))
+	assert.Equal(t, int64(100804375953), s.Visitor.TokenBalance("em", "vote_producer.empow"))
 
 	s.Head.Time += 86400 * 1e9
 	r, err = s.Call("bonus.empow", "exchangeEMPOW", fmt.Sprintf(`["%s","%s"]`, acc1.ID, "0.00000001"), acc1.ID, acc1.KeyPair)
@@ -96,26 +102,14 @@ func Test_VoteBonus(t *testing.T) {
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc1.ID), acc0.ID, acc0.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(657026882+60606062), s.Visitor.TokenBalance("em", acc1.ID))                  // 60606062 = (3333333410*(2/55))/2
-	assert.Equal(t, int64(103333333410-60606062), s.Visitor.TokenBalance("em", "vote_producer.empow")) // half to voterBonus
+	assert.Equal(t, int64(156434972+29250034), s.Visitor.TokenBalance("em", acc1.ID))                  // 29250034 = (804375953*(2/55))
+	assert.Equal(t, int64(100804375953-29250034), s.Visitor.TokenBalance("em", "vote_producer.empow")) // half to voterBonus
 
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc1.ID), acc1.ID, acc1.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(657026882+60606062), s.Visitor.TokenBalance("em", acc1.ID)) // not change
-	assert.Equal(t, int64(103333333410-60606062), s.Visitor.TokenBalance("em", "vote_producer.empow"))
-
-	r, err = s.Call("vote_producer.empow", "voterWithdraw", fmt.Sprintf(`["%s"]`, acc0.ID), acc0.ID, acc0.KeyPair)
-	assert.Nil(t, err)
-	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(30303031), s.Visitor.TokenBalance("em", acc0.ID))
-	assert.Equal(t, int64(103242424317), s.Visitor.TokenBalance("em", "vote_producer.empow"))
-
-	r, err = s.Call("vote_producer.empow", "voterWithdraw", fmt.Sprintf(`["%s"]`, acc0.ID), acc0.ID, acc0.KeyPair)
-	assert.Nil(t, err)
-	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(30303031), s.Visitor.TokenBalance("em", acc0.ID))
-	assert.Equal(t, int64(103242424317), s.Visitor.TokenBalance("em", "vote_producer.empow"))
+	assert.Equal(t, int64(156434972+29250034), s.Visitor.TokenBalance("em", acc1.ID)) // not change
+	assert.Equal(t, int64(100804375953-29250034), s.Visitor.TokenBalance("em", "vote_producer.empow"))
 
 	// 1. unregistered withdraw
 	r, err = s.Call("vote_producer.empow", "forceUnregister", fmt.Sprintf(`["%v"]`, acc3.ID), acc0.ID, acc0.KeyPair)
@@ -129,8 +123,8 @@ func Test_VoteBonus(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
 	assert.Equal(t, int64(0), s.Visitor.TokenBalance("contribute", acc3.ID))
-	assert.Equal(t, int64(1314053764), s.Visitor.TokenBalance("em", acc3.ID))
-	assert.Equal(t, int64(103242424317), s.Visitor.TokenBalance("em", "vote_producer.empow"))
+	assert.Equal(t, int64(312869944), s.Visitor.TokenBalance("em", acc3.ID))
+	assert.Equal(t, int64(100775125919), s.Visitor.TokenBalance("em", "vote_producer.empow"))
 
 	s.Head.Time += 86400 * 1e9
 	r, err = s.Call("bonus.empow", "exchangeEMPOW", fmt.Sprintf(`["%s","%s"]`, acc3.ID, "0.00000001"), acc3.ID, acc3.KeyPair)
@@ -140,26 +134,14 @@ func Test_VoteBonus(t *testing.T) {
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc3.ID), acc3.ID, acc3.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(1314053764+121212124), s.Visitor.TokenBalance("em", acc3.ID))                 // 121212124 = (3333333410*(4/55))/2
-	assert.Equal(t, int64(103242424317-121212124), s.Visitor.TokenBalance("em", "vote_producer.empow")) // =103121212193. half to voterBonus
+	assert.Equal(t, int64(312869944+58500069), s.Visitor.TokenBalance("em", acc3.ID)) // 58500069 = (804375953*(4/55))
+	assert.Equal(t, int64(100775125919-58500069), s.Visitor.TokenBalance("em", "vote_producer.empow"))
 
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc3.ID), acc3.ID, acc3.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(1314053764+121212124), s.Visitor.TokenBalance("em", acc3.ID)) // not change
-	assert.Equal(t, int64(103242424317-121212124), s.Visitor.TokenBalance("em", "vote_producer.empow"))
-
-	r, err = s.Call("vote_producer.empow", "voterWithdraw", fmt.Sprintf(`["%s"]`, acc0.ID), acc0.ID, acc0.KeyPair)
-	assert.Nil(t, err)
-	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(30303031+90909093), s.Visitor.TokenBalance("em", acc0.ID))                   // 121212124
-	assert.Equal(t, int64(103121212193-90909093), s.Visitor.TokenBalance("em", "vote_producer.empow")) // 103030303100
-
-	r, err = s.Call("vote_producer.empow", "voterWithdraw", fmt.Sprintf(`["%s"]`, acc0.ID), acc0.ID, acc0.KeyPair)
-	assert.Nil(t, err)
-	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(30303031+90909093), s.Visitor.TokenBalance("em", acc0.ID))
-	assert.Equal(t, int64(103121212193-90909093), s.Visitor.TokenBalance("em", "vote_producer.empow"))
+	assert.Equal(t, int64(312869944+58500069), s.Visitor.TokenBalance("em", acc3.ID)) // not change
+	assert.Equal(t, int64(100775125919-58500069), s.Visitor.TokenBalance("em", "vote_producer.empow"))
 }
 
 func Test_PartnerBonus(t *testing.T) {
@@ -172,6 +154,7 @@ func Test_PartnerBonus(t *testing.T) {
 	createAccountsWithResource(s)
 	prepareFakeBase(t, s)
 	prepareIssue(s, acc0)
+	prepareStake(t, s, acc0)
 	prepareNewProducerVote(t, s, acc0)
 	initProducer(t, s)
 
@@ -191,7 +174,10 @@ func Test_PartnerBonus(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, tx.Success, r.Status.Code)
 	}
-	s.Visitor.SetTokenBalance("em", acc2.ID, 1e17)
+
+	s.Visitor.SetTokenBalance("vote", acc0.ID, 1e17)
+	s.Visitor.SetTokenBalance("vote", acc2.ID, 1e17)
+
 	for idx, acc := range testAccounts {
 		voter := acc0
 		if idx > 0 {
@@ -213,38 +199,27 @@ func Test_PartnerBonus(t *testing.T) {
 	r, err := s.Call("issue.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(103333333410), s.Visitor.TokenBalance("em", "vote_producer.empow"))
-	assert.Equal(t, int64(3333333410), s.Visitor.TokenBalance("em", "bonus.empow"))
+	assert.Equal(t, int64(100804375953), s.Visitor.TokenBalance("em", "vote_producer.empow"))
+	assert.Equal(t, int64(1206563930), s.Visitor.TokenBalance("em", "bonus.empow"))
 
 	for i := 0; i < 10; i++ {
 		s.Visitor.SetTokenBalance("em", testAccounts[i].ID, 0)
 	}
 
+	t.Log(s.Visitor.Get("vote_producer.empow-candAllKey"))
+
 	// 0. normal withdraw
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc6.ID), acc6.ID, acc6.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(212121217), s.Visitor.TokenBalance("em", acc6.ID))                            // 212121217 = (3333333410*(7/55))/2
-	assert.Equal(t, int64(103333333410-212121217), s.Visitor.TokenBalance("em", "vote_producer.empow")) // half to voterBonus
+	assert.Equal(t, int64(102375121), s.Visitor.TokenBalance("em", acc6.ID)) // 102375121 = (804375953*(7/55))
+	assert.Equal(t, int64(100804375953-102375121), s.Visitor.TokenBalance("em", "vote_producer.empow"))
 
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc6.ID), acc6.ID, acc6.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(212121217), s.Visitor.TokenBalance("em", acc6.ID)) // not change
-	assert.Equal(t, int64(103333333410-212121217), s.Visitor.TokenBalance("em", "vote_producer.empow"))
-
-	// withdraw by admin
-	r, err = s.Call("vote_producer.empow", "voterWithdraw", fmt.Sprintf(`["%s"]`, acc2.ID), acc0.ID, acc0.KeyPair)
-	assert.Nil(t, err)
-	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(30303031), s.Visitor.TokenBalance("em", acc2.ID))
-	assert.Equal(t, int64(103090909162), s.Visitor.TokenBalance("em", "vote_producer.empow"))
-
-	r, err = s.Call("vote_producer.empow", "voterWithdraw", fmt.Sprintf(`["%s"]`, acc2.ID), acc2.ID, acc2.KeyPair)
-	assert.Nil(t, err)
-	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(30303031), s.Visitor.TokenBalance("em", acc2.ID))
-	assert.Equal(t, int64(103090909162), s.Visitor.TokenBalance("em", "vote_producer.empow"))
+	assert.Equal(t, int64(102375121), s.Visitor.TokenBalance("em", acc6.ID)) // not change
+	assert.Equal(t, int64(100804375953-102375121), s.Visitor.TokenBalance("em", "vote_producer.empow"))
 }
 
 func TestCriticalVoteCase(t *testing.T) {
@@ -257,6 +232,7 @@ func TestCriticalVoteCase(t *testing.T) {
 	createAccountsWithResource(s)
 	prepareFakeBase(t, s)
 	prepareIssue(s, acc0)
+	prepareStake(t, s, acc0)
 	prepareNewProducerVote(t, s, acc0)
 	initProducer(t, s)
 
@@ -265,6 +241,8 @@ func TestCriticalVoteCase(t *testing.T) {
 	s.Call("bonus.empow", "init", `[]`, acc0.ID, acc0.KeyPair)
 	s.Head.Number = 1
 
+	s.Visitor.SetTokenBalance("vote", acc0.ID, 1e17)
+
 	for _, acc := range testAccounts[6:] {
 		r, err := s.Call("vote_producer.empow", "applyRegister", fmt.Sprintf(`["%v", "%v", "loc", "url", "netId", true]`, acc.ID, acc.KeyPair.ReadablePubkey()), acc.ID, acc.KeyPair)
 		assert.Nil(t, err)
@@ -272,23 +250,23 @@ func TestCriticalVoteCase(t *testing.T) {
 	}
 	for idx, acc := range testAccounts {
 		voter := acc0
-		r, err := s.Call("vote_producer.empow", "vote", fmt.Sprintf(`["%v", "%v", "%v"]`, voter.ID, acc.ID, (idx+1)*2e6), voter.ID, voter.KeyPair)
+		r, err := s.Call("vote_producer.empow", "vote", fmt.Sprintf(`["%v", "%v", "%v"]`, voter.ID, acc.ID, (idx+1)*4e5), voter.ID, voter.KeyPair)
 		assert.Nil(t, err)
 		assert.Empty(t, r.Status.Message)
-		assert.Equal(t, fmt.Sprintf(`{"votes":"%d","deleted":0,"clearTime":-1}`, (idx+1)*2e6), database.MustUnmarshal(s.Visitor.MGet("vote.empow-v_1", acc.ID)))
+		assert.Equal(t, fmt.Sprintf(`{"votes":"%d","deleted":0,"clearTime":-1}`, (idx+1)*4e5), database.MustUnmarshal(s.Visitor.MGet("vote.empow-v_1", acc.ID)))
 		if idx == 0 {
 			assert.Nil(t, database.MustUnmarshal(s.Visitor.Get("vote_producer.empow-candAllKey")))
 		} else {
-			assert.Equal(t, fmt.Sprintf(`"%d"`, (idx+1)*(idx+2)*2e6/2-2e6), database.MustUnmarshal(s.Visitor.Get("vote_producer.empow-candAllKey")))
+			assert.Equal(t, fmt.Sprintf(`"%d"`, (idx+1)*(idx+2)*4e5/2-4e5), database.MustUnmarshal(s.Visitor.Get("vote_producer.empow-candAllKey")))
 		}
 	}
-	assert.Equal(t, `{"user_0":["2000000",1,"0"],"user_1":["4000000",1,"0"],"user_2":["6000000",1,"0"],"user_3":["8000000",1,"0"],"user_4":["10000000",1,"0"],"user_5":["12000000",1,"0"],"user_6":["14000000",1,"0"],"user_7":["16000000",1,"0"],"user_8":["18000000",1,"0"],"user_9":["20000000",1,"0"]}`, database.MustUnmarshal(s.Visitor.MGet("vote.empow-u_1", acc0.ID)))
+	assert.Equal(t, `{"user_0":["400000",1,"0"],"user_1":["800000",1,"0"],"user_2":["1200000",1,"0"],"user_3":["1600000",1,"0"],"user_4":["2000000",1,"0"],"user_5":["2400000",1,"0"],"user_6":["2800000",1,"0"],"user_7":["3200000",1,"0"],"user_8":["3600000",1,"0"],"user_9":["4000000",1,"0"]}`, database.MustUnmarshal(s.Visitor.MGet("vote.empow-u_1", acc0.ID)))
 	s.Head.Time += 5073358980
 	r, err := s.Call("issue.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(103333333410), s.Visitor.TokenBalance("em", "vote_producer.empow"))
-	assert.Equal(t, int64(3333333410), s.Visitor.TokenBalance("em", "bonus.empow"))
+	assert.Equal(t, int64(100804375953), s.Visitor.TokenBalance("em", "vote_producer.empow"))
+	assert.Equal(t, int64(1206563930), s.Visitor.TokenBalance("em", "bonus.empow"))
 
 	for i := 0; i < 10; i++ {
 		s.Visitor.SetTokenBalance("em", testAccounts[i].ID, 0)
@@ -296,42 +274,36 @@ func TestCriticalVoteCase(t *testing.T) {
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc6.ID), acc6.ID, acc6.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(216049387), s.Visitor.TokenBalance("em", acc6.ID))                            // 216049387 = (3333333410*(7/54))/2
-	assert.Equal(t, int64(103333333410-216049387), s.Visitor.TokenBalance("em", "vote_producer.empow")) // half to voterBonus
+	assert.Equal(t, int64(104270956), s.Visitor.TokenBalance("em", acc6.ID)) // 104270956 = (804375953*(7/54))
+	assert.Equal(t, int64(100804375953-104270956), s.Visitor.TokenBalance("em", "vote_producer.empow"))
 
-	r, err = s.Call("vote_producer.empow", "voterWithdraw", fmt.Sprintf(`["%s"]`, acc0.ID), acc0.ID, acc0.KeyPair)
-	assert.Nil(t, err)
-	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(216049387), s.Visitor.TokenBalance("em", acc0.ID))
-	assert.Equal(t, int64(103333333410-216049387*2), s.Visitor.TokenBalance("em", "vote_producer.empow"))
-
-	s.Visitor.SetTokenBalance("em", acc2.ID, 1e17)
+	s.Visitor.SetTokenBalance("vote", acc2.ID, 1e17)
 	r, err = s.Call("vote_producer.empow", "vote", fmt.Sprintf(`["%v", "%v", "%v"]`, acc2.ID, acc0.ID, 1e5), acc2.ID, acc2.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, `"110100000"`, database.MustUnmarshal(s.Visitor.Get("vote_producer.empow-candAllKey")))
+	assert.Equal(t, `"22100000"`, database.MustUnmarshal(s.Visitor.Get("vote_producer.empow-candAllKey")))
 
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc0.ID), acc0.ID, acc0.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(216049387), s.Visitor.TokenBalance("em", acc0.ID)) // not changed
+	assert.Equal(t, int64(0), s.Visitor.TokenBalance("em", acc0.ID)) // not changed
 
 	s.Head.Time += 24*3600*1e9 + 1
 	r, err = s.Call("issue.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(102901234636+56767125693515), s.Visitor.TokenBalance("em", "vote_producer.empow"))
-	assert.Equal(t, int64(3333333410+56767125693515), s.Visitor.TokenBalance("em", "bonus.empow"))
+	assert.Equal(t, int64(13799333069860), s.Visitor.TokenBalance("em", "vote_producer.empow"))
+	assert.Equal(t, int64(20549156011224), s.Visitor.TokenBalance("em", "bonus.empow"))
 
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc0.ID), acc0.ID, acc0.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(216049387+541375858112), s.Visitor.TokenBalance("em", acc0.ID)) // 541375858112 = (56767125693515*(21/1101))/2
+	assert.Equal(t, int64(309923822734), s.Visitor.TokenBalance("em", acc0.ID))
 
 	r, err = s.Call("vote_producer.empow", "unvote", fmt.Sprintf(`["%v", "%v", "%v"]`, acc2.ID, acc0.ID, 1e5), acc2.ID, acc2.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, `"108000000"`, database.MustUnmarshal(s.Visitor.Get("vote_producer.empow-candAllKey")))
+	assert.Equal(t, `"21600000"`, database.MustUnmarshal(s.Visitor.Get("vote_producer.empow-candAllKey")))
 
 	s.Head.Time += 24*3600*1e9 + 1
 	r, err = s.Call("issue.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
@@ -341,5 +313,5 @@ func TestCriticalVoteCase(t *testing.T) {
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc0.ID), acc0.ID, acc0.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(216049387+541375858112), s.Visitor.TokenBalance("em", acc0.ID)) // not changed
+	assert.Equal(t, int64(309923822734), s.Visitor.TokenBalance("em", acc0.ID)) // not changed
 }

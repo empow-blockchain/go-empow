@@ -29,7 +29,7 @@ func toString(n int64) string {
 }
 
 func toEMPOWFixed(n int64) *common.Fixed {
-	return &common.Fixed{Value: n * database.empowRatio, Decimal: 8}
+	return &common.Fixed{Value: n * database.EMPOWRatio, Decimal: 8}
 }
 
 const initCoin int64 = 5000
@@ -414,7 +414,7 @@ func TestGas_TGas(t *testing.T) {
 			r, err := s.Call("auth.empow", "signUp", array2json([]interface{}{otherID, otherKp.ReadablePubkey(), otherKp.ReadablePubkey()}), acc.ID, acc.KeyPair)
 			So(err, ShouldBeNil)
 			So(r.Status.Message, ShouldEqual, "")
-			So(s.Visitor.TokenBalanceFixed("em", acc.ID).Value, ShouldEqual, oldEMPOW-7*database.empowRatio)
+			So(s.Visitor.TokenBalanceFixed("em", acc.ID).Value, ShouldEqual, oldEMPOW-7*database.EMPOWRatio)
 			SkipSo(s.Visitor.TGas(acc.ID).ToString(), ShouldEqual, "30000")
 			r, err = s.Call("gas.empow", "pledge", array2json([]interface{}{acc.ID, otherID, "199"}), acc.ID, acc.KeyPair)
 			So(err, ShouldBeNil)

@@ -59,6 +59,11 @@ func prepareNewProducerVote(t *testing.T, s *Simulator, acc1 *TestAccount) {
 		t.Fatal(err, r)
 	}
 
+	r, err = s.Call("vote.empow", "initVotePoint", fmt.Sprintf(`["%s"]`, acc1.ID), acc1.ID, acc1.KeyPair)
+	if err != nil || r.Status.Code != tx.Success {
+		t.Fatal(err, r)
+	}
+
 	// deploy vote_producer.empow
 	setNonNativeContract(s, "vote_producer.empow", "vote_producer.js", ContractPath)
 
@@ -325,8 +330,8 @@ func Test_Register(t *testing.T) {
 		kp, _ := account.NewKeyPair(nil, crypto.Ed25519)
 		operator := account.NewInitAccount("operator", kp.ReadablePubkey(), kp.ReadablePubkey())
 		s.SetAccount(operator)
-		s.SetGas(operator.ID, 1e12)
-		s.SetRAM(operator.ID, 1e12)
+		s.SetGas(operator.Address, 1e12)
+		s.SetRAM(operator.Address, 1e12)
 
 		createAccountsWithResource(s)
 		prepareFakeBase(t, s)
@@ -335,28 +340,28 @@ func Test_Register(t *testing.T) {
 		initProducer(t, s)
 
 		s.Head.Number = 1
-		r, err := s.Call("vote_producer.empow", "applyRegister", fmt.Sprintf(`["%v", "%v", "loc", "url", "netId", true]`, acc6.ID, acc6.KeyPair.ReadablePubkey()), operator.ID, kp)
+		r, err := s.Call("vote_producer.empow", "applyRegister", fmt.Sprintf(`["%v", "%v", "loc", "url", "netId", true]`, acc6.ID, acc6.KeyPair.ReadablePubkey()), operator.Address, kp)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
-		r, err = s.Call("vote_producer.empow", "logInProducer", fmt.Sprintf(`["%v"]`, acc6.ID), operator.ID, kp)
+		r, err = s.Call("vote_producer.empow", "logInProducer", fmt.Sprintf(`["%v"]`, acc6.ID), operator.Address, kp)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
 		r, err = s.Call("vote_producer.empow", "forceUnregister", fmt.Sprintf(`["%v"]`, acc6.ID), acc0.ID, acc0.KeyPair)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
-		r, err = s.Call("vote_producer.empow", "unregister", fmt.Sprintf(`["%v"]`, acc6.ID), operator.ID, kp)
+		r, err = s.Call("vote_producer.empow", "unregister", fmt.Sprintf(`["%v"]`, acc6.ID), operator.Address, kp)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
-		r, err = s.Call("vote_producer.empow", "applyRegister", fmt.Sprintf(`["%v", "%v", "loc", "url", "netId", true]`, acc6.ID, acc6.KeyPair.ReadablePubkey()), operator.ID, kp)
+		r, err = s.Call("vote_producer.empow", "applyRegister", fmt.Sprintf(`["%v", "%v", "loc", "url", "netId", true]`, acc6.ID, acc6.KeyPair.ReadablePubkey()), operator.Address, kp)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
 		r, err = s.Call("vote_producer.empow", "approveRegister", fmt.Sprintf(`["%v"]`, acc6.ID), acc0.ID, acc0.KeyPair)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
-		r, err = s.Call("vote_producer.empow", "logOutProducer", fmt.Sprintf(`["%v"]`, acc6.ID), operator.ID, kp)
+		r, err = s.Call("vote_producer.empow", "logOutProducer", fmt.Sprintf(`["%v"]`, acc6.ID), operator.Address, kp)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
-		r, err = s.Call("vote_producer.empow", "applyUnregister", fmt.Sprintf(`["%v"]`, acc6.ID), operator.ID, kp)
+		r, err = s.Call("vote_producer.empow", "applyUnregister", fmt.Sprintf(`["%v"]`, acc6.ID), operator.Address, kp)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
 	})
@@ -377,6 +382,7 @@ func Test_SwitchOff(t *testing.T) {
 		initProducer(t, s)
 
 		s.Head.Number = 1
+		s.Visitor.SetTokenBalance("vote", acc0.ID, 3*1e8)
 
 		r, err := s.Call("vote_producer.empow", "vote", fmt.Sprintf(`["%v", "%v", "%v"]`, acc0.ID, acc1.ID, 3), acc0.ID, acc0.KeyPair)
 		So(err, ShouldBeNil)
@@ -387,44 +393,6 @@ func Test_SwitchOff(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
 		So(database.MustUnmarshal(s.Visitor.MGet("vote.empow-v_1", acc1.ID)), ShouldEqual, fmt.Sprintf(`{"votes":"%v","deleted":0,"clearTime":-1}`, 2))
-
-		r, err = s.Call("vote_producer.empow", "switchOff", `[true]`, acc0.ID, acc0.KeyPair)
-		So(err, ShouldBeNil)
-		So(r.Status.Message, ShouldEqual, "")
-
-		r, err = s.Call("vote_producer.empow", "vote", fmt.Sprintf(`["%v", "%v", "%v"]`, acc0.ID, acc1.ID, 3), acc0.ID, acc0.KeyPair)
-		So(err, ShouldBeNil)
-		So(r.Status.Message, ShouldContainSubstring, "can't vote for now")
-
-		r, err = s.Call("vote_producer.empow", "unvote", fmt.Sprintf(`["%v", "%v", "%v"]`, acc0.ID, acc1.ID, 1), acc0.ID, acc0.KeyPair)
-		So(err, ShouldBeNil)
-		So(r.Status.Message, ShouldContainSubstring, "can't unvote for now")
-
-		r, err = s.Call("vote_producer.empow", "topupVoterBonus", fmt.Sprintf(`["%v", "%v", "%v"]`, acc1.ID, 1, acc0.ID), acc0.ID, acc0.KeyPair)
-		So(err, ShouldBeNil)
-		So(r.Status.Message, ShouldContainSubstring, "can't topup for now")
-
-		r, err = s.Call("vote_producer.empow", "voterWithdraw", fmt.Sprintf(`["%v"]`, acc0.ID), acc0.ID, acc0.KeyPair)
-		So(err, ShouldBeNil)
-		So(r.Status.Message, ShouldContainSubstring, "can't withdraw for now")
-
-		r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%v"]`, acc0.ID), acc0.ID, acc0.KeyPair)
-		So(err, ShouldBeNil)
-		So(r.Status.Message, ShouldContainSubstring, "can't withdraw for now")
-
-		r, err = s.Call("vote_producer.empow", "switchOff", `[false]`, acc0.ID, acc0.KeyPair)
-		So(err, ShouldBeNil)
-		So(r.Status.Message, ShouldEqual, "")
-
-		r, err = s.Call("vote_producer.empow", "vote", fmt.Sprintf(`["%v", "%v", "%v"]`, acc0.ID, acc1.ID, 3), acc0.ID, acc0.KeyPair)
-		So(err, ShouldBeNil)
-		So(r.Status.Message, ShouldEqual, "")
-		So(database.MustUnmarshal(s.Visitor.MGet("vote.empow-v_1", acc1.ID)), ShouldEqual, fmt.Sprintf(`{"votes":"%v","deleted":0,"clearTime":-1}`, 5))
-
-		r, err = s.Call("vote_producer.empow", "unvote", fmt.Sprintf(`["%v", "%v", "%v"]`, acc0.ID, acc1.ID, 1), acc0.ID, acc0.KeyPair)
-		So(err, ShouldBeNil)
-		So(r.Status.Message, ShouldEqual, "")
-		So(database.MustUnmarshal(s.Visitor.MGet("vote.empow-v_1", acc1.ID)), ShouldEqual, fmt.Sprintf(`{"votes":"%v","deleted":0,"clearTime":-1}`, 4))
 	})
 }
 
@@ -455,7 +423,7 @@ func Test_Unregister2(t *testing.T) {
 			So(r.Status.Message, ShouldEqual, "")
 		}
 		// So(database.MustUnmarshal(s.Visitor.MGet("vote.empow-voteInfo", fmt.Sprintf(`%d`, 1))), ShouldEqual, "")
-		s.Visitor.SetTokenBalance("em", acc1.ID, 2e18)
+		s.Visitor.SetTokenBalance("vote", acc1.ID, 2e18)
 		for idx, acc := range testAccounts {
 			r, err := s.Call("vote_producer.empow", "vote", fmt.Sprintf(`["%v", "%v", "%v"]`, acc1.ID, acc.ID, (idx+2)*1e7), acc1.ID, acc1.KeyPair)
 			So(err, ShouldBeNil)
@@ -678,6 +646,8 @@ func Test_TakeTurns(t *testing.T) {
 		prepareNewProducerVote(t, s, acc0)
 		initProducer(t, s)
 
+		s.Visitor.SetTokenBalance("vote", acc0.ID, 1e17)
+
 		s.Head.Number = 1
 		for _, acc := range testAccounts[6:] {
 			r, err := s.Call("vote_producer.empow", "applyRegister", fmt.Sprintf(`["%v", "%v", "loc", "url", "netId", true]`, acc.ID, acc.KeyPair.ReadablePubkey()), acc.ID, acc.KeyPair)
@@ -770,6 +740,8 @@ func Test_KickOut(t *testing.T) {
 		prepareToken(t, s, acc0)
 		prepareNewProducerVote(t, s, acc0)
 		initProducer(t, s)
+
+		s.Visitor.SetTokenBalance("vote", acc0.ID, 1e17)
 
 		s.Head.Number = 1
 		for _, acc := range testAccounts[6:] {
@@ -869,6 +841,8 @@ func Test_UpdatePubkey(t *testing.T) {
 		prepareNewProducerVote(t, s, acc0)
 		initProducer(t, s)
 
+		s.Visitor.SetTokenBalance("vote", acc0.ID, 1e17)
+
 		s.Head.Number = 1
 		for _, acc := range testAccounts[6:9] {
 			r, err := s.Call("vote_producer.empow", "applyRegister", fmt.Sprintf(`["%v", "%v", "loc", "url", "netId", true]`, acc.ID, acc.KeyPair.ReadablePubkey()), acc.ID, acc.KeyPair)
@@ -937,7 +911,7 @@ func Test_UnvoteCommon(t *testing.T) {
 		initProducer(t, s)
 
 		s.Head.Number = 1
-		s.Visitor.SetTokenBalance("em", acc1.ID, 1e15)
+		s.Visitor.SetTokenBalance("vote", acc1.ID, 1e15)
 		for idx, acc := range testAccounts[:6] {
 			r, err := s.Call("vote_producer.empow", "vote", fmt.Sprintf(`["%v", "%v", "%v"]`, acc1.ID, acc.ID, idx+2), acc1.ID, acc1.KeyPair)
 			So(err, ShouldBeNil)
@@ -964,6 +938,8 @@ func Test_LogOutInPending(t *testing.T) {
 		prepareToken(t, s, acc0)
 		prepareNewProducerVote(t, s, acc0)
 		initProducer(t, s)
+
+		s.Visitor.SetTokenBalance("vote", acc0.ID, 1e17)
 
 		s.Head.Number = 1
 		for _, acc := range testAccounts[6:] {

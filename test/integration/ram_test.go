@@ -1,9 +1,10 @@
 package integration
 
 import (
+	"testing"
+
 	"github.com/empow-blockchain/go-empow/vm/database"
 	"github.com/empow-blockchain/go-empow/vm/native"
-	"testing"
 
 	"github.com/empow-blockchain/go-empow/core/tx"
 	"github.com/empow-blockchain/go-empow/ilog"
@@ -48,7 +49,7 @@ func ramSetup(t *testing.T) (*Simulator, *TestAccount) {
 		panic("call failed " + r.String())
 	}
 	dbKey := "token.empow" + database.Separator + native.TokenInfoMapPrefix + "ram"
-	if database.MustUnmarshal(s.Visitor.MGet(dbKey, "fullName")) != "EMPOW system ram" {
+	if database.MustUnmarshal(s.Visitor.MGet(dbKey, "fullName")) != "system ram" {
 		panic("incorrect token full name")
 	}
 	s.Head.Number = 1

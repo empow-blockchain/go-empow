@@ -100,7 +100,7 @@
                 "string"
             ],
             "amountLimit": [{
-                "token": "em",
+                "token": "vote",
                 "val": "unlimited"
             }]
         },

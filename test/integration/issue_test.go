@@ -21,10 +21,10 @@ func prepareIssue(s *Simulator, acc *TestAccount) (*tx.TxReceipt, error) {
 	s.Call("issue.empow", "init", `[]`, acc.ID, acc.KeyPair)
 
 	witness := common.Witness{
-		ID:      acc0.ID,
+		Address: acc0.ID,
 		Owner:   acc0.KeyPair.ReadablePubkey(),
 		Active:  acc0.KeyPair.ReadablePubkey(),
-		Balance: 55000000000,
+		Balance: 5000000000,
 	}
 	params := []interface{}{
 		acc0.ID,
@@ -53,10 +53,11 @@ func Test_EMPOWIssue(t *testing.T) {
 		Convey("test init", func() {
 			So(err, ShouldBeNil)
 			So(r.Status.Message, ShouldEqual, "")
-			So(s.Visitor.TokenBalance("em", acc0.ID), ShouldEqual, int64(210*1e16))
+			So(s.Visitor.TokenBalance("em", acc0.ID), ShouldEqual, int64(5*1e17))
 		})
 
 		prepareNewProducerVote(t, s, acc0)
+		prepareStake(t, s, acc0)
 		initProducer(t, s)
 
 		Convey("test issueEM", func() {
@@ -67,8 +68,8 @@ func Test_EMPOWIssue(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(r.Status.Message, ShouldEqual, "")
 
-			So(s.Visitor.TokenBalance("em", "bonus.empow"), ShouldEqual, int64(7884322975))
-			So(s.Visitor.TokenBalance("em", acc1.ID), ShouldEqual, int64(7884323211))
+			So(s.Visitor.TokenBalance("em", "bonus.empow"), ShouldEqual, int64(2853881849))
+			So(s.Visitor.TokenBalance("em", acc1.ID), ShouldEqual, int64(1902587899))
 		})
 	})
 }

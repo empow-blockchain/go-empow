@@ -19,7 +19,7 @@ func prepareToken(t *testing.T, s *Simulator, pubAcc *TestAccount) {
 		t.Fatal(err, r)
 	}
 	for _, acc := range testAccounts {
-		s.Call("token.empow", "issue", fmt.Sprintf(`["%v", "%v", "%v"]`, "em", acc.ID, "5500000000"), pubAcc.ID, pubAcc.KeyPair)
+		s.Call("token.empow", "issue", fmt.Sprintf(`["%v", "%v", "%v"]`, "em", acc.ID, "5000000000"), pubAcc.ID, pubAcc.KeyPair)
 	}
 	s.Visitor.Commit()
 }
@@ -34,6 +34,11 @@ func prepareVote(t *testing.T, s *Simulator, acc *TestAccount) (*tx.TxReceipt, e
 	}
 
 	r, err = s.Call("vote.empow", "initAdmin", fmt.Sprintf(`["%v"]`, acc.ID), acc.ID, acc.KeyPair)
+	if err != nil || r.Status.Code != tx.Success {
+		t.Fatal(err, r)
+	}
+
+	r, err = s.Call("vote.empow", "initVotePoint", fmt.Sprintf(`["%v"]`, acc.ID), acc.ID, acc.KeyPair)
 	if err != nil || r.Status.Code != tx.Success {
 		t.Fatal(err, r)
 	}
@@ -76,7 +81,7 @@ func Test_NewVote(t *testing.T) {
 		r, err := prepareVote(t, s, acc0)
 		So(err, ShouldBeNil)
 		So(r.Status.Code, ShouldEqual, tx.Success)
-		So(s.Visitor.TokenBalance("em", acc0.ID), ShouldEqual, int64(2000000000*1e8))
+		So(s.Visitor.TokenBalance("em", acc0.ID), ShouldEqual, int64(5000000000*1e8))
 		So(database.MustUnmarshal(s.Visitor.Get("vote.empow-current_id")), ShouldEqual, `"1"`)
 		So(database.MustUnmarshal(s.Visitor.MGet("vote.empow-voteInfo", "1")), ShouldEqual, `{"deleted":0,"description":"test vote","resultNumber":2,"minVote":10,"anyOption":false,"freezeTime":0,"deposit":"0","optionNum":4,"canVote":true}`)
 		So(database.MustUnmarshal(s.Visitor.MGet("vote.empow-v_1", "option1")), ShouldEqual, `{"votes":"0","deleted":0,"clearTime":-1}`)
@@ -150,6 +155,8 @@ func Test_Vote(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(rs.Status.Message, ShouldEqual, "")
 
+		s.Visitor.SetTokenBalance("vote", acc1.ID, 1000*1e8)
+
 		rs, err = s.Call("vote.empow", "vote", fmt.Sprintf(`["1", "%v", "option3", "5"]`, acc1.ID), acc1.ID, acc1.KeyPair)
 		So(err, ShouldBeNil)
 		So(rs.Status.Message, ShouldEqual, "")
@@ -172,6 +179,8 @@ func Test_Vote(t *testing.T) {
 		info := database.MustUnmarshal(s.Visitor.MGet("vote.empow-preResult", "1"))
 		So(info, ShouldContainSubstring, `option3`)
 		So(info, ShouldContainSubstring, `option1`)
+
+		s.Visitor.SetTokenBalance("vote", acc0.ID, 1000*1e8)
 
 		rs, err = s.Call("vote.empow", "vote", fmt.Sprintf(`["1", "%v", "option3", "100"]`, acc0.ID), acc0.ID, acc0.KeyPair)
 		So(err, ShouldBeNil)
@@ -211,6 +220,8 @@ func Test_Unvote(t *testing.T) {
 		prepareToken(t, s, acc0)
 		prepareVote(t, s, acc0)
 
+		s.Visitor.SetTokenBalance("vote", acc1.ID, 1000*1e8)
+
 		// vote
 		r, err := s.Call("vote.empow", "vote", fmt.Sprintf(`["1", "%v", "option1", "100"]`, acc1.ID), acc1.ID, acc1.KeyPair)
 		So(err, ShouldBeNil)
@@ -221,6 +232,9 @@ func Test_Unvote(t *testing.T) {
 		r, err = s.Call("vote.empow", "vote", fmt.Sprintf(`["1", "%v", "option2", "100"]`, acc1.ID), acc1.ID, acc1.KeyPair)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
+
+		s.Visitor.SetTokenBalance("vote", acc0.ID, 1000*1e8)
+
 		r, err = s.Call("vote.empow", "vote", fmt.Sprintf(`["1", "%v", "option2", "100"]`, acc0.ID), acc0.ID, acc0.KeyPair)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
@@ -235,6 +249,8 @@ func Test_Unvote(t *testing.T) {
 		info = database.MustUnmarshal(s.Visitor.MGet("vote.empow-preResult", "1"))
 		So(info, ShouldContainSubstring, `option2`)
 		So(info, ShouldContainSubstring, `option3`)
+
+		s.Visitor.SetTokenBalance("vote", acc2.ID, 1000*1e8)
 
 		r, err = s.Call("vote.empow", "vote", fmt.Sprintf(`["1", "%v", "option4", "400"]`, acc2.ID), acc2.ID, acc2.KeyPair)
 		So(err, ShouldBeNil)
@@ -304,6 +320,10 @@ func Test_DelVote(t *testing.T) {
 		prepareToken(t, s, acc0)
 		prepareVote(t, s, acc0)
 
+		s.Visitor.SetTokenBalance("vote", acc0.ID, 1000*1e8)
+		s.Visitor.SetTokenBalance("vote", acc1.ID, 1000*1e8)
+		s.Visitor.SetTokenBalance("vote", acc2.ID, 1000*1e8)
+
 		// vote
 		s.Call("vote.empow", "vote", fmt.Sprintf(`["1", "%v", "option1", "100"]`, acc1.ID), acc1.ID, acc1.KeyPair)
 		s.Call("vote.empow", "vote", fmt.Sprintf(`["1", "%v", "option2", "100"]`, acc1.ID), acc1.ID, acc1.KeyPair)
@@ -351,6 +371,10 @@ func Test_MixVoteOption(t *testing.T) {
 		createAccountsWithResource(s)
 		prepareToken(t, s, acc0)
 		prepareVote(t, s, acc0)
+
+		s.Visitor.SetTokenBalance("vote", acc0.ID, 1000*1e8)
+		s.Visitor.SetTokenBalance("vote", acc1.ID, 1000*1e8)
+		s.Visitor.SetTokenBalance("vote", acc2.ID, 1000*1e8)
 
 		Convey("test addOption not clear", func() {
 			// vote
@@ -542,6 +566,8 @@ func Test_LargeVote(t *testing.T) {
 		prepareVote(t, s, acc0)
 		s.GasLimit = 2e8
 
+		s.Visitor.SetTokenBalance("vote", acc0.ID, 1e17)
+
 		for i := 5; i < 1000; i++ {
 			s.SetGas(acc0.ID, 1e9)
 			r, err := s.Call("vote.empow", "addOption", fmt.Sprintf(`["1", "option%d", true]`, i), acc0.ID, acc0.KeyPair)
@@ -566,7 +592,7 @@ func Test_LargeVote(t *testing.T) {
 
 func Test_CanVote(t *testing.T) {
 	ilog.Stop()
-	Convey("test latge vote", t, func() {
+	Convey("test large vote", t, func() {
 		s := NewSimulator()
 		defer s.Clear()
 
@@ -593,9 +619,13 @@ func Test_CanVote(t *testing.T) {
 		So(r.Status.Message, ShouldEqual, "")
 		So(r.Returns[0], ShouldEqual, `["2"]`)
 
+		s.Visitor.SetTokenBalance("vote", acc1.ID, 1000*1e8)
+
 		r, err = s.Call("vote.empow", "vote", fmt.Sprintf(`["2", "%v", "option1", "1"]`, acc1.ID), acc1.ID, acc1.KeyPair)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldContainSubstring, "require auth failed")
+
+		s.Visitor.SetTokenBalance("vote", acc0.ID, 1000*1e8)
 
 		r, err = s.Call("vote.empow", "vote", fmt.Sprintf(`["2", "%v", "option1", "1"]`, acc0.ID), acc0.ID, acc0.KeyPair)
 		So(err, ShouldBeNil)
@@ -604,6 +634,8 @@ func Test_CanVote(t *testing.T) {
 		r, err = s.Call("vote.empow", "setCanVote", `["2", true]`, acc0.ID, acc0.KeyPair)
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldEqual, "")
+
+		s.Visitor.SetTokenBalance("vote", acc1.ID, 1000*1e8)
 
 		r, err = s.Call("vote.empow", "vote", fmt.Sprintf(`["2", "%v", "option1", "1"]`, acc1.ID), acc1.ID, acc1.KeyPair)
 		So(err, ShouldBeNil)
