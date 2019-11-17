@@ -18,13 +18,13 @@ var startTime time.Time
 // rootCmd represents the base command when called without any subcommands.
 var rootCmd = &cobra.Command{
 	Use:           "iwallet",
-	Short:         "IOST client",
-	Long:          `An IOST RPC client`,
+	Short:         "EMPOW client",
+	Long:          `An EMPOW RPC client`,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		startTime = time.Now()
-		iwalletSDK = sdk.NewIOSTDevSDK()
+		iwalletSDK = sdk.NewEMPOWDevSDK()
 		iwalletSDK.SetChainID(chainID)
 		iwalletSDK.SetServer(server)
 		iwalletSDK.SetVerbose(verbose)
@@ -121,7 +121,7 @@ func initConfig() {
 	}
 }
 
-var iwalletSDK *sdk.IOSTDevSDK
+var iwalletSDK *sdk.EMPOWDevSDK
 
 var (
 	server      string

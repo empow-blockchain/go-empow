@@ -89,9 +89,9 @@ function genAbiArr(stat, comments) {
 function checkInvalidKeyword(tokens) {
     for (let i = 0; i < tokens.length; i++) {
         if ((tokens[i].type === "Identifier" || tokens[i].type === "Literal") &&
-            (tokens[i].value === "_IOSTInstruction_counter" || tokens[i].value === "_IOSTBinaryOp" || tokens[i].value === "IOSTInstruction" ||
-             tokens[i].value === "_IOSTTemplateTag" || tokens[i].value === "_IOSTSpreadElement")) {
-            throw new Error("use of _IOSTInstruction_counter or _IOSTBinaryOp keyword is not allowed");
+            (tokens[i].value === "_EMPOWInstruction_counter" || tokens[i].value === "_EMPOWBinaryOp" || tokens[i].value === "EMPOWInstruction" ||
+             tokens[i].value === "_EMPOWTemplateTag" || tokens[i].value === "_EMPOWSpreadElement")) {
+            throw new Error("use of _EMPOWInstruction_counter or _EMPOWBinaryOp keyword is not allowed");
         }
         if (tokens[i].type === "RegularExpression") {
             throw new Error("use of RegularExpression is not allowed." + tokens[i].val)
@@ -133,7 +133,7 @@ function processOperator(node, pnode) {
         newnode.type = "CallExpression";
         let calleeNode = {};
         calleeNode.type = 'Identifier';
-        calleeNode.name = '_IOSTBinaryOp';
+        calleeNode.name = '_EMPOWBinaryOp';
         newnode.callee = calleeNode;
         let opNode = {};
         opNode.type = 'Literal';
@@ -146,7 +146,7 @@ function processOperator(node, pnode) {
         newnode.type = "TaggedTemplateExpression";
         let tagNode = {};
         tagNode.type = 'Identifier';
-        tagNode.name = '_IOSTTemplateTag';
+        tagNode.name = '_EMPOWTemplateTag';
         newnode.tag = tagNode;
         newnode.quasi = node;
         node = newnode;
@@ -155,7 +155,7 @@ function processOperator(node, pnode) {
         newnode.type = "CallExpression";
         let calleeNode = {};
         calleeNode.type = 'Identifier';
-        calleeNode.name = '_IOSTSpreadElement';
+        calleeNode.name = '_EMPOWSpreadElement';
         newnode.callee = calleeNode;
         newnode.arguments = [node.argument];
         node.argument = newnode;

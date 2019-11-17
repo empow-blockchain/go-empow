@@ -1,5 +1,5 @@
-#ifndef IOST_V8_CONSOLE_H
-#define IOST_V8_CONSOLE_H
+#ifndef EMPOW_V8_CONSOLE_H
+#define EMPOW_V8_CONSOLE_H
 
 #include "sandbox.h"
 
@@ -7,4 +7,4 @@
 void InitConsole(Isolate *isolate, Local<ObjectTemplate> globalTpl);
 void NewConsoleLog(const FunctionCallbackInfo<Value> &args);
 
-#endif // IOST_V8_CONSOLE_H
+#endif // EMPOW_V8_CONSOLE_H

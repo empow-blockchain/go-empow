@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	// GasPledgeTotalKey : how many IOST is pledged
+	// GasPledgeTotalKey : how many EMPOW is pledged
 	GasPledgeTotalKey = "gt"
-	// GasLimitKey : how much gas can be generated max per IOST
+	// GasLimitKey : how much gas can be generated max per EMPOW
 	GasLimitKey = "gl"
 	// GasUpdateTimeKey : when the gas state is refreshed last time, for internal use
 	GasUpdateTimeKey = "gu"
@@ -28,33 +28,33 @@ const (
 )
 const gasMaxIncreaseSeconds = 3 * 24 * 3600
 
-// Each IOST you pledge, you will get `GasImmediateReward` gas immediately.
+// Each EMPOW you pledge, you will get `GasImmediateReward` gas immediately.
 // Then gas will be generated at a rate of `GasIncreaseRate` gas per second.
 // Then it takes `GasFulfillSeconds` time to reach the limit.
 // Your gas production will stop when it reaches the limit.
 // When you use some gas later, the total amount will be less than the limit,
 // so gas production will resume again util the limit.
 
-// GasMinPledgeOfUser Each user must pledge a minimum amount of IOST
-var GasMinPledgeOfUser = &common.Fixed{Value: 10 * IOSTRatio, Decimal: 8}
+// GasMinPledgeOfUser Each user must pledge a minimum amount of EMPOW
+var GasMinPledgeOfUser = &common.Fixed{Value: 10 * EMPOWRatio, Decimal: 8}
 
-// GasMinPledgePerAction One must (un)pledge more than 1 IOST
-var GasMinPledgePerAction = &common.Fixed{Value: 1 * IOSTRatio, Decimal: 8}
+// GasMinPledgePerAction One must (un)pledge more than 1 EMPOW
+var GasMinPledgePerAction = &common.Fixed{Value: 1 * EMPOWRatio, Decimal: 8}
 
-// GasImmediateReward immediate reward per IOST
+// GasImmediateReward immediate reward per EMPOW
 var GasImmediateReward = &common.Fixed{Value: 100000 * 100, Decimal: 2}
 
-// GasLimit gas limit per IOST
+// GasLimit gas limit per EMPOW
 var GasLimit = &common.Fixed{Value: 300000 * 100, Decimal: 2}
 
 // GasFulfillSeconds it takes 2 days to fulfill the gas buffer.
 const GasFulfillSeconds int64 = 2 * 24 * 3600
 
-// GasIncreaseRate gas increase per IOST per second
+// GasIncreaseRate gas increase per EMPOW per second
 var GasIncreaseRate = GasLimit.Sub(GasImmediateReward).Div(GasFulfillSeconds)
 
-// IOSTRatio ...
-const IOSTRatio int64 = 100000000
+// EMPOWRatio ...
+const EMPOWRatio int64 = 100000000
 
 // PledgerInfo ...
 type PledgerInfo struct {

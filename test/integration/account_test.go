@@ -63,9 +63,9 @@ func TestAccountInfo(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldContainSubstring, "unexpected item")
 
-		r, err = s.Call("auth.empow", "assignPermission", array2json([]interface{}{"myidid", "active", "IOST1234", 1}), acc.ID, acc.KeyPair)
+		r, err = s.Call("auth.empow", "assignPermission", array2json([]interface{}{"myidid", "active", "EMPOW1234", 1}), acc.ID, acc.KeyPair)
 		So(err, ShouldBeNil)
-		So(database.Unmarshal(s.Visitor.MGet("auth.empow-auth", "myidid")), ShouldContainSubstring, `{"id":"IOST1234","is_key_pair":true,"weight":1}`)
+		So(database.Unmarshal(s.Visitor.MGet("auth.empow-auth", "myidid")), ShouldContainSubstring, `{"id":"EMPOW1234","is_key_pair":true,"weight":1}`)
 
 		r, err = s.Call("auth.empow", "assignPermission", array2json([]interface{}{"myidid", "active", "acc1@active", 1}), acc.ID, acc.KeyPair)
 		So(err, ShouldBeNil)
@@ -79,9 +79,9 @@ func TestAccountInfo(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(r.Status.Message, ShouldContainSubstring, "item not found")
 
-		r, err = s.Call("auth.empow", "revokePermission", array2json([]interface{}{"myidid", "active", "IOST1234"}), acc.ID, acc.KeyPair)
+		r, err = s.Call("auth.empow", "revokePermission", array2json([]interface{}{"myidid", "active", "EMPOW1234"}), acc.ID, acc.KeyPair)
 		So(err, ShouldBeNil)
-		So(database.Unmarshal(s.Visitor.MGet("auth.empow-auth", "myidid")), ShouldNotContainSubstring, `{"id":"IOST1234","is_key_pair":true,"weight":1}`)
+		So(database.Unmarshal(s.Visitor.MGet("auth.empow-auth", "myidid")), ShouldNotContainSubstring, `{"id":"EMPOW1234","is_key_pair":true,"weight":1}`)
 
 		r, err = s.Call("auth.empow", "addGroup", array2json([]interface{}{"myidid", "grp0"}), acc.ID, acc.KeyPair)
 		So(err, ShouldBeNil)

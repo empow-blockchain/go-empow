@@ -1,5 +1,5 @@
-#ifndef IOST_V8_ENGINE_H
-#define IOST_V8_ENGINE_H
+#ifndef EMPOW_V8_ENGINE_H
+#define EMPOW_V8_ENGINE_H
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -107,4 +107,4 @@ extern CustomStartupData createCompileStartupData();
 }
 #endif // __cplusplus
 
-#endif // IOST_V8_ENGINE_H
+#endif // EMPOW_V8_ENGINE_H

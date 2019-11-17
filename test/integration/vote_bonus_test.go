@@ -80,7 +80,7 @@ func Test_VoteBonus(t *testing.T) {
 	}
 
 	// 0. normal withdraw
-	r, err = s.Call("bonus.empow", "exchangeIOST", fmt.Sprintf(`["%s","0"]`, acc1.ID), acc1.ID, acc1.KeyPair)
+	r, err = s.Call("bonus.empow", "exchangeEMPOW", fmt.Sprintf(`["%s","0"]`, acc1.ID), acc1.ID, acc1.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
 	assert.Equal(t, int64(0), s.Visitor.TokenBalance("contribute", acc1.ID))
@@ -88,7 +88,7 @@ func Test_VoteBonus(t *testing.T) {
 	assert.Equal(t, int64(103333333410), s.Visitor.TokenBalance("em", "vote_producer.empow"))
 
 	s.Head.Time += 86400 * 1e9
-	r, err = s.Call("bonus.empow", "exchangeIOST", fmt.Sprintf(`["%s","%s"]`, acc1.ID, "0.00000001"), acc1.ID, acc1.KeyPair)
+	r, err = s.Call("bonus.empow", "exchangeEMPOW", fmt.Sprintf(`["%s","%s"]`, acc1.ID, "0.00000001"), acc1.ID, acc1.KeyPair)
 	assert.Nil(t, err)
 	assert.Contains(t, r.Status.Message, "invalid amount: negative or greater than contribute")
 
@@ -125,7 +125,7 @@ func Test_VoteBonus(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Contains(t, r.Status.Message, "producer in pending list or in current list, can't unregister")
 
-	r, err = s.Call("bonus.empow", "exchangeIOST", fmt.Sprintf(`["%s","0"]`, acc3.ID), acc3.ID, acc3.KeyPair)
+	r, err = s.Call("bonus.empow", "exchangeEMPOW", fmt.Sprintf(`["%s","0"]`, acc3.ID), acc3.ID, acc3.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
 	assert.Equal(t, int64(0), s.Visitor.TokenBalance("contribute", acc3.ID))
@@ -133,7 +133,7 @@ func Test_VoteBonus(t *testing.T) {
 	assert.Equal(t, int64(103242424317), s.Visitor.TokenBalance("em", "vote_producer.empow"))
 
 	s.Head.Time += 86400 * 1e9
-	r, err = s.Call("bonus.empow", "exchangeIOST", fmt.Sprintf(`["%s","%s"]`, acc3.ID, "0.00000001"), acc3.ID, acc3.KeyPair)
+	r, err = s.Call("bonus.empow", "exchangeEMPOW", fmt.Sprintf(`["%s","%s"]`, acc3.ID, "0.00000001"), acc3.ID, acc3.KeyPair)
 	assert.Nil(t, err)
 	assert.Contains(t, r.Status.Message, "invalid amount: negative or greater than contribute")
 

@@ -1657,12 +1657,12 @@
         "sell_price": {
           "type": "number",
           "format": "double",
-          "title": "User can sell NUM bytes RAM to system to get `NUM * sell_price` IOSTs"
+          "title": "User can sell NUM bytes RAM to system to get `NUM * sell_price` EMPOWs"
         },
         "buy_price": {
           "type": "number",
           "format": "double",
-          "title": "User can spend approximate `NUM * buy_price` IOSTs for NUM bytes RAM"
+          "title": "User can spend approximate `NUM * buy_price` EMPOWs for NUM bytes RAM"
         }
       },
       "description": "The message containing blockchain's ram information."

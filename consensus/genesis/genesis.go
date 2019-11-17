@@ -52,10 +52,10 @@ func genGenesisTx(gConf *common.GenesisConfig) (*tx.Tx, *account.Account, error)
 		fmt.Sprintf(`["%v", "%v"]`, "token.empow", native.SystemContractABI("token.empow", "1.0.0").B64Encode())))
 	acts = append(acts, tx.NewAction("system.empow", "initSetCode",
 		fmt.Sprintf(`["%v", "%v"]`, "token721.empow", native.SystemContractABI("token721.empow", "1.0.0").B64Encode())))
-	// deploy iost.gas
+	// deploy gas.empow
 	acts = append(acts, tx.NewAction("system.empow", "initSetCode",
 		fmt.Sprintf(`["%v", "%v"]`, "gas.empow", native.SystemContractABI("gas.empow", "1.0.0").B64Encode())))
-	// deploy issue.empow and create iost
+	// deploy issue.empow and create em token
 	code, err := compile("issue.empow", gConf.ContractPath, "issue.js")
 	if err != nil {
 		return nil, nil, err
@@ -81,6 +81,14 @@ func genGenesisTx(gConf *common.GenesisConfig) (*tx.Tx, *account.Account, error)
 	// deploy domain.empow
 	acts = append(acts, tx.NewAction("system.empow", "initSetCode",
 		fmt.Sprintf(`["%v", "%v"]`, "domain.empow", native.SystemContractABI("domain.empow", "0.0.0").B64Encode())))
+
+	// deloy stake.empow
+	code, err = compile("stake.empow", gConf.ContractPath, "stake.js")
+	if err != nil {
+		return nil, nil, err
+	}
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "stake.empow", code.B64Encode())))
+	acts = append(acts, tx.NewAction("stake.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 
 	// new account
 	acts = append(acts, tx.NewAction("auth.empow", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, adminInfo.Address, adminInfo.Owner, adminInfo.Active)))

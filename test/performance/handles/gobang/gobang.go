@@ -26,7 +26,7 @@ var rootKey = "2yquS3ySrGWPEKywCPzX4RTJugqRh7kJSo5aehsLYPEWkUxBWA39oMrZ7ZxuM4fgy
 var rootID = "admin"
 var rootAcc *account.KeyPair
 var contractID string
-var iostSDK = sdk.NewIOSTDevSDK()
+var iostSDK = sdk.NewEMPOWDevSDK()
 var testID = "i" + strconv.FormatInt(time.Now().Unix(), 10)
 var testAcc *account.KeyPair
 

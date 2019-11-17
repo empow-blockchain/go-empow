@@ -9,8 +9,8 @@ var memo string
 var transferCmd = &cobra.Command{
 	Use:     "transfer receiver amount",
 	Aliases: []string{"trans"},
-	Short:   "Transfer IOST",
-	Long:    `Transfer IOST`,
+	Short:   "Transfer EMPOW",
+	Long:    `Transfer EMPOW`,
 	Example: `  iwallet transfer test1 100 --account test0
   iwallet transfer test1 100 --account test0 --memo "just for test :D\n中文测试\n😏"`,
 	Args: func(cmd *cobra.Command, args []string) error {

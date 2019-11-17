@@ -1,5 +1,5 @@
-#ifndef IOST_V8_SANDBOX_H
-#define IOST_V8_SANDBOX_H
+#ifndef EMPOW_V8_SANDBOX_H
+#define EMPOW_V8_SANDBOX_H
 
 #include "v8.h"
 #include "vm.h"
@@ -46,4 +46,4 @@ size_t MemoryUsage(Isolate* isolate, ArrayBufferAllocator* allocator);
 
 std::string reportException(Isolate *isolate, Local<Context> ctx, TryCatch& tryCatch);
 
-#endif // IOST_V8_SANDBOX_H
+#endif // EMPOW_V8_SANDBOX_H

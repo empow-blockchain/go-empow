@@ -108,8 +108,8 @@ class BonusContract {
         ]);
     }
 
-    // exchangeIOST with contribute
-    exchangeIOST(account, amount) {
+    // exchangeEMPOW with contribute
+    exchangeEMPOW(account, amount) {
         this._requireAuth(account, activePermission);
 
         const contribute = blockchain.callWithAuth("token.empow", "balanceOf", [

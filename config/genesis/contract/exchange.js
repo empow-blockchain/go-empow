@@ -45,7 +45,7 @@ class Exchange {
 
             if (memo.startsWith("create:")) {
                 if (tokenSym !== "em") {
-                    throw new Error("must transfer iost if you want to create a new account");
+                    throw new Error("must transfer EM if you want to create a new account");
                 }
                 // create account and then transfer to account
                 let args = memo.split(":").slice(1);
@@ -58,7 +58,7 @@ class Exchange {
 
                 let paid = new BigNumber(price).plus(new BigNumber(initialGasPledged));
                 if (bamount.lt(paid)) {
-                    throw new Error("amount not enough to buy 1kB RAM and pledge 10 IOST Gas. need " + bamount.toString())
+                    throw new Error("amount not enough to buy 1kB RAM and pledge 10 EM Gas. need " + bamount.toString())
                 }
 
                 blockchain.transfer(from, args[0], bamount.minus(paid), memo);

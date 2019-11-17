@@ -201,9 +201,9 @@ message RAMInfoResponse {
     int64 available_ram = 2;
     // total ram byte
     int64 total_ram = 3;
-    // User can sell NUM bytes RAM to system to get `NUM * sell_price` IOSTs
+    // User can sell NUM bytes RAM to system to get `NUM * sell_price` EMPOWs
     double sell_price = 4;
-    // User can spend approximate `NUM * buy_price` IOSTs for NUM bytes RAM
+    // User can spend approximate `NUM * buy_price` EMPOWs for NUM bytes RAM
     double buy_price = 5;
 }
 

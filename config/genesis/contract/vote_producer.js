@@ -2,7 +2,7 @@ const VOTE_THRESHOLD = "500000";
 const VOTE_LOCKTIME = 604800;
 const VOTE_STAT_INTERVAL = 1200;
 const SCORE_DECREASE_INTERVAL = 31104000;
-const IOST_DECIMAL = 8;
+const EM_DECIMAL = 8;
 const ADMIN_PERMISSION = "active";
 const VOTE_PERMISSION = "vote";
 const ACTIVE_PERMISSION = "active";
@@ -512,7 +512,7 @@ class VoteContract {
     }
 
     _fixAmount(amount) {
-        amount = new Float64(new Float64(amount).toFixed(IOST_DECIMAL));
+        amount = new Float64(new Float64(amount).toFixed(EM_DECIMAL));
         if (amount.lte("0")) {
             throw new Error("amount must be positive");
         }
@@ -620,7 +620,7 @@ class VoteContract {
     }
 
     getCandidateBonus(account) {
-        return this._calCandidateBonus(account, false).toFixed(IOST_DECIMAL);
+        return this._calCandidateBonus(account, false).toFixed(EM_DECIMAL);
     }
 
     candidateWithdraw(account) {
@@ -772,7 +772,7 @@ class VoteContract {
             if (!pro.online || isDead || forbidUntil >= bn || !validPendingMap[pro.pubkey]) {
                 oldPreListToRemove.push(pinfo);
                 if (isDead) {
-                    scores[account] = score.div("2").toFixed(IOST_DECIMAL);
+                    scores[account] = score.div("2").toFixed(EM_DECIMAL);
                 }
             } else {
                 pinfo.prior = 1;
@@ -814,7 +814,7 @@ class VoteContract {
             const account = producerKeyMap[key];
             const score = new BigNumber(scores[account] || "0").minus(scoreAvg);
             if (score.gte("0")) {
-                scores[account] = score.toFixed(IOST_DECIMAL);
+                scores[account] = score.toFixed(EM_DECIMAL);
             } else {
                 delete(scores[account]);
             }
@@ -822,7 +822,7 @@ class VoteContract {
 
         if (bn % SCORE_DECREASE_INTERVAL === 0) {
             for (const acc in scores) {
-                scores[acc] = new BigNumber(scores[acc]).div("2").toFixed(IOST_DECIMAL);
+                scores[acc] = new BigNumber(scores[acc]).div("2").toFixed(EM_DECIMAL);
             }
         }
 

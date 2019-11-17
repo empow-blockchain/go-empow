@@ -33,7 +33,7 @@ print_requirements() {
     {
         printf "\nWarning: please consider upgrading your hardware to get better performance."
         printf "\n"
-        printf "\nSystem requirements to run IOST node:\n\n"
+        printf "\nSystem requirements to run EMPOW node:\n\n"
         printf "\tMinimal: \t$_SYS_MIN_CPU cpu / ${_SYS_MIN_MEM}G ram / ${_SYS_MIN_STO}G storage\n"
         printf "\tRecommended: \t$_SYS_REC_CPU cpu / ${_SYS_REC_MEM}G ram / ${_SYS_REC_STO}G storage\n"
         printf "\n"

@@ -97,5 +97,5 @@ func waitExit() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	i := <-c
-	ilog.Infof("IOST server received interrupt[%v], shutting down...", i)
+	ilog.Infof("EMPOW server received interrupt[%v], shutting down...", i)
 }

@@ -2,8 +2,8 @@
 // Created by Shiqi Liu on 2018/10/29.
 //
 
-#ifndef GO_IOST_ALLOCATOR_H
-#define GO_IOST_ALLOCATOR_H
+#ifndef GO_EMPOW_ALLOCATOR_H
+#define GO_EMPOW_ALLOCATOR_H
 
 #include <stdint.h>
 #include <v8.h>
@@ -43,4 +43,4 @@ private:
     void AddAllocatedSize(size_t length);
 };
 
-#endif //GO_IOST_ALLOCATOR_H
+#endif //GO_EMPOW_ALLOCATOR_H

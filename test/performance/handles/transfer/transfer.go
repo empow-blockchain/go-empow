@@ -33,7 +33,7 @@ const (
 )
 
 var rootKey = "2yquS3ySrGWPEKywCPzX4RTJugqRh7kJSo5aehsLYPEWkUxBWA39oMrZ7ZxuM4fgyXYs2cPwh5n8aNNpH5x2VyK1"
-var iostSDK = sdk.NewIOSTDevSDK()
+var iostSDK = sdk.NewEMPOWDevSDK()
 
 type transferHandler struct {
 	testID     string

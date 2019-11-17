@@ -3,7 +3,7 @@ const producerRegisterFee = 1000 * 1000 * softFloatRate;
 const preProducerThreshold = 2100 * 10000;
 const voteLockTime = 200;
 const voteStatInterval = 200;
-const admin = "IOSTrGdaqXePYMyo33DhjHthVSzFCmv7khwXejvBTcRvVbFoNjbrV";
+const admin = "EMPOWrGdaqXePYMyo33DhjHthVSzFCmv7khwXejvBTcRvVbFoNjbrV";
 
 class VoteContract {
     init() {

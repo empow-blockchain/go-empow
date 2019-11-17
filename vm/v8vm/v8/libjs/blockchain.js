@@ -1,6 +1,6 @@
 let BlockChain = (function () {
-    let bc = new IOSTBlockchain;
-    let storage = new IOSTStorage;
+    let bc = new EMPOWBlockchain;
+    let storage = new EMPOWStorage;
     // get contractName
     let contractName = function () {
         let ctxInfo = JSON.parse(bc.contextInfo());
@@ -11,7 +11,7 @@ let BlockChain = (function () {
         let ctxInfo = JSON.parse(bc.contextInfo());
         return ctxInfo["publisher"];
     };
-    // transfer IOSToken
+    // transfer EMPOWoken
     let transfer = function (from, to, amount, memo) {
         if (!(amount instanceof Float64)) {
             amount = new Float64(amount);
@@ -20,13 +20,13 @@ let BlockChain = (function () {
         return JSON.parse(bc.callWithAuth("token.empow", "transfer", JSON.stringify(args)));
     };
     return {
-        // transfer IOSToken
+        // transfer EMPOWoken
         transfer: transfer,
-        // withdraw IOSToken
+        // withdraw EMPOWoken
         withdraw: function (to, amount, memo) {
             return transfer(contractName(), to, amount, memo);
         },
-        // deposit IOSToken
+        // deposit EMPOWoken
         deposit: function (from, amount, memo) {
             return transfer(from, contractName(), amount, memo);
         },

@@ -19,7 +19,7 @@
             ]
         },
         {
-            "name": "exchangeIOST",
+            "name": "exchangeEMPOW",
             "args": [
                 "string",
                 "string"

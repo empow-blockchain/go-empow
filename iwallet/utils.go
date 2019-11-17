@@ -240,7 +240,7 @@ func InitAccount() error {
 }
 
 // LoadAndSetAccountForSDK ...
-func LoadAndSetAccountForSDK(s *sdk.IOSTDevSDK) error {
+func LoadAndSetAccountForSDK(s *sdk.EMPOWDevSDK) error {
 	a, err := loadAccountByName(accountName, true)
 	if err != nil {
 		return err

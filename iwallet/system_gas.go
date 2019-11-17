@@ -9,8 +9,8 @@ var gasUser string
 var pledgeCmd = &cobra.Command{
 	Use:     "gas-pledge amount",
 	Aliases: []string{"pledge"},
-	Short:   "Pledge IOST to obtain gas",
-	Long:    `Pledge IOST to obtain gas`,
+	Short:   "Pledge EMPOW to obtain gas",
+	Long:    `Pledge EMPOW to obtain gas`,
 	Example: `  iwallet sys pledge 100 --account test0
   iwallet sys pledge 100 --account test0 --gas_user test1`,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -34,7 +34,7 @@ var unpledgeCmd = &cobra.Command{
 	Use:     "gas-unpledge amount",
 	Aliases: []string{"unpledge"},
 	Short:   "Undo pledge",
-	Long:    `Undo pledge and get back the IOST pledged earlier`,
+	Long:    `Undo pledge and get back the EMPOW pledged earlier`,
 	Example: `  iwallet sys unpledge 100 --account test0
   iwallet sys pledge 100 --account test0 --gas_user test1`,
 	Args: pledgeCmd.Args,
@@ -48,7 +48,7 @@ var unpledgeCmd = &cobra.Command{
 
 func init() {
 	systemCmd.AddCommand(pledgeCmd)
-	pledgeCmd.Flags().StringVarP(&gasUser, "gas_user", "", "", "gas user that pledge IOST for (default is pledger himself/herself)")
+	pledgeCmd.Flags().StringVarP(&gasUser, "gas_user", "", "", "gas user that pledge EMPOW for (default is pledger himself/herself)")
 	systemCmd.AddCommand(unpledgeCmd)
 	unpledgeCmd.Flags().StringVarP(&gasUser, "gas_user", "", "", "gas user that earlier pledge for (default is pledger himself/herself)")
 }

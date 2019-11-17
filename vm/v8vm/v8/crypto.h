@@ -1,5 +1,5 @@
-#ifndef IOST_V8_CRYPTO_H
-#define IOST_V8_CRYPTO_H
+#ifndef EMPOW_V8_CRYPTO_H
+#define EMPOW_V8_CRYPTO_H
 
 #include "sandbox.h"
 
@@ -7,14 +7,14 @@
 void InitCrypto(Isolate *isolate, Local<ObjectTemplate> globalTpl);
 void NewCrypto(const FunctionCallbackInfo<Value> &info);
 
-class IOSTCrypto {
+class EMPOWCrypto {
 private:
     SandboxPtr sbxPtr;
 public:
-    IOSTCrypto(SandboxPtr ptr): sbxPtr(ptr) {}
+    EMPOWCrypto(SandboxPtr ptr): sbxPtr(ptr) {}
 
     CStr sha3(const CStr msg);
     int verify(const CStr algo, const CStr msg, const CStr sig, const CStr pubkey);
 };
 
-#endif // IOST_V8_CRYPTO_H
+#endif // EMPOW_V8_CRYPTO_H

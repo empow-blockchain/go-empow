@@ -595,8 +595,8 @@ func TestEngine_Danger(t *testing.T) {
 	}
 
 	_, _, err = vmPool.LoadAndCall(host, code, "tooBigArray")
-	if err == nil || !strings.Contains(err.Error(), "IOSTContractInstruction_Incr gas overflow max int") {
-		t.Fatalf("LoadAndCall tooBigArray should return error: Uncaught exception: IOSTContractInstruction_Incr gas overflow max int, got %v\n", err)
+	if err == nil || !strings.Contains(err.Error(), "EMPOWContractInstruction_Incr gas overflow max int") {
+		t.Fatalf("LoadAndCall tooBigArray should return error: Uncaught exception: EMPOWContractInstruction_Incr gas overflow max int, got %v\n", err)
 	}
 
 	_, _, err = vmPool.LoadAndCall(host, code, "bigArray")

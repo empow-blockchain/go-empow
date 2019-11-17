@@ -75,6 +75,6 @@ func init() {
 	systemCmd.AddCommand(buyCmd)
 	buyCmd.Flags().StringVarP(&other, "ram_receiver", "", "", "who gets the bought ram")
 	systemCmd.AddCommand(sellCmd)
-	sellCmd.Flags().StringVarP(&other, "token_receiver", "", "", "who gets the returned IOST after selling")
+	sellCmd.Flags().StringVarP(&other, "token_receiver", "", "", "who gets the returned EMPOW after selling")
 	systemCmd.AddCommand(rtransCmd)
 }

@@ -150,7 +150,7 @@ Wed Feb 13 16:08:40 CST 2019
 Mon Feb 11 18:14:20 CST 2019
 
 - Improve stability.
-- Add 'verify' method to 'IOSTCrypto' object in order to verify signature.
+- Add 'verify' method to 'EMPOWCrypto' object in order to verify signature.
 
 ## Everest v2.5.0
 
@@ -199,7 +199,7 @@ Sat Jan 12 20:36:05 CST 2019
 Sat Jan 12 17:37:34 CST 2019
 
 - Change naming style of all functions in system contracts from `ThisNameStyle` to `thisNameStyle`.
-- Remove `keypair pubkey ID`. Change pubkey ID ( "IOST" + `base58`(pubkey_bytes + `crc32`(pubkey_bytes)) to `base58`(pubkey_bytes) for simplicity;
+- Remove `keypair pubkey ID`. Change pubkey ID ( "EMPOW" + `base58`(pubkey_bytes + `crc32`(pubkey_bytes)) to `base58`(pubkey_bytes) for simplicity;
   `signup` and `vote` will be affected.
 - Add transaction replay protection.
 - Add `ChainID` field in each transaction.
@@ -222,4 +222,4 @@ Thu Jan  3 22:11:50 CST 2019
 - Command flag changes for iwallet: gasLimit -> gas_limit, gasRatio -> gas_ratio (edited).
 - More friendly error message in RPC and iWallet.
 - API `getAccount` returns detailed ram info: used, available, total.
-- System Contract: `SignUp` needs the creator pledging 10IOST for gas when creating new account.
+- System Contract: `SignUp` needs the creator pledging 10EMPOW for gas when creating new account.

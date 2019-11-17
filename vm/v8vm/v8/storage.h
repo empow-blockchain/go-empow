@@ -1,5 +1,5 @@
-#ifndef IOST_V8_STORAGE_H
-#define IOST_V8_STORAGE_H
+#ifndef EMPOW_V8_STORAGE_H
+#define EMPOW_V8_STORAGE_H
 
 #include "sandbox.h"
 #include "stddef.h"
@@ -7,13 +7,13 @@
 using namespace v8;
 
 void InitStorage(Isolate *isolate, Local<ObjectTemplate> globalTpl);
-void NewIOSTContractStorage(const FunctionCallbackInfo<Value> &info);
+void NewEMPOWContractStorage(const FunctionCallbackInfo<Value> &info);
 
-class IOSTContractStorage {
+class EMPOWContractStorage {
 private:
     SandboxPtr sbxPtr;
 public:
-    IOSTContractStorage(SandboxPtr ptr): sbxPtr(ptr) {}
+    EMPOWContractStorage(SandboxPtr ptr): sbxPtr(ptr) {}
 
     char* Put(const CStr key, const CStr value, const CStr owner);
     char* Has(const CStr key, const CStr owner, bool *result);
@@ -35,4 +35,4 @@ public:
 
 };
 
-#endif // IOST_V8_STORAGE_H
+#endif // EMPOW_V8_STORAGE_H

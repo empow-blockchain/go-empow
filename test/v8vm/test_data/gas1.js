@@ -78,7 +78,7 @@ class Gas {
     }
     */
     counter0(N) {
-        let names = Object.getOwnPropertyNames("_IOSTInstruction" + "_counter");
+        let names = Object.getOwnPropertyNames("_EMPOWInstruction" + "_counter");
         let methods = new Array();
         names.forEach((method) => {
             methods = methods.concat(method);

@@ -48,7 +48,7 @@ func ramSetup(t *testing.T) (*Simulator, *TestAccount) {
 		panic("call failed " + r.String())
 	}
 	dbKey := "token.empow" + database.Separator + native.TokenInfoMapPrefix + "ram"
-	if database.MustUnmarshal(s.Visitor.MGet(dbKey, "fullName")) != "IOST system ram" {
+	if database.MustUnmarshal(s.Visitor.MGet(dbKey, "fullName")) != "EMPOW system ram" {
 		panic("incorrect token full name")
 	}
 	s.Head.Number = 1

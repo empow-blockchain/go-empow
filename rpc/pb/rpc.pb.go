@@ -288,9 +288,9 @@ type RAMInfoResponse struct {
 	AvailableRam int64 `protobuf:"varint,2,opt,name=available_ram,json=availableRam,proto3" json:"available_ram,omitempty"`
 	// total ram byte
 	TotalRam int64 `protobuf:"varint,3,opt,name=total_ram,json=totalRam,proto3" json:"total_ram,omitempty"`
-	// User can sell NUM bytes RAM to system to get `NUM * sell_price` IOSTs
+	// User can sell NUM bytes RAM to system to get `NUM * sell_price` EMPOWs
 	SellPrice float64 `protobuf:"fixed64,4,opt,name=sell_price,json=sellPrice,proto3" json:"sell_price,omitempty"`
-	// User can spend approximate `NUM * buy_price` IOSTs for NUM bytes RAM
+	// User can spend approximate `NUM * buy_price` EMPOWs for NUM bytes RAM
 	BuyPrice             float64  `protobuf:"fixed64,5,opt,name=buy_price,json=buyPrice,proto3" json:"buy_price,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`

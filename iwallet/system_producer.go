@@ -21,7 +21,7 @@ var voteCmd = &cobra.Command{
 	Use:     "producer-vote producerID amount",
 	Aliases: []string{"vote"},
 	Short:   "Vote a producer",
-	Long:    `Vote a producer by given amount of IOSTs`,
+	Long:    `Vote a producer by given amount of EMPOWs`,
 	Example: `  iwallet sys vote producer000 1000000 --account test0`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := checkArgsNumber(cmd, args, "producerID", "amount"); err != nil {
@@ -40,7 +40,7 @@ var unvoteCmd = &cobra.Command{
 	Use:     "producer-unvote producerID amount",
 	Aliases: []string{"unvote"},
 	Short:   "Unvote a producer",
-	Long:    `Unvote a producer by given amount of IOSTs`,
+	Long:    `Unvote a producer by given amount of EMPOWs`,
 	Example: `  iwallet sys unvote producer000 1000000 --account test0`,
 	Args:    voteCmd.Args,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -244,8 +244,8 @@ var pupdateCmd = &cobra.Command{
 var predeemCmd = &cobra.Command{
 	Use:     "producer-redeem [amount]",
 	Aliases: []string{"predeem"},
-	Short:   "Redeem the contribution value obtained by the block producing to IOST tokens",
-	Long: `Redeem the contribution value obtained by the block producing to IOST tokens
+	Short:   "Redeem the contribution value obtained by the block producing to EMPOW tokens",
+	Long: `Redeem the contribution value obtained by the block producing to EMPOW tokens
 	Omitting amount argument or zero amount will redeem all contribution value.`,
 	Example: `  iwallet sys producer-redeem --account test0
   iwallet sys producer-redeem 10 --account test0`,
@@ -262,7 +262,7 @@ var predeemCmd = &cobra.Command{
 		if len(args) > 0 {
 			amount = args[0]
 		}
-		return saveOrSendAction("bonus.empow", "exchangeIOST", accountName, amount)
+		return saveOrSendAction("bonus.empow", "exchangeEMPOW", accountName, amount)
 	},
 }
 

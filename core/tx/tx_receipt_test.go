@@ -15,7 +15,7 @@ func gentx() Tx {
 				Put("hello", "world")
 				return "success"
 			end`
-	lc := lua.NewContract(vm.ContractInfo{Prefix: "test", GasLimit: 100, Price: 1, PublishSign: vm.IOSTAccount("ahaha")}, code, main)
+	lc := lua.NewContract(vm.ContractInfo{Prefix: "test", GasLimit: 100, Price: 1, PublishSign: vm.EMPOWAccount("ahaha")}, code, main)
 
 	return NewTx(int64(0), &lc, [1]byte)
 }

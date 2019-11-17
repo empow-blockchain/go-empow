@@ -41,7 +41,7 @@ func prepareIssue(s *Simulator, acc *TestAccount) (*tx.TxReceipt, error) {
 	return r, err
 }
 
-func Test_IOSTIssue(t *testing.T) {
+func Test_EMPOWIssue(t *testing.T) {
 	ilog.Stop()
 	Convey("test issue.empow", t, func() {
 		s := NewSimulator()

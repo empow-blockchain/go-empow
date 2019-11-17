@@ -1,5 +1,5 @@
 const oneYearNano = new Float64("31536000000000000");
-const iostIssueRate = new Float64("0.0296").div(oneYearNano);
+const issueRate = new Float64("0.04").div(oneYearNano);
 const activePermission = "active";
 
 class IssueContract {
@@ -27,7 +27,7 @@ class IssueContract {
             }
         }
         storage.put("EMDecimal", new Int64(config.EMDecimal).toFixed());
-        storage.put("IOSTLastIssueTime", this._getBlockTime().toFixed());
+        storage.put("lastIssueTime", this._getBlockTime().toFixed());
     }
 
     /**
@@ -101,7 +101,7 @@ class IssueContract {
         this._issueEM(admin, amount);
     }
 
-    // issueEM to bonus.empow and iost foundation
+    // issueEM to bonus.empow and foundation
     issueEM() {
         const admin = storage.get("adminAddress");
         const whitelist = ["base.empow", admin];
@@ -113,11 +113,11 @@ class IssueContract {
             }
         }
         if (!auth) {
-            throw new Error("issue iost permission denied");
+            throw new Error("issue permission denied");
         }
-        const lastIssueTime = storage.get("IOSTLastIssueTime");
+        const lastIssueTime = storage.get("lastIssueTime");
         if (lastIssueTime === null || lastIssueTime === 0 || lastIssueTime === undefined) {
-            throw new Error("IOSTLastIssueTime not set.");
+            throw new Error("lastIssueTime not set.");
         }
         const currentTime = this._getBlockTime();
         const gap = currentTime.minus(lastIssueTime);
@@ -131,26 +131,36 @@ class IssueContract {
             throw new Error("FoundationAccount not set.");
         }
 
-        storage.put("IOSTLastIssueTime", currentTime.toFixed());
+        storage.put("lastIssueTime", currentTime.toFixed());
 
         const contractName = blockchain.contractName();
         const supply = new Float64(blockchain.callWithAuth("token.empow", "supply", ["em"])[0]);
-        const issueAmount = supply.multi(iostIssueRate).multi(gap);
-        const bonus = issueAmount.multi("0.33333333");
+        const issueAmount = supply.multi(issueRate).multi(gap);
+        const onePercentAmount = issueAmount.multi("0.25");
+        const halfOnePercentAmount = onePercentAmount.div("2");
+        const onePointFivePercentAmount = onePercentAmount.plus(halfOnePercentAmount);
         // issue to foundation
-        this._issueEM(foundationAcc, issueAmount.minus(bonus).minus(bonus).toFixed(decimal));
+        this._issueEM(foundationAcc, issueAmount.minus(onePointFivePercentAmount).minus(onePointFivePercentAmount).toFixed(decimal));
         // issue to producer with block reward
-        this._issueEM("bonus.empow", bonus.toFixed(decimal));
+        this._issueEM("bonus.empow", onePointFivePercentAmount.toFixed(decimal));
+        
+        this._issueEM(contractName, onePointFivePercentAmount.toFixed(decimal));
         // issue to producer with vote percent
-        this._issueEM(contractName, bonus.toFixed(decimal));
-
         const succ = blockchain.callWithAuth("vote_producer.empow", "topupCandidateBonus", [
-            bonus.toFixed(decimal),
+            onePercentAmount.toFixed(decimal),
             contractName
         ])[0];
         if (!succ) {
             // transfer bonus to foundation if topup failed
-            blockchain.transfer(contractName, foundationAcc, bonus.toFixed(decimal), "");
+            blockchain.transfer(contractName, foundationAcc, onePercentAmount.toFixed(decimal), "");
+        }
+        // issue to stake
+        const succ = blockchain.callWithAuth("stake.empow", "topup", [
+            halfOnePercentAmount.toFixed(decimal)
+        ])[0];
+        if (!succ) {
+            // transfer bonus to foundation if topup failed
+            blockchain.transfer(contractName, foundationAcc, halfOnePercentAmount.toFixed(decimal), "");
         }
     }
 }

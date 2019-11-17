@@ -120,7 +120,7 @@ func BenchmarkBlock(b *testing.B) {
 				Info:                make([]byte, 0),
 				Number:              int64(i),
 				Time:                time.Now().UnixNano(),
-				Witness:             "IOSTfQFocqDn7VrKV7vvPqhAQGyeFU9XMYo5SNn5yQbdbzC75wM7C",
+				Witness:             "EMPOWfQFocqDn7VrKV7vvPqhAQGyeFU9XMYo5SNn5yQbdbzC75wM7C",
 			},
 		}
 		for j := 0; j < txnum; j++ {

@@ -225,7 +225,7 @@ var ret = 0;
 // store kv that was constructed by contract.
 //Object.keys(obj).forEach((key) => {
 //   let val = obj[key];
-//   ret = IOSTContractStorage.put(key, val);
+//   ret = EMPOWContractStorage.put(key, val);
 //});
 ret;
 `, code), nil
@@ -243,7 +243,7 @@ const obj = new module.exports;
 // run contract with specified function and args
 let rs = obj.%s(%s);
 if ((typeof rs === 'function') || (typeof rs === 'object')) {
-	_IOSTInstruction_counter.incr(12);
+	_EMPOWInstruction_counter.incr(12);
 	rs = JSON.stringify(rs);
 }
 rs;

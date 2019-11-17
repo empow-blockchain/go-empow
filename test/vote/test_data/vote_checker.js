@@ -67,19 +67,19 @@ class VoteChecker {
         return data;
     }
 
-    exchangeIOST() {
+    exchangeEMPOW() {
         let publisher = blockchain.publisher();
         let balance10 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", BonusContract])[0];
         let balance11 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", publisher])[0];
-        blockchain.callWithAuth(BonusContract, "exchangeIOST", [publisher, "0"]);
+        blockchain.callWithAuth(BonusContract, "exchangeEMPOW", [publisher, "0"]);
         let balance20 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", BonusContract])[0];
         let balance21 = blockchain.callWithAuth(TokenContract, "balanceOf", ["em", publisher])[0];
-        let data = this._get("exchangeIOST") || {};
+        let data = this._get("exchangeEMPOW") || {};
         data[publisher] = {
             BonusContract: new Float64(balance20).minus(balance10).toFixed(8),
             publisher: new Float64(balance21).minus(balance11).toFixed(8),
         }
-        this._put("exchangeIOST", data);
+        this._put("exchangeEMPOW", data);
         return data;
     }
 
@@ -166,7 +166,7 @@ class VoteChecker {
             vote: this._get("vote"),
             unvote: this._get("unvote"),
             issueEM: this._get("issueEM"),
-            exchangeIOST: this._get("exchangeIOST"),
+            exchangeEMPOW: this._get("exchangeEMPOW"),
             topupVoterBonus: this._get("topupVoterBonus"),
             candidateWithdraw: this._get("candidateWithdraw"),
             voterWithdraw: this._get("voterWithdraw"),

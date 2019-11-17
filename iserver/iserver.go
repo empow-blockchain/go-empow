@@ -17,7 +17,7 @@ type Service interface {
 	Stop()
 }
 
-// IServer is application for IOST.
+// IServer is application for EMPOW.
 type IServer struct {
 	config    *common.Config
 	cBase     *chainbase.ChainBase

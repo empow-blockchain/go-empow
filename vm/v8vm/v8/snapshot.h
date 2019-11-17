@@ -1,5 +1,5 @@
-#ifndef IOST_V8_SNAPSHOT_H
-#define IOST_V8_SNAPSHOT_H
+#ifndef EMPOW_V8_SNAPSHOT_H
+#define EMPOW_V8_SNAPSHOT_H
 
 #include "sandbox.h"
 
@@ -8,4 +8,4 @@ type struct {
     int len;
 } SnapshotData;
 
-#endif //IOST_V8_SNAPSHOT_H
+#endif //EMPOW_V8_SNAPSHOT_H

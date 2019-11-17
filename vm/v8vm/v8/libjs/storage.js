@@ -1,6 +1,6 @@
-let IOSTContractStorage = (function () {
+let EMPOWContractStorage = (function () {
 
-    let storage = new IOSTStorage;
+    let storage = new EMPOWStorage;
 
     let simpleStorage = function () {
         this.put = function (k, v, p) {
@@ -128,4 +128,4 @@ let IOSTContractStorage = (function () {
     }
 })();
 
-module.exports = IOSTContractStorage;
+module.exports = EMPOWContractStorage;

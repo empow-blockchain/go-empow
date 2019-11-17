@@ -1,5 +1,5 @@
-#ifndef IOST_V8_COMPILE_H
-#define IOST_V8_COMPILE_H
+#ifndef EMPOW_V8_COMPILE_H
+#define EMPOW_V8_COMPILE_H
 
 #include "sandbox.h"
 
@@ -10,4 +10,4 @@ CustomStartupData createCompileStartupData();
 
 extern intptr_t externalRef[];
 
-#endif // IOST_V8_COMPILE_H
+#endif // EMPOW_V8_COMPILE_H

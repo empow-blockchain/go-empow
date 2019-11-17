@@ -5,10 +5,11 @@ import (
 
 	"fmt"
 
+	"strings"
+
 	"github.com/bitly/go-simplejson"
 	"github.com/empow-blockchain/go-empow/core/contract"
 	"github.com/empow-blockchain/go-empow/vm/host"
-	"strings"
 )
 
 // DomainABIs list of domain abi
@@ -65,7 +66,7 @@ var (
 				ok, c := h.RequireAuth(AdminAccount, DomainPermission)
 				cost.AddAssign(c)
 				if !ok {
-					return nil, cost, errors.New("only admin has permission to claim url .iost")
+					return nil, cost, errors.New("only admin has permission to claim url .empow")
 				}
 			}
 

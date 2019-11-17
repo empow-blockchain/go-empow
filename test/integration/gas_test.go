@@ -28,13 +28,13 @@ func toString(n int64) string {
 	return strconv.FormatInt(n, 10)
 }
 
-func toIOSTFixed(n int64) *common.Fixed {
+func toEMPOWFixed(n int64) *common.Fixed {
 	return &common.Fixed{Value: n * database.empowRatio, Decimal: 8}
 }
 
 const initCoin int64 = 5000
 
-var initCoinFN = toIOSTFixed(initCoin)
+var initCoinFN = toEMPOWFixed(initCoin)
 var monitor = vm.NewMonitor()
 
 func gasTestInit() (*native.Impl, *host.Host, *contract.Contract, string, db.MVCCDB) {
@@ -130,7 +130,7 @@ func TestGas_PledgeAuth(t *testing.T) {
 			tmpDB.Close()
 			os.RemoveAll("mvcc")
 		}()
-		pledgeAmount := toIOSTFixed(200)
+		pledgeAmount := toEMPOWFixed(200)
 		authList := make(map[string]int)
 		h.Context().Set("auth_list", authList)
 		_, _, err := e.LoadAndCall(h, code, "pledge", testAcc, testAcc, pledgeAmount.ToString())
@@ -145,7 +145,7 @@ func TestGas_NotEnoughMoney(t *testing.T) {
 			tmpDB.Close()
 			os.RemoveAll("mvcc")
 		}()
-		pledgeAmount := toIOSTFixed(20000)
+		pledgeAmount := toEMPOWFixed(20000)
 		_, _, err := e.LoadAndCall(h, code, "pledge", testAcc, testAcc, pledgeAmount.ToString())
 		So(err, ShouldNotBeNil)
 	})
@@ -158,7 +158,7 @@ func TestGas_Pledge(t *testing.T) {
 			tmpDB.Close()
 			os.RemoveAll("mvcc")
 		}()
-		pledgeAmount := toIOSTFixed(200)
+		pledgeAmount := toEMPOWFixed(200)
 		_, _, err := e.LoadAndCall(h, code, "pledge", testAcc, testAcc, pledgeAmount.ToString())
 		So(err, ShouldBeNil)
 		So(h.DB().TokenBalance("em", testAcc), ShouldEqual, initCoinFN.Value-pledgeAmount.Value)
@@ -193,13 +193,13 @@ func TestGas_PledgeMore(t *testing.T) {
 			tmpDB.Close()
 			os.RemoveAll("mvcc")
 		}()
-		firstTimePledgeAmount := toIOSTFixed(200)
+		firstTimePledgeAmount := toEMPOWFixed(200)
 		_, _, err := e.LoadAndCall(h, code, "pledge", testAcc, testAcc, firstTimePledgeAmount.ToString())
 		So(err, ShouldBeNil)
 		delta1 := int64(5)
 		timePass(h, delta1)
 		gasBeforeSecondPledge := h.GasManager.PGas(testAcc)
-		secondTimePledgeAmount := toIOSTFixed(300)
+		secondTimePledgeAmount := toEMPOWFixed(300)
 		_, _, err = e.LoadAndCall(h, code, "pledge", testAcc, testAcc, secondTimePledgeAmount.ToString())
 		So(err, ShouldBeNil)
 		delta2 := int64(10)
@@ -226,7 +226,7 @@ func TestGas_UseGas(t *testing.T) {
 		delta1 := int64(5)
 		timePass(h, delta1)
 		gasBeforeUse := h.GasManager.PGas(testAcc)
-		gasCost := toIOSTFixed(100)
+		gasCost := toEMPOWFixed(100)
 		err = h.GasManager.CostGas(testAcc, gasCost)
 		So(err, ShouldBeNil)
 		gasAfterUse := h.GasManager.PGas(testAcc)
@@ -242,12 +242,12 @@ func TestGas_unpledge(t *testing.T) {
 			tmpDB.Close()
 			os.RemoveAll("mvcc")
 		}()
-		pledgeAmount := toIOSTFixed(200)
+		pledgeAmount := toEMPOWFixed(200)
 		_, _, err := e.LoadAndCall(h, code, "pledge", testAcc, testAcc, pledgeAmount.ToString())
 		So(err, ShouldBeNil)
 		delta1 := int64(10)
 		timePass(h, delta1)
-		unpledgeAmount := toIOSTFixed(190)
+		unpledgeAmount := toEMPOWFixed(190)
 		balanceBeforeunpledge := h.DB().TokenBalance("em", testAcc)
 		_, _, err = e.LoadAndCall(h, code, "unpledge", testAcc, testAcc, unpledgeAmount.ToString())
 		So(err, ShouldBeNil)
@@ -296,7 +296,7 @@ func TestGas_PledgeunpledgeForOther(t *testing.T) {
 			os.RemoveAll("mvcc")
 		}()
 		otherAcc := acc1.ID
-		pledgeAmount := toIOSTFixed(200)
+		pledgeAmount := toEMPOWFixed(200)
 		_, _, err := e.LoadAndCall(h, code, "pledge", testAcc, otherAcc, pledgeAmount.ToString())
 		h.FlushCacheCost()
 		h.ClearCosts()
@@ -313,7 +313,7 @@ func TestGas_PledgeunpledgeForOther(t *testing.T) {
 			So(gas.Value, ShouldBeZeroValue)
 		})
 		Convey("Test unpledge for others", func() {
-			unpledgeAmount := toIOSTFixed(190)
+			unpledgeAmount := toEMPOWFixed(190)
 			_, _, err = e.LoadAndCall(h, code, "unpledge", testAcc, otherAcc, unpledgeAmount.ToString())
 			So(err, ShouldBeNil)
 			timePass(h, native.UnpledgeFreezeSeconds)
@@ -409,12 +409,12 @@ func TestGas_TGas(t *testing.T) {
 	otherID := "lispc0"
 	s.Visitor.Put("vote_producer.empow-producerMap", fmt.Sprintf(`s{"%s":"dummy"}`, acc.ID))
 	Convey("test tgas", t, func() {
-		Convey("account referrer should got 3 IOST", func() {
-			oldIOST := s.Visitor.TokenBalanceFixed("em", acc.ID).Value
+		Convey("account referrer should got 3 EMPOW", func() {
+			oldEMPOW := s.Visitor.TokenBalanceFixed("em", acc.ID).Value
 			r, err := s.Call("auth.empow", "signUp", array2json([]interface{}{otherID, otherKp.ReadablePubkey(), otherKp.ReadablePubkey()}), acc.ID, acc.KeyPair)
 			So(err, ShouldBeNil)
 			So(r.Status.Message, ShouldEqual, "")
-			So(s.Visitor.TokenBalanceFixed("em", acc.ID).Value, ShouldEqual, oldIOST-7*database.empowRatio)
+			So(s.Visitor.TokenBalanceFixed("em", acc.ID).Value, ShouldEqual, oldEMPOW-7*database.empowRatio)
 			SkipSo(s.Visitor.TGas(acc.ID).ToString(), ShouldEqual, "30000")
 			r, err = s.Call("gas.empow", "pledge", array2json([]interface{}{acc.ID, otherID, "199"}), acc.ID, acc.KeyPair)
 			So(err, ShouldBeNil)

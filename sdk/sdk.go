@@ -16,8 +16,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-// IOSTDevSDK ...
-type IOSTDevSDK struct {
+// EMPOWDevSDK ...
+type EMPOWDevSDK struct {
 	// the remote server to connect to
 	server string
 
@@ -52,9 +52,9 @@ type IOSTDevSDK struct {
 	rpcConn *grpc.ClientConn
 }
 
-// NewIOSTDevSDK creatimg an SDK with reasonable params
-func NewIOSTDevSDK() *IOSTDevSDK {
-	return &IOSTDevSDK{
+// NewEMPOWDevSDK creatimg an SDK with reasonable params
+func NewEMPOWDevSDK() *EMPOWDevSDK {
+	return &EMPOWDevSDK{
 		server:              "localhost:30002",
 		checkResult:         true,
 		checkResultDelay:    3,
@@ -71,18 +71,18 @@ func NewIOSTDevSDK() *IOSTDevSDK {
 /////////////////////////////////////// getter/setter ///////////////////////////////////////
 
 // SetChainID sets chainID.
-func (s *IOSTDevSDK) SetChainID(chainID uint32) {
+func (s *EMPOWDevSDK) SetChainID(chainID uint32) {
 	s.chainID = chainID
 }
 
 // SetAccount ...
-func (s *IOSTDevSDK) SetAccount(name string, kp *account.KeyPair) {
+func (s *EMPOWDevSDK) SetAccount(name string, kp *account.KeyPair) {
 	s.accountName = name
 	s.keyPair = kp
 }
 
 // SetTxInfo ...
-func (s *IOSTDevSDK) SetTxInfo(gasLimit float64, gasRatio float64, expiration int64, delaySecond int64, amountLimit []*rpcpb.AmountLimit) {
+func (s *EMPOWDevSDK) SetTxInfo(gasLimit float64, gasRatio float64, expiration int64, delaySecond int64, amountLimit []*rpcpb.AmountLimit) {
 	s.gasLimit = gasLimit
 	s.gasRatio = gasRatio
 	s.expiration = expiration
@@ -91,39 +91,39 @@ func (s *IOSTDevSDK) SetTxInfo(gasLimit float64, gasRatio float64, expiration in
 }
 
 // SetCheckResult ...
-func (s *IOSTDevSDK) SetCheckResult(checkResult bool, checkResultDelay float32, checkResultMaxRetry int32) {
+func (s *EMPOWDevSDK) SetCheckResult(checkResult bool, checkResultDelay float32, checkResultMaxRetry int32) {
 	s.checkResult = checkResult
 	s.checkResultDelay = checkResultDelay
 	s.checkResultMaxRetry = checkResultMaxRetry
 }
 
 // SetServer ...
-func (s *IOSTDevSDK) SetServer(server string) {
+func (s *EMPOWDevSDK) SetServer(server string) {
 	s.server = server
 }
 
 // SetSignAlgo ...
-func (s *IOSTDevSDK) SetSignAlgo(signAlgo string) {
+func (s *EMPOWDevSDK) SetSignAlgo(signAlgo string) {
 	s.signAlgo = signAlgo
 }
 
 // SetVerbose ...
-func (s *IOSTDevSDK) SetVerbose(verbose bool) {
+func (s *EMPOWDevSDK) SetVerbose(verbose bool) {
 	s.verbose = verbose
 }
 
 // SetUseLongestChain ...
-func (s *IOSTDevSDK) SetUseLongestChain(useLongestChain bool) {
+func (s *EMPOWDevSDK) SetUseLongestChain(useLongestChain bool) {
 	s.useLongestChain = useLongestChain
 }
 
 // Connected checks if is connected to grpc server.
-func (s *IOSTDevSDK) Connected() bool {
+func (s *EMPOWDevSDK) Connected() bool {
 	return s.rpcConn != nil
 }
 
 // Connect ...
-func (s *IOSTDevSDK) Connect() (err error) {
+func (s *EMPOWDevSDK) Connect() (err error) {
 	if s.rpcConn == nil {
 		s.log("Connecting to server", s.server, "...")
 		s.rpcConn, err = grpc.Dial(s.server, grpc.WithInsecure())
@@ -132,14 +132,14 @@ func (s *IOSTDevSDK) Connect() (err error) {
 }
 
 // CloseConn ...
-func (s *IOSTDevSDK) CloseConn() {
+func (s *EMPOWDevSDK) CloseConn() {
 	if s.rpcConn != nil {
 		s.rpcConn.Close()
 		s.rpcConn = nil
 	}
 }
 
-func (s *IOSTDevSDK) log(a ...interface{}) {
+func (s *EMPOWDevSDK) log(a ...interface{}) {
 	if s.verbose {
 		fmt.Println(a...)
 	}
@@ -148,7 +148,7 @@ func (s *IOSTDevSDK) log(a ...interface{}) {
 ///////////////////////////////////////// wrapper of rpc ////////////////////////////////
 
 // GetContractStorage ...
-func (s *IOSTDevSDK) GetContractStorage(r *rpcpb.GetContractStorageRequest) (*rpcpb.GetContractStorageResponse, error) {
+func (s *EMPOWDevSDK) GetContractStorage(r *rpcpb.GetContractStorageRequest) (*rpcpb.GetContractStorageResponse, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -164,7 +164,7 @@ func (s *IOSTDevSDK) GetContractStorage(r *rpcpb.GetContractStorageRequest) (*rp
 }
 
 // GetBatchContractStorage ...
-func (s *IOSTDevSDK) GetBatchContractStorage(r *rpcpb.GetBatchContractStorageRequest) (*rpcpb.GetBatchContractStorageResponse, error) {
+func (s *EMPOWDevSDK) GetBatchContractStorage(r *rpcpb.GetBatchContractStorageRequest) (*rpcpb.GetBatchContractStorageResponse, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -180,7 +180,7 @@ func (s *IOSTDevSDK) GetBatchContractStorage(r *rpcpb.GetBatchContractStorageReq
 }
 
 // GetNodeInfo ...
-func (s *IOSTDevSDK) GetNodeInfo() (*rpcpb.NodeInfoResponse, error) {
+func (s *EMPOWDevSDK) GetNodeInfo() (*rpcpb.NodeInfoResponse, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -196,7 +196,7 @@ func (s *IOSTDevSDK) GetNodeInfo() (*rpcpb.NodeInfoResponse, error) {
 }
 
 // GetChainInfo ...
-func (s *IOSTDevSDK) GetChainInfo() (*rpcpb.ChainInfoResponse, error) {
+func (s *EMPOWDevSDK) GetChainInfo() (*rpcpb.ChainInfoResponse, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -212,7 +212,7 @@ func (s *IOSTDevSDK) GetChainInfo() (*rpcpb.ChainInfoResponse, error) {
 }
 
 // GetRAMInfo ...
-func (s *IOSTDevSDK) GetRAMInfo() (*rpcpb.RAMInfoResponse, error) {
+func (s *EMPOWDevSDK) GetRAMInfo() (*rpcpb.RAMInfoResponse, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -229,7 +229,7 @@ func (s *IOSTDevSDK) GetRAMInfo() (*rpcpb.RAMInfoResponse, error) {
 }
 
 // GetAccountInfo return account info
-func (s *IOSTDevSDK) GetAccountInfo(id string) (*rpcpb.Account, error) {
+func (s *EMPOWDevSDK) GetAccountInfo(id string) (*rpcpb.Account, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -246,7 +246,7 @@ func (s *IOSTDevSDK) GetAccountInfo(id string) (*rpcpb.Account, error) {
 }
 
 // GetTokenBalance return token balance
-func (s *IOSTDevSDK) GetTokenBalance(account string, token string) (*rpcpb.GetTokenBalanceResponse, error) {
+func (s *EMPOWDevSDK) GetTokenBalance(account string, token string) (*rpcpb.GetTokenBalanceResponse, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -267,7 +267,7 @@ func (s *IOSTDevSDK) GetTokenBalance(account string, token string) (*rpcpb.GetTo
 }
 
 // GetBlockByNum ...
-func (s *IOSTDevSDK) GetBlockByNum(num int64, complete bool) (*rpcpb.BlockResponse, error) {
+func (s *EMPOWDevSDK) GetBlockByNum(num int64, complete bool) (*rpcpb.BlockResponse, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -279,7 +279,7 @@ func (s *IOSTDevSDK) GetBlockByNum(num int64, complete bool) (*rpcpb.BlockRespon
 }
 
 // GetBlockByHash ...
-func (s *IOSTDevSDK) GetBlockByHash(hash string, complete bool) (*rpcpb.BlockResponse, error) {
+func (s *EMPOWDevSDK) GetBlockByHash(hash string, complete bool) (*rpcpb.BlockResponse, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -291,7 +291,7 @@ func (s *IOSTDevSDK) GetBlockByHash(hash string, complete bool) (*rpcpb.BlockRes
 }
 
 // GetTxByHash ...
-func (s *IOSTDevSDK) GetTxByHash(hash string) (*rpcpb.TransactionResponse, error) {
+func (s *EMPOWDevSDK) GetTxByHash(hash string) (*rpcpb.TransactionResponse, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -303,7 +303,7 @@ func (s *IOSTDevSDK) GetTxByHash(hash string) (*rpcpb.TransactionResponse, error
 }
 
 // GetTxReceiptByTxHash ...
-func (s *IOSTDevSDK) GetTxReceiptByTxHash(txHashStr string) (*rpcpb.TxReceipt, error) {
+func (s *EMPOWDevSDK) GetTxReceiptByTxHash(txHashStr string) (*rpcpb.TxReceipt, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -315,7 +315,7 @@ func (s *IOSTDevSDK) GetTxReceiptByTxHash(txHashStr string) (*rpcpb.TxReceipt, e
 }
 
 // GetTokenInfo ...
-func (s *IOSTDevSDK) GetTokenInfo(token string) (*rpcpb.TokenInfo, error) {
+func (s *EMPOWDevSDK) GetTokenInfo(token string) (*rpcpb.TokenInfo, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -331,7 +331,7 @@ func (s *IOSTDevSDK) GetTokenInfo(token string) (*rpcpb.TokenInfo, error) {
 }
 
 // SendTransaction send raw transaction to server
-func (s *IOSTDevSDK) SendTransaction(signedTx *rpcpb.TransactionRequest) (string, error) {
+func (s *EMPOWDevSDK) SendTransaction(signedTx *rpcpb.TransactionRequest) (string, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return "", err
@@ -349,7 +349,7 @@ func (s *IOSTDevSDK) SendTransaction(signedTx *rpcpb.TransactionRequest) (string
 ////////////////////////////////////// transaction related /////////////////////////////////
 
 // CreateTxFromActions ...
-func (s *IOSTDevSDK) CreateTxFromActions(actions []*rpcpb.Action) (*rpcpb.TransactionRequest, error) {
+func (s *EMPOWDevSDK) CreateTxFromActions(actions []*rpcpb.Action) (*rpcpb.TransactionRequest, error) {
 
 	txTime := time.Now().UnixNano()
 	expiration := txTime + s.expiration*1e9
@@ -371,7 +371,7 @@ func (s *IOSTDevSDK) CreateTxFromActions(actions []*rpcpb.Action) (*rpcpb.Transa
 }
 
 // SignTx ...
-func (s *IOSTDevSDK) SignTx(t *rpcpb.TransactionRequest, signAlgo string) (*rpcpb.TransactionRequest, error) {
+func (s *EMPOWDevSDK) SignTx(t *rpcpb.TransactionRequest, signAlgo string) (*rpcpb.TransactionRequest, error) {
 	t.Publisher = s.accountName
 	if len(t.PublisherSigs) == 0 {
 		signAlgorithm := GetSignAlgoByName(signAlgo)
@@ -386,7 +386,7 @@ func (s *IOSTDevSDK) SignTx(t *rpcpb.TransactionRequest, signAlgo string) (*rpcp
 	return t, nil
 }
 
-func (s *IOSTDevSDK) checkTransaction(txHash string) error {
+func (s *EMPOWDevSDK) checkTransaction(txHash string) error {
 	s.log("Checking transaction receipt...")
 	receiptPrinted := false
 	packedPrinted := false
@@ -438,7 +438,7 @@ func (s *IOSTDevSDK) checkTransaction(txHash string) error {
 }
 
 // SendTx send transaction and check result if sdk.checkResult is set
-func (s *IOSTDevSDK) SendTx(tx *rpcpb.TransactionRequest) (string, error) {
+func (s *EMPOWDevSDK) SendTx(tx *rpcpb.TransactionRequest) (string, error) {
 	signedTx, err := s.SignTx(tx, s.signAlgo)
 	if err != nil {
 		return "", fmt.Errorf("sign tx error %v", err)
@@ -465,7 +465,7 @@ func (s *IOSTDevSDK) SendTx(tx *rpcpb.TransactionRequest) (string, error) {
 }
 
 // SendTxFromActions send transaction and check result if sdk.checkResult is set
-func (s *IOSTDevSDK) SendTxFromActions(actions []*rpcpb.Action) (txHash string, err error) {
+func (s *EMPOWDevSDK) SendTxFromActions(actions []*rpcpb.Action) (txHash string, err error) {
 	trx, err := s.CreateTxFromActions(actions)
 	if err != nil {
 		return "", err
@@ -476,7 +476,7 @@ func (s *IOSTDevSDK) SendTxFromActions(actions []*rpcpb.Action) (txHash string, 
 ////////////////////////////////////// some common used contract calling /////////////////////////////////////////////
 
 // PledgeForGasAndRAM ...
-func (s *IOSTDevSDK) PledgeForGasAndRAM(gasPledged int64, ram int64) error {
+func (s *EMPOWDevSDK) PledgeForGasAndRAM(gasPledged int64, ram int64) error {
 	var acts []*rpcpb.Action
 	acts = append(acts, NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, s.accountName, s.accountName, gasPledged)))
 	if ram > 0 {
@@ -490,7 +490,7 @@ func (s *IOSTDevSDK) PledgeForGasAndRAM(gasPledged int64, ram int64) error {
 }
 
 // CreateNewAccountActions makes actions for creating new account.
-func (s *IOSTDevSDK) CreateNewAccountActions(newID string, ownerKey string, activeKey string, initialGasPledge int64, initialRAM int64, initialCoins int64) ([]*rpcpb.Action, error) {
+func (s *EMPOWDevSDK) CreateNewAccountActions(newID string, ownerKey string, activeKey string, initialGasPledge int64, initialRAM int64, initialCoins int64) ([]*rpcpb.Action, error) {
 	var acts []*rpcpb.Action
 	acts = append(acts, NewAction("auth.empow", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, newID, ownerKey, activeKey)))
 	if initialRAM > 0 {
@@ -511,7 +511,7 @@ func (s *IOSTDevSDK) CreateNewAccountActions(newID string, ownerKey string, acti
 }
 
 // CreateNewAccount ... return txHash
-func (s *IOSTDevSDK) CreateNewAccount(newID string, ownerKey string, activeKey string, initialGasPledge int64, initialRAM int64, initialCoins int64) (string, error) {
+func (s *EMPOWDevSDK) CreateNewAccount(newID string, ownerKey string, activeKey string, initialGasPledge int64, initialRAM int64, initialCoins int64) (string, error) {
 	acts, err := s.CreateNewAccountActions(newID, ownerKey, activeKey, initialGasPledge, initialRAM, initialCoins)
 	if err != nil {
 		return "", err
@@ -524,7 +524,7 @@ func (s *IOSTDevSDK) CreateNewAccount(newID string, ownerKey string, activeKey s
 }
 
 // PublishContractActions makes actions for publishing contract.
-func (s *IOSTDevSDK) PublishContractActions(codePath string, abiPath string, conID string, update bool, updateID string) ([]*rpcpb.Action, error) {
+func (s *EMPOWDevSDK) PublishContractActions(codePath string, abiPath string, conID string, update bool, updateID string) ([]*rpcpb.Action, error) {
 	fd, err := ioutil.ReadFile(codePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read source code file: %v", err)
@@ -579,7 +579,7 @@ func (s *IOSTDevSDK) PublishContractActions(codePath string, abiPath string, con
 }
 
 // PublishContract converts contract js code to transaction. If 'send', also send it to chain.
-func (s *IOSTDevSDK) PublishContract(codePath string, abiPath string, conID string, update bool, updateID string) (*rpcpb.TransactionRequest, string, error) {
+func (s *EMPOWDevSDK) PublishContract(codePath string, abiPath string, conID string, update bool, updateID string) (*rpcpb.TransactionRequest, string, error) {
 	acts, err := s.PublishContractActions(codePath, abiPath, conID, update, updateID)
 	if err != nil {
 		return nil, "", err
@@ -596,7 +596,7 @@ func (s *IOSTDevSDK) PublishContract(codePath string, abiPath string, conID stri
 }
 
 // GetProducerVoteInfo ...
-func (s *IOSTDevSDK) GetProducerVoteInfo(r *rpcpb.GetProducerVoteInfoRequest) (*rpcpb.GetProducerVoteInfoResponse, error) {
+func (s *EMPOWDevSDK) GetProducerVoteInfo(r *rpcpb.GetProducerVoteInfoRequest) (*rpcpb.GetProducerVoteInfoResponse, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err

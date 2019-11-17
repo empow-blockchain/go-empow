@@ -1,0 +1,53 @@
+{
+    "lang": "javascript",
+    "version": "1.0.0",
+    "abi": [
+        {
+            "name": "can_update",
+            "args": [
+                "string"
+            ]
+        },
+        {
+            "name": "initAdmin",
+            "args": [
+                "string"
+            ]
+        },
+        {
+            "name": "stake",
+            "args": [
+                "string",
+                "string"
+            ],
+            "amountLimit": [{
+                "token": "em",
+                "val": "unlimited"
+            }]
+        },
+        {
+            "name": "topup",
+            "args": [
+                "string"
+            ],
+            "amountLimit": [{
+                "token": "em",
+                "val": "unlimited"
+            }]
+        },
+        {
+            "name": "withdraw",
+            "args": [
+                "string",
+                "number"
+            ]
+        },
+        {
+            "name": "unstake",
+            "args": [
+                "string",
+                "number"
+            ]
+        }
+    ]
+}

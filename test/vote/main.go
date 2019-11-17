@@ -17,13 +17,13 @@ import (
 )
 
 var (
-	iostSDKs     = make(map[string]*sdk.IOSTDevSDK)
+	iostSDKs     = make(map[string]*sdk.EMPOWDevSDK)
 	witness      = []string{}
 	accounts     = []string{}
 	server       = "localhost:30002"
 	contractName = ""
 	pledgeGAS    = int64(0)
-	exchangeIOST = false
+	exchangeEMPOW = false
 )
 
 func init() {
@@ -38,14 +38,14 @@ func parseFlag() {
 	a := flag.String("a", "", "account names")         // format: acc1,acc2
 	w := flag.String("w", "", "witness account names") // format: acc1,acc2
 	p := flag.Int64("p", 0, "pledge gas for admin")    // format: 1234
-	e := flag.Bool("e", false, "call exchangeIOST")    // format: true
+	e := flag.Bool("e", false, "call exchangeEMPOW")    // format: true
 	flag.Parse()
 
 	server = *s
 	accounts = strings.Split(*a, ",")
 	witness = strings.Split(*w, ",")
 	pledgeGAS = *p
-	exchangeIOST = *e
+	exchangeEMPOW = *e
 
 	if *a == "" {
 		log.Fatalf("flag a is required")
@@ -59,7 +59,7 @@ func initSDKs() {
 	accs := append(accounts, witness...)
 	accs = append(accs, "admin")
 	for _, a := range accs {
-		iostSDK := sdk.NewIOSTDevSDK()
+		iostSDK := sdk.NewEMPOWDevSDK()
 		iostSDK.SetChainID(1024)
 		iostSDK.SetSignAlgo("ed25519")
 		kp, err := iwallet.LoadKeyPair(a)
@@ -163,13 +163,13 @@ func issueEM() {
 }
 
 func withdrawBlockBonus() {
-	if !exchangeIOST {
+	if !exchangeEMPOW {
 		return
 	}
 	for _, acc := range witness {
 		iostSDK := iostSDKs[acc]
 		iostSDK.SendTxFromActions([]*rpcpb.Action{
-			sdk.NewAction(contractName, "exchangeIOST", `[]`),
+			sdk.NewAction(contractName, "exchangeEMPOW", `[]`),
 		})
 	}
 }
