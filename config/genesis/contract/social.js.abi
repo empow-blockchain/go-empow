@@ -1,0 +1,64 @@
+{
+    "lang": "javascript",
+    "version": "1.0.0",
+    "abi": [
+        {
+            "name": "can_update",
+            "args": [
+                "string"
+            ]
+        },
+        {
+            "name": "initAdmin",
+            "args": [
+                "string"
+            ]
+        },
+        {
+            "name": "post",
+            "args": [
+                "string",
+                "string",
+                "string",
+                "string"
+            ]
+        },
+        {
+            "name": "like",
+            "args": [
+                "string",
+                "string"
+            ]
+        },
+        {
+            "name": "likeWithdraw",
+            "args": [
+                "string"
+            ]
+        },
+        {
+            "name": "unstake",
+            "args": [
+                "string",
+                "number"
+            ]
+        },
+        {
+            "name": "topup",
+            "args": [
+                "string"
+            ],
+            "amountLimit": [{
+                "token": "em",
+                "val": "unlimited"
+            }]
+        },
+        {
+            "name": "upLevel",
+            "args": [
+                "string",
+                "string"
+            ]
+        }
+    ]
+}

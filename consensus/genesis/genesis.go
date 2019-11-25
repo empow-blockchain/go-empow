@@ -90,6 +90,14 @@ func genGenesisTx(gConf *common.GenesisConfig) (*tx.Tx, *account.Account, error)
 	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "stake.empow", code.B64Encode())))
 	acts = append(acts, tx.NewAction("stake.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 
+	// deloy social.empow
+	code, err = compile("social.empow", gConf.ContractPath, "stake.js")
+	if err != nil {
+		return nil, nil, err
+	}
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "social.empow", code.B64Encode())))
+	acts = append(acts, tx.NewAction("social.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
+
 	// new account
 	acts = append(acts, tx.NewAction("auth.empow", "signUp", fmt.Sprintf(`["%v", "%v", "%v"]`, adminInfo.Address, adminInfo.Owner, adminInfo.Active)))
 	// new account

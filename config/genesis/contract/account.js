@@ -213,9 +213,10 @@ class Account {
         const halfEMAmount = EMneedToPay.div(2).toFixed(8)
         const ramPrice = blockchain.callWithAuth("ram.empow", "getPrice", [])
         const ramAmount = new Float64(halfEMAmount).div(ramPrice).toFixed(0)
-
         blockchain.callWithAuth("gas.empow", "pledge", [blockchain.contractName(), address, halfEMAmount]);
         blockchain.callWithAuth("ram.empow", "buy", [blockchain.contractName(), address, ramAmount * 1.00]);
+        // update level
+        blockchain.callWithAuth("social.empow", "upLevel", [address, 2])
         // save to storage
         storage.mapPut("username",username, address, address);
     }
