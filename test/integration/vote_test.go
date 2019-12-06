@@ -25,20 +25,28 @@ func prepareToken(t *testing.T, s *Simulator, pubAcc *TestAccount) {
 }
 
 func prepareVote(t *testing.T, s *Simulator, acc *TestAccount) (*tx.TxReceipt, error) {
+	// deploy vote_point.empow
+	s.Head.Number = 0
+	setNonNativeContract(s, "vote_point.empow", "vote_point.js", ContractPath)
+	r, err := s.Call("vote_point.empow", "init", `[]`, acc.ID, acc.KeyPair)
+	if err != nil || r.Status.Code != tx.Success {
+		t.Fatal(err, r)
+	}
+
+	r, err = s.Call("vote_point.empow", "initAdmin", fmt.Sprintf(`["%v"]`, acc.ID), acc.ID, acc.KeyPair)
+	if err != nil || r.Status.Code != tx.Success {
+		t.Fatal(err, r)
+	}
+
 	// deploy vote.empow
 	s.Head.Number = 0
 	setNonNativeContract(s, "vote.empow", "vote_common.js", ContractPath)
-	r, err := s.Call("vote.empow", "init", `[]`, acc.ID, acc.KeyPair)
+	r, err = s.Call("vote.empow", "init", `[]`, acc.ID, acc.KeyPair)
 	if err != nil || r.Status.Code != tx.Success {
 		t.Fatal(err, r)
 	}
 
 	r, err = s.Call("vote.empow", "initAdmin", fmt.Sprintf(`["%v"]`, acc.ID), acc.ID, acc.KeyPair)
-	if err != nil || r.Status.Code != tx.Success {
-		t.Fatal(err, r)
-	}
-
-	r, err = s.Call("vote.empow", "initVotePoint", fmt.Sprintf(`["%v"]`, acc.ID), acc.ID, acc.KeyPair)
 	if err != nil || r.Status.Code != tx.Success {
 		t.Fatal(err, r)
 	}

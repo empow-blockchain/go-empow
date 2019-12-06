@@ -3,12 +3,12 @@ package transfer
 import (
 	"context"
 	"fmt"
-	"github.com/empow-blockchain/go-empow/sdk"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"strings"
 	"time"
+
+	"github.com/empow-blockchain/go-empow/sdk"
 
 	"github.com/empow-blockchain/go-empow/test/performance/call"
 
@@ -17,7 +17,7 @@ import (
 	"github.com/empow-blockchain/go-empow/core/contract"
 	"github.com/empow-blockchain/go-empow/core/tx"
 	"github.com/empow-blockchain/go-empow/crypto"
-	"github.com/empow-blockchain/go-empow/rpc/pb"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
 )
 
 func init() {
@@ -71,14 +71,14 @@ func (t *transferHandler) Prepare() error {
 	abiPath := codePath + ".abi"
 	client := call.GetClient(0)
 	iostSDK.SetServer(client.Addr())
-	iostSDK.SetAccount("admin", acc)
-	iostSDK.SetTxInfo(500000.0, 1.0, 90, 0, nil)
+	iostSDK.SetAccount("EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", acc)
+	iostSDK.SetTxInfo(500000.0, 1.0, 90, 0, []*rpcpb.AmountLimit{{Token: "*", Value: "unlimited"}})
 	iostSDK.SetCheckResult(true, 3, 10)
 	testKp, err := account.NewKeyPair(nil, crypto.Ed25519)
 	if err != nil {
 		return err
 	}
-	testID := "i" + strconv.FormatInt(time.Now().Unix(), 10)
+	testID := account.PubkeyToAddress(testKp.Pubkey)
 	k := testKp.ReadablePubkey()
 	_, err = iostSDK.CreateNewAccount(testID, k, k, 1000000, 10000, 100000)
 	if err != nil {
@@ -110,11 +110,11 @@ func (t *transferHandler) Prepare() error {
 
 // Run ...
 func (t *transferHandler) Run(i int) (interface{}, error) {
-	action := tx.NewAction(t.contractID, "transfer", fmt.Sprintf(`["admin","%v",1]`, t.testID))
+	action := tx.NewAction(t.contractID, "transfer", fmt.Sprintf(`["EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas","%v",1]`, t.testID))
 	acc, _ := account.NewKeyPair(common.Base58Decode(rootKey), crypto.Ed25519)
 	trx := tx.NewTx([]*tx.Action{action}, []string{}, 6000000, 100, time.Now().Add(time.Second*time.Duration(10000)).UnixNano(), 0, chainID)
 	trx.AmountLimit = []*contract.Amount{{Token: "*", Val: "unlimited"}}
-	stx, err := tx.SignTx(trx, "admin", []*account.KeyPair{acc})
+	stx, err := tx.SignTx(trx, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", []*account.KeyPair{acc})
 
 	if err != nil {
 		return nil, fmt.Errorf("sign tx error: %v", err)

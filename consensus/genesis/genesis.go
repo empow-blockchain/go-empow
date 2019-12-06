@@ -119,6 +119,14 @@ func genGenesisTx(gConf *common.GenesisConfig) (*tx.Tx, *account.Account, error)
 	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "bonus.empow", code.B64Encode())))
 	acts = append(acts, tx.NewAction("bonus.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 
+	// deloy vote_point.empow
+	code, err = compile("vote_point.empow", gConf.ContractPath, "vote_point.js")
+	if err != nil {
+		return nil, nil, err
+	}
+	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "vote_point.empow", code.B64Encode())))
+	acts = append(acts, tx.NewAction("vote_point.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
+
 	// deploy vote.empow
 	code, err = compile("vote.empow", gConf.ContractPath, "vote_common.js")
 	if err != nil {
@@ -126,7 +134,6 @@ func genGenesisTx(gConf *common.GenesisConfig) (*tx.Tx, *account.Account, error)
 	}
 	acts = append(acts, tx.NewAction("system.empow", "initSetCode", fmt.Sprintf(`["%v", "%v"]`, "vote.empow", code.B64Encode())))
 	acts = append(acts, tx.NewAction("vote.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
-	acts = append(acts, tx.NewAction("vote.empow", "initVotePoint", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 
 	// deploy vote_producer.empow
 	code, err = compile("vote_producer.empow", gConf.ContractPath, "vote_producer.js")

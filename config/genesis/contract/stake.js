@@ -1,17 +1,16 @@
 const COUNT_PACKAGE_PREFIX = 'c_'                               // c_address
 const PACKAGE_INFO_PREFIX = 'p_'                                // p_address_count
+const INTEREST_PREFIX = 'i_'                                    // i_day
 const TOTAL_STAKE_AMOUNT = 'totalStakeAmount'
-const INTEREST_ARRAY = 'interestArray'
 const REST_AMOUNT = "restAmount"
 const MAXIMUM_PERCENT_PER_DAY = new Float64("0.000833333333")   // 30%/year
 const BLOCK_NUMBER_PER_DAY = 172800
-const THREE_DAY_NANO = 259200
+const THREE_DAY_NANO = 259200*1e9
 
 class Stake {
     init() {
         storage.put(TOTAL_STAKE_AMOUNT, "0")
         storage.put(REST_AMOUNT, "0")
-        storage.put(INTEREST_ARRAY, JSON.stringify([]))
     }
 
     initAdmin (adminAddress) {
@@ -80,8 +79,15 @@ class Stake {
         return amount;
     }
 
+    _requireAuth(address, permission) {
+        const ret = blockchain.requireAuth(address, permission);
+        if (ret !== true) {
+            throw new Error("require auth > " + address)
+        }
+    }
+
     stake(address, amount) {
-        blockchain.requireAuth(address, "active")
+        this._requireAuth(address, "active")
         // send EM to stake.empow
         blockchain.callWithAuth("token.empow", "transfer", ["em", address, blockchain.contractName(), amount, "stake EM"])
         // create package info
@@ -97,7 +103,7 @@ class Stake {
     }
 
     topup(amount) {
-        blockchain.requireAuth("issue.empow", "active")
+        this._requireAuth("base.empow", "active")
         amount = this._fixAmount(amount);
 
         blockchain.deposit("issue.empow", amount.toFixed(), "");
@@ -110,18 +116,15 @@ class Stake {
         }
 
         // insert interest to array
-        let interestArray = JSON.parse(storage.get(INTEREST_ARRAY))
-        interestArray.push(interest.toFixed(8))
-        if(interestArray.length > 30) {
-            interestArray.shift()
-        }
-        storage.put(INTEREST_ARRAY, JSON.stringify(interestArray))
+        const bn = block.number
+        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
+        storage.put(INTEREST_PREFIX + currentDay, interest.toFixed(8))
 
         return true
     }
 
     withdraw(address, packageNumber) {
-        blockchain.requireAuth(address, "active")
+        this._requireAuth(address, "active")
         // check package exist
         const packageInfoString = storage.get(PACKAGE_INFO_PREFIX + address + "_" + packageNumber)
         if(!packageInfoString) {
@@ -135,22 +138,23 @@ class Stake {
         // calc interest
         const bn = block.number
         const totalDayStake = Math.floor((bn - packageInfo.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
-        const interestArray = JSON.parse(storage.get(INTEREST_ARRAY))
+
+        if(totalDayStake <= 0) {
+            throw new Error("package withdraw less than 1 day > " + packageNumber)
+        }
+
+        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
+        const stopWithdrawDay = currentDay - totalDayStake
+
         let amountCanWithdraw = new Float64("0")
         const packageAmount = new Float64(packageInfo.amount)
         
-        if(totalDayStake > interestArray.length) {
-            totalDayStake = interestArray.length
-        }
+        const maxAmountCanWithdraw = packageAmount.multi(MAXIMUM_PERCENT_PER_DAY).multi(totalDayStake)
 
-        if(totalDayStake <= 0) {
-            throw new Error("package stake less than 1 day > " + packageNumber)
-        }
-
-        const maxAmountCanWithdraw = packageAmount.multi(MAXIMUM_PERCENT_PER_DAY.multi(totalDayStake))
-
-        for(i = interestArray.length - 1; i >= interestArray.length - totalDayStake; i--) {
-            amountCanWithdraw.plus(packageAmount.multi(interestArray[i]))
+        for(let i = currentDay; i >= stopWithdrawDay; i--) {
+            let interest = storage.get(INTEREST_PREFIX + i)
+            if(!interest) continue;
+            amountCanWithdraw = amountCanWithdraw.plus(packageAmount.multi(interest))
         }
 
         if(amountCanWithdraw.gt(maxAmountCanWithdraw)) {
@@ -159,16 +163,13 @@ class Stake {
         }
 
         blockchain.withdraw(address, amountCanWithdraw.toFixed(8), "withdraw stake")
-
         packageInfo.lastBlockWithdraw = bn
-
         this._updatePackageInfo(address, packageNumber, packageInfo)
-
         blockchain.receipt(JSON.stringify([address, amountCanWithdraw.toFixed(8)]))
     }
 
     unstake (address, packageNumber) {
-        blockchain.requireAuth(address, "active")
+        this._requireAuth(address, "active")
 
         const packageInfoString = storage.get(PACKAGE_INFO_PREFIX + address + "_" + packageNumber)
         if(!packageInfoString) {
@@ -180,7 +181,7 @@ class Stake {
             throw new Error("package has been unstake > " + packageNumber)
         }
 
-        const freezeTime = tx.time + THREE_DAY_NANO*1e9
+        const freezeTime = tx.time + THREE_DAY_NANO
         const stakeAmount = new Float64(packageInfo.amount)
         blockchain.callWithAuth("token.empow", "transferFreeze", ["em", "stake.empow", address, packageInfo.amount, freezeTime, "unstake"])
 

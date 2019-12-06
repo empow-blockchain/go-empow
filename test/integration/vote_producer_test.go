@@ -47,19 +47,27 @@ func prepareFakeBase(t *testing.T, s *Simulator) {
 
 func prepareNewProducerVote(t *testing.T, s *Simulator, acc1 *TestAccount) {
 	s.Head.Number = 0
+
+	// deploy vote_point.empow
+	setNonNativeContract(s, "vote_point.empow", "vote_point.js", ContractPath)
+	r, err := s.Call("vote_point.empow", "init", `[]`, acc1.ID, acc1.KeyPair)
+	if err != nil || r.Status.Code != tx.Success {
+		t.Fatal(err, r)
+	}
+
+	r, err = s.Call("vote_point.empow", "initAdmin", fmt.Sprintf(`["%s"]`, acc1.ID), acc1.ID, acc1.KeyPair)
+	if err != nil || r.Status.Code != tx.Success {
+		t.Fatal(err, r)
+	}
+
 	// deploy vote.empow
 	setNonNativeContract(s, "vote.empow", "vote_common.js", ContractPath)
-	r, err := s.Call("vote.empow", "init", `[]`, acc1.ID, acc1.KeyPair)
+	r, err = s.Call("vote.empow", "init", `[]`, acc1.ID, acc1.KeyPair)
 	if err != nil || r.Status.Code != tx.Success {
 		t.Fatal(err, r)
 	}
 
 	r, err = s.Call("vote.empow", "initAdmin", fmt.Sprintf(`["%s"]`, acc1.ID), acc1.ID, acc1.KeyPair)
-	if err != nil || r.Status.Code != tx.Success {
-		t.Fatal(err, r)
-	}
-
-	r, err = s.Call("vote.empow", "initVotePoint", fmt.Sprintf(`["%s"]`, acc1.ID), acc1.ID, acc1.KeyPair)
 	if err != nil || r.Status.Code != tx.Success {
 		t.Fatal(err, r)
 	}

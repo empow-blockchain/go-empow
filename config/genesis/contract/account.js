@@ -149,7 +149,7 @@ class Account {
         }
         this._checkAddressValid(address);
         if(block.number != 0) {
-            blockchain.requireAuth("token.empow", "active")
+            this._ra("token.empow", "active")
         }
         let account = {};
         account.address = address;
@@ -193,7 +193,7 @@ class Account {
         // check isvailid username
         this._checkNormalUsername(username)
         // require auth address
-        blockchain.requireAuth(address, 'active')
+        this._ra(address, "active")
         // save to storage with prefix "newbie."
         storage.mapPut("username", "newbie." + username, address, address);
     }
@@ -205,7 +205,7 @@ class Account {
         // check isvailid username
         this._checkPremiumUsername(username)
         // require auth address
-        blockchain.requireAuth(address, 'active')
+        this._ra(address, "active")
         const EMPrice = storage.get('EMPrice')
         const EMneedToPay = new Float64(premiumUsernamePriceUSD).div(EMPrice)
         blockchain.callWithAuth("token.empow", "transfer", ["em", address, "deadaddr", EMneedToPay, "pay premium username"]);
@@ -217,6 +217,8 @@ class Account {
         blockchain.callWithAuth("ram.empow", "buy", [blockchain.contractName(), address, ramAmount * 1.00]);
         // update level
         blockchain.callWithAuth("social.empow", "upLevel", [address, 2])
+        // reward vote point
+        blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, "1000"])
         // save to storage
         storage.mapPut("username",username, address, address);
     }

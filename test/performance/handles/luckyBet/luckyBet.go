@@ -3,12 +3,13 @@ package luckyBet
 import (
 	"context"
 	"fmt"
-	"github.com/empow-blockchain/go-empow/sdk"
 	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/empow-blockchain/go-empow/sdk"
 
 	"github.com/empow-blockchain/go-empow/test/performance/call"
 
@@ -18,7 +19,7 @@ import (
 	"github.com/empow-blockchain/go-empow/common"
 	"github.com/empow-blockchain/go-empow/core/tx"
 	"github.com/empow-blockchain/go-empow/crypto"
-	"github.com/empow-blockchain/go-empow/rpc/pb"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
 )
 
 func init() {
@@ -79,7 +80,7 @@ func (t *luckyBetHandler) Prepare() error {
 	abiPath := codePath + ".abi"
 	client := call.GetClient(0)
 	iostSDK.SetServer(client.Addr())
-	iostSDK.SetAccount("admin", acc)
+	iostSDK.SetAccount("EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", acc)
 	iostSDK.SetTxInfo(3000000.0, 1.0, 90, 0, nil)
 	iostSDK.SetCheckResult(true, 3, 10)
 	var err error

@@ -31,6 +31,11 @@ func AddressToPubkey(address string) ([]byte, error) {
 
 	removePrefix := address[2:len(address)]
 	pubkeyWithPrefix := common.Base58Decode(removePrefix)
+
+	if len(pubkeyWithPrefix) < 2 {
+		return nil, fmt.Errorf("wrong address")
+	}
+
 	pubkey := pubkeyWithPrefix[2:]
 
 	return pubkey, nil

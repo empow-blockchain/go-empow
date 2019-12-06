@@ -4,7 +4,6 @@ const optionMaxNum = 65536;
 const resultMaxLength = 2048;
 const voteDecimal = 8;
 const voteSymbol = 'vote';
-const voteTotalSupply = 90000000000;
 
 const adminPermission = "active";
 const votePermission = "active";
@@ -27,27 +26,6 @@ class VoteCommonContract {
         }
         storage.put("adminID", adminID);
         this._put("fundID", [adminID]);
-    }
-
-    initVotePoint(adminID) {
-        const bn = block.number;
-        if(bn !== 0) {
-            throw new Error("init out of genesis block");
-        }
-        blockchain.callWithAuth("token.empow", "create", [
-            voteSymbol,
-            "bonus.empow",
-            voteTotalSupply,
-            {
-                "can_transfer": false,
-                "decimal": voteDecimal
-            }
-        ]);
-    }
-
-    issueVotePoint() {
-        // when change like to EM
-        // when purchase premium account
     }
 
     can_update(data) {
@@ -570,6 +548,24 @@ class VoteCommonContract {
             blockchain.callWithAuth("token.empow", "transfer", [voteSymbol, "vote.empow", owner, deposit.toFixed(), ""]);
         }
         this._delVote(voteId, info);
+    }
+
+    issueVotePoint(address, amount) {
+        // auth
+        const admin = storage.get("adminID");
+        const whitelist = ["social.empow", "auth.empow", admin];
+        let auth = false;
+        for (const c of whitelist) {
+            if (blockchain.requireAuth(c, "active")) {
+                auth = true;
+                break;
+            }
+        }
+        if (!auth) {
+            throw new Error("permission denied");
+        }
+        // when change like to EM
+        blockchain.callWithAuth("token.empow", "issue", [voteSymbol, address, amount])
     }
 }
 

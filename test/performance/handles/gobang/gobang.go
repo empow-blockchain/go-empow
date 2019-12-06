@@ -3,10 +3,11 @@ package gobang
 import (
 	"context"
 	"fmt"
-	"github.com/empow-blockchain/go-empow/sdk"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/empow-blockchain/go-empow/sdk"
 
 	"github.com/empow-blockchain/go-empow/test/performance/call"
 
@@ -19,11 +20,11 @@ import (
 	"github.com/empow-blockchain/go-empow/core/tx"
 	"github.com/empow-blockchain/go-empow/crypto"
 	"github.com/empow-blockchain/go-empow/ilog"
-	"github.com/empow-blockchain/go-empow/rpc/pb"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
 )
 
 var rootKey = "2yquS3ySrGWPEKywCPzX4RTJugqRh7kJSo5aehsLYPEWkUxBWA39oMrZ7ZxuM4fgyXYs2cPwh5n8aNNpH5x2VyK1"
-var rootID = "admin"
+var rootID = "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas"
 var rootAcc *account.KeyPair
 var contractID string
 var iostSDK = sdk.NewEMPOWDevSDK()
@@ -49,7 +50,7 @@ func (t *gobangHandle) Prepare() error {
 	codePath := os.Getenv("GOPATH") + "/src/github.com/empow-blockchain/go-empow/test/performance/handles/gobang/gobang.js"
 	abiPath := codePath + ".abi"
 	iostSDK.SetServer(call.GetClient(0).Addr())
-	iostSDK.SetAccount("admin", rootAcc)
+	iostSDK.SetAccount("EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", rootAcc)
 	iostSDK.SetTxInfo(100000, 1, 90, 0, nil)
 	iostSDK.SetCheckResult(true, 3, 10)
 	testAcc, err = account.NewKeyPair(nil, crypto.Ed25519)

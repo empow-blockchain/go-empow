@@ -58,17 +58,19 @@ func Test_EMPOWIssue(t *testing.T) {
 
 		prepareNewProducerVote(t, s, acc0)
 		prepareStake(t, s, acc0)
+		prepareSocial(t, s, acc0)
+		prepareFakeBase(t, s)
 		initProducer(t, s)
 
 		Convey("test issueEM", func() {
 			s.Head.Time += 4 * 3 * 1e9
-			r, err := s.Call("issue.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
+			r, err := s.Call("base.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
 			s.Visitor.Commit()
 
 			So(err, ShouldBeNil)
 			So(r.Status.Message, ShouldEqual, "")
 
-			So(s.Visitor.TokenBalance("em", "bonus.empow"), ShouldEqual, int64(2853881849))
+			So(s.Visitor.TokenBalance("em", "bonus.empow"), ShouldEqual, int64(1902587899))
 			So(s.Visitor.TokenBalance("em", acc1.ID), ShouldEqual, int64(1902587899))
 		})
 	})

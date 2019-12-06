@@ -100,7 +100,6 @@ func TestToken721_Create(t *testing.T) {
 			_, _, err = e.LoadAndCall(host, code, "create", "em", "issuer0", int64(100))
 			So(err.Error(), ShouldEqual, "token exists")
 		})
-
 	})
 }
 

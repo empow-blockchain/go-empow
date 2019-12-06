@@ -17,6 +17,10 @@
       "args": [
           "json"
       ]
+    },
+    {
+      "name": "issueEM",
+      "args": []
     }
   ]
 }

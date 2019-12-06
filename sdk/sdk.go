@@ -8,11 +8,11 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/empow-blockchain/go-empow/account"
 	"github.com/empow-blockchain/go-empow/common"
 	"github.com/empow-blockchain/go-empow/core/contract"
 	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
+	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc"
 )
 
@@ -504,9 +504,7 @@ func (s *EMPOWDevSDK) CreateNewAccountActions(newID string, ownerKey string, act
 	if initialGasPledge > 0 {
 		acts = append(acts, NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, s.accountName, newID, initialGasPledge)))
 	}
-	if initialCoins > 0 {
-		acts = append(acts, NewAction("token.empow", "transfer", fmt.Sprintf(`["em", "%v", "%v", "%v", ""]`, s.accountName, newID, initialCoins)))
-	}
+	acts = append(acts, NewAction("token.empow", "transfer", fmt.Sprintf(`["em", "%v", "%v", "%v", ""]`, s.accountName, newID, initialCoins)))
 	return acts, nil
 }
 

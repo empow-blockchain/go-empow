@@ -107,6 +107,7 @@ func Test_UpdateBonus(t *testing.T) {
 		So(r.Status.Message, ShouldEqual, "")
 
 		prepareStake(t, s, acc0)
+		prepareSocial(t, s, acc0)
 
 		// deploy issue.empow
 		err = setNonNativeContract(s, "bonus.empow", "bonus.js", ContractPath)
@@ -127,7 +128,7 @@ func Test_UpdateBonus(t *testing.T) {
 			for i := 0; i < 7; i++ {
 				s.Head.Time += 86400 * 1e9
 
-				r, err = s.Call("issue.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
+				r, err = s.Call("base.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
 				So(err, ShouldBeNil)
 				So(r.Status.Message, ShouldEqual, "")
 
@@ -136,14 +137,14 @@ func Test_UpdateBonus(t *testing.T) {
 				So(r.Status.Message, ShouldEqual, "")
 			}
 
-			So(s.Visitor.TokenBalance("em", "bonus.empow"), ShouldEqual, int64(143882942274880))
+			So(s.Visitor.TokenBalance("em", "bonus.empow"), ShouldEqual, int64(95921961516586))
 			So(s.Visitor.TokenBalance("contribute", acc1.ID), ShouldEqual, int64(547582439))
 			So(database.MustUnmarshal(s.Visitor.Get("bonus.empow-blockContrib")), ShouldEqual, `"0.78277523"`)
 
 			for i := 0; i < 7; i++ {
 				s.Head.Time += 86400 * 1e9
 
-				r, err = s.Call("issue.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
+				r, err = s.Call("base.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
 				So(err, ShouldBeNil)
 				So(r.Status.Message, ShouldEqual, "")
 
@@ -152,7 +153,7 @@ func Test_UpdateBonus(t *testing.T) {
 				So(r.Status.Message, ShouldEqual, "")
 			}
 
-			So(s.Visitor.TokenBalance("em", "bonus.empow"), ShouldEqual, int64(287876296800092))
+			So(s.Visitor.TokenBalance("em", "bonus.empow"), ShouldEqual, int64(191917531200059))
 			So(s.Visitor.TokenBalance("contribute", acc1.ID), ShouldEqual, int64(1095585169))
 			So(database.MustUnmarshal(s.Visitor.Get("bonus.empow-blockContrib")), ShouldEqual, `"0.78337592"`)
 		})

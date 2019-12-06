@@ -3,6 +3,10 @@ package integration
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
 	"github.com/empow-blockchain/go-empow/account"
 	"github.com/empow-blockchain/go-empow/common"
 	"github.com/empow-blockchain/go-empow/core/block"
@@ -11,9 +15,6 @@ import (
 	"github.com/empow-blockchain/go-empow/crypto"
 	. "github.com/empow-blockchain/go-empow/verifier"
 	"github.com/empow-blockchain/go-empow/vm/native"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 )
 
 // TestAccount used for writing test cases

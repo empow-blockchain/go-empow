@@ -13,12 +13,6 @@
             ]
         },
         {
-            "name": "initVotePoint",
-            "args": [
-                "string"
-            ]
-        },
-        {
             "name": "newVote",
             "args": [
                 "string",
@@ -98,6 +92,13 @@
         {
             "name": "delVote",
             "args": [
+                "string"
+            ]
+        },
+        {
+            "name": "issueVotePoint",
+            "args": [
+                "string",
                 "string"
             ]
         }

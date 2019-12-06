@@ -1,0 +1,16 @@
+{
+    "lang": "javascript",
+    "version": "1.0.2",
+    "abi": [
+        {
+            "name": "can_update",
+            "args": ["string"]
+        },
+        {
+            "name": "initAdmin",
+            "args": [
+                "string"
+            ]
+        }
+    ]
+}

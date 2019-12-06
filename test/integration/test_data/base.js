@@ -17,6 +17,10 @@ class Base {
     issueContribute(data) {
         blockchain.callWithAuth("bonus.empow", "issueContribute", JSON.stringify([data]));
     }
+
+    issueEM() {
+        blockchain.callWithAuth("issue.empow", "issueEM", JSON.stringify([]))
+    }
 }
 
 module.exports = Base;

@@ -19,8 +19,8 @@
             "args": [
                 "string",
                 "string",
-                "string",
-                "string"
+                "json",
+                "json"
             ]
         },
         {
@@ -37,10 +37,21 @@
             ]
         },
         {
-            "name": "unstake",
+            "name": "comment",
             "args": [
                 "string",
-                "number"
+                "string",
+                "string",
+                "number",
+                "string"
+            ]
+        },
+        {
+            "name": "report",
+            "args": [
+                "string",
+                "string",
+                "string"
             ]
         },
         {
@@ -57,6 +68,12 @@
             "name": "upLevel",
             "args": [
                 "string",
+                "string"
+            ]
+        },
+        {
+            "name": "addReportTag",
+            "args": [
                 "string"
             ]
         }

@@ -115,7 +115,7 @@ func TestToken_Create(t *testing.T) {
 			_, _, err := e.LoadAndCall(host, code, "create", "iostaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "issuer0", int64(100), []byte("{}"))
 			So(err.Error(), ShouldContainSubstring, "token symbol invalid.")
 
-			_, _, err = e.LoadAndCall(host, code, "create", "em", "issuer0", int64(100), []byte("{}"))
+			_, _, err = e.LoadAndCall(host, code, "create", "EM", "issuer0", int64(100), []byte("{}"))
 			So(err.Error(), ShouldContainSubstring, "token symbol invalid.")
 		})
 
@@ -135,7 +135,7 @@ func TestToken_Create(t *testing.T) {
 			_, _, err = e.LoadAndCall(host, code, "transfer", "em", "issuer0", "user0", "22.3", "")
 			So(err.Error(), ShouldEqual, "token can't transfer")
 
-			dr, _ := host.MapGet("TIiost", "defaultRate")
+			dr, _ := host.MapGet("TIem", "defaultRate")
 			So(dr.(string), ShouldEqual, "1.1")
 
 			// transfer truncate

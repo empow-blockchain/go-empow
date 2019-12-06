@@ -16,17 +16,17 @@ func checkHashValid(hash string) error {
 func checkIDValid(id string) error {
 	if strings.HasPrefix(id, "Contract") || strings.HasSuffix(id, ".empow") {
 		if len(id) >= 100 {
-			return fmt.Errorf("id invalid. ContractID length should be less then 100 - %v", len(id))
+			return fmt.Errorf("address invalid. ContractID length should be less then 100 - %v", len(id))
 		}
 		return nil
 	}
 
-	if len(id) < 5 || len(id) > 11 {
-		return fmt.Errorf("id invalid. id length should be between 5,11 - %v ", len(id))
+	if len(id) != 49 {
+		return fmt.Errorf("wrong address")
 	}
 
 	for _, v := range id {
-		if !((v >= 'a' && v <= 'z') || (v >= '0' && v <= '9' || v == '_')) {
+		if !((v >= 'A' && v <= 'z') || (v >= '0' && v <= '9' || v == '_')) {
 			return fmt.Errorf("id invalid. id contains invalid character - %v", v)
 		}
 	}
