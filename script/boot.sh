@@ -1,7 +1,6 @@
 #!/bin/sh
 #
 # boot.sh
-# Author Yuanyi<yuanyi@iost.io>
 #
 # Distributed under terms of the LGPLv3 license.
 #
@@ -144,21 +143,6 @@ do_system_check() {
     fi
 }
 
-print_servi() {
-    {
-        echo If you want to register Servi node, exec:
-        printf "\n\t"
-        echo "iwallet sys register $PUBKEY --net_id $NETWORK_ID --account <your-account>"
-        echo
-        echo To set the Servi node online:
-        printf "\n\t"
-        echo "iwallet sys plogin --acount <your-account>"
-        echo
-        echo See full doc at https://developers.iost.io/docs/en/4-running-iost-node/Become-Servi-Node.html
-        echo
-    }>&2
-}
-
 print_bye() {
     {
         echo Happy hacking !
@@ -183,7 +167,7 @@ version: "2.2"
 
 services:
   iserver:
-    image: iostio/iost-node:$VERSION
+    image: empowio/empow-node:$VERSION
     container_name: iserver
     restart: unless-stopped
     ports:
@@ -200,14 +184,14 @@ docker-compose pull
 # Generate key producer pair
 #
 
-( docker run --rm iostio/iost-node:$VERSION iwallet --verbose=false key; ) >> $PRODUCER_KEY_FILE
+( docker run --rm empowio/empow-node:$VERSION iwallet --verbose=false key; ) >> $PRODUCER_KEY_FILE
 
 #
 # Get genesis info
 #
 
-$CURL "https://developers.iost.io/docs/assets/$INET/$VERSION/genesis.tgz" | tar zxC $PREFIX
-$CURL "https://developers.iost.io/docs/assets/$INET/$VERSION/iserver.yml" -o $PREFIX/iserver.yml
+# $CURL "https://developers.iost.io/docs/assets/$INET/$VERSION/genesis.tgz" | tar zxC $PREFIX
+# $CURL "https://developers.iost.io/docs/assets/$INET/$VERSION/iserver.yml" -o $PREFIX/iserver.yml
 
 #
 # Config producer
@@ -238,5 +222,4 @@ NETWORK_ID=$($CURL localhost:30001/getNodeInfo | ${PYTHON} -c 'import json,sys;p
     echo
 }>&2
 
-print_servi
 print_bye
