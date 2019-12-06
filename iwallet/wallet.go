@@ -9,6 +9,7 @@ import (
 
 	"github.com/empow-blockchain/go-empow/account"
 	"github.com/empow-blockchain/go-empow/common"
+	"github.com/empow-blockchain/go-empow/sdk"
 	"github.com/spf13/cobra"
 )
 
@@ -30,24 +31,63 @@ type accounts struct {
 	Account []*acc
 }
 
-// accountCmd represents the account command.
+// walletCmd represents the account command.
 var accountCmd = &cobra.Command{
-	Use:     "account",
-	Aliases: []string{"acc"},
-	Short:   "KeyPair manager",
-	Long:    `Manage account in local storage`,
+	Use:     "wallet",
+	Aliases: []string{"wallet"},
+	Short:   "Wallet manager",
+	Long:    `Manage wallet in local storage`,
+}
+
+var encrypt bool
+var createCmd = &cobra.Command{
+	Use:     "create",
+	Short:   "Create new wallet and save to local storage",
+	Long:    `Create new wallet and save to local storage`,
+	Example: `  iwallet wallet create`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		n, err := account.NewAddress(nil, sdk.GetSignAlgoByName(signAlgo))
+		if err != nil {
+			return fmt.Errorf("failed to new key pair: %v", err)
+		}
+
+		var k key
+		k.Algorithm = n.Algorithm.String()
+		k.Address = n.Address
+		k.Pubkey = common.Base58Encode(n.Pubkey)
+		k.Seckey = common.Base58Encode(n.Seckey)
+
+		if err != nil {
+			return fmt.Errorf("failed create wallet: %v", err)
+		}
+
+		kp, err := NewKeyPairInfo(k.Seckey, k.Algorithm)
+		if err != nil {
+			return err
+		}
+
+		acc := AccountInfo{Address: k.Address, Keypairs: make(map[string]*KeyPairInfo, 0)}
+
+		acc.Keypairs["active"] = kp
+		acc.Keypairs["owner"] = kp
+
+		acc.save(encrypt)
+
+		fmt.Printf("Created %v\n", k.Address)
+		return nil
+	},
 }
 
 var viewCmd = &cobra.Command{
 	Use:   "view [<address>]",
-	Short: "View account by name or omit to show all accounts",
-	Long:  `View account by name or omit to show all accounts`,
-	Example: `  iwallet account view <address>
-  iwallet account view`,
+	Short: "View address by name or omit to show all addresses",
+	Long:  `View address by name or omit to show all addresses`,
+	Example: `  iwallet wallet view <address>
+  iwallet wallet view`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dir, err := getAccountDir()
 		if err != nil {
-			return fmt.Errorf("failed to get account dir: %v", err)
+			return fmt.Errorf("failed to get address dir: %v", err)
 		}
 		a := accounts{}
 		a.Dir = dir
@@ -92,15 +132,14 @@ var viewCmd = &cobra.Command{
 	},
 }
 
-var encrypt bool
 var importCmd = &cobra.Command{
-	Use:   "import accountName accountPrivateKey",
-	Short: "Import an account by private key",
-	Long:  `Import an account by private key`,
-	Example: `  iwallet account import <private_key>
-  iwallet account import active:<private_key>,owner:<private_key>`,
+	Use:   "import privateKey",
+	Short: "Import an address by private key",
+	Long:  `Import an address by private key`,
+	Example: `  iwallet wallet import <private_key>
+  iwallet wallet import <private_key>`,
 	Args: func(cmd *cobra.Command, args []string) error {
-		if err := checkArgsNumber(cmd, args, "accountPrivateKey"); err != nil {
+		if err := checkArgsNumber(cmd, args, "privateKey"); err != nil {
 			return err
 		}
 		return nil
@@ -137,20 +176,20 @@ var importCmd = &cobra.Command{
 		acc.Address = address
 		err := acc.save(encrypt)
 		if err != nil {
-			return fmt.Errorf("failed to save account: %v", err)
+			return fmt.Errorf("failed to save address: %v", err)
 		}
-		fmt.Printf("import account %v done\n", address)
+		fmt.Printf("import address %v done\n", address)
 		return nil
 	},
 }
 
 var dumpKeyCmd = &cobra.Command{
-	Use:     "dumpkey accountName",
-	Short:   "Print private key of the account to stdout",
-	Long:    "Print private key of the account to stdout",
-	Example: `  iwallet account dumpkey test0`,
+	Use:     "dumpkey address",
+	Short:   "Print private key of the address to stdout",
+	Long:    "Print private key of the address to stdout",
+	Example: `  iwallet wallet dumpkey <address>`,
 	Args: func(cmd *cobra.Command, args []string) error {
-		if err := checkArgsNumber(cmd, args, "accountName"); err != nil {
+		if err := checkArgsNumber(cmd, args, "address"); err != nil {
 			return err
 		}
 		return nil
@@ -170,11 +209,11 @@ var dumpKeyCmd = &cobra.Command{
 var deleteCmd = &cobra.Command{
 	Use:     "delete <address>",
 	Aliases: []string{"del"},
-	Short:   "Delete an account by address",
-	Long:    `Delete an account by address`,
-	Example: `  iwallet account delete EMvFUnDToqD4rFhckJCfkTHuufdSFPQpabrJs`,
+	Short:   "Delete an address",
+	Long:    `Delete an address`,
+	Example: `  iwallet wallet delete EMvFUnDToqD4rFhckJCfkTHuufdSFPQpabrJs`,
 	Args: func(cmd *cobra.Command, args []string) error {
-		if err := checkArgsNumber(cmd, args, "accountName"); err != nil {
+		if err := checkArgsNumber(cmd, args, "address"); err != nil {
 			return err
 		}
 		return nil
@@ -183,7 +222,7 @@ var deleteCmd = &cobra.Command{
 		address := args[0]
 		dir, err := getAccountDir()
 		if err != nil {
-			return fmt.Errorf("failed to get account dir: %v", err)
+			return fmt.Errorf("failed to get address dir: %v", err)
 		}
 		found := false
 		sufs := []string{".json"}
@@ -209,7 +248,7 @@ var deleteCmd = &cobra.Command{
 		if found {
 			fmt.Println("Successfully deleted <", address, ">.")
 		} else {
-			fmt.Println("Account <", address, "> does not exist.")
+			fmt.Println("Address <", address, "> does not exist.")
 		}
 		return nil
 	},
@@ -218,6 +257,7 @@ var deleteCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(accountCmd)
 	accountCmd.PersistentFlags().BoolVarP(&encrypt, "encrypt", "", false, "whether to encrypt local key file")
+	accountCmd.AddCommand(createCmd)
 	accountCmd.AddCommand(importCmd)
 	accountCmd.AddCommand(viewCmd)
 	accountCmd.AddCommand(deleteCmd)

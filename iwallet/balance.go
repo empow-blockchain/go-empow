@@ -2,6 +2,7 @@ package iwallet
 
 import (
 	"fmt"
+
 	"github.com/empow-blockchain/go-empow/sdk"
 
 	"github.com/spf13/cobra"
@@ -9,12 +10,12 @@ import (
 
 // accountInfoCmd represents the balance command.
 var accountInfoCmd = &cobra.Command{
-	Use:     "balance accountName",
-	Short:   "Check the information of a specified account",
-	Long:    `Check the information of a specified account`,
-	Example: `  iwallet balance test0`,
+	Use:     "balance address",
+	Short:   "Check the information of a specified address",
+	Long:    `Check the information of a specified address`,
+	Example: `  iwallet balance EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
-		if err := checkArgsNumber(cmd, args, "accountName"); err != nil {
+		if err := checkArgsNumber(cmd, args, "address"); err != nil {
 			return err
 		}
 		return nil
