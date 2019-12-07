@@ -7,7 +7,7 @@
 
 set -ue
 
-PREFIX=${PREFIX:="/data/iserver"}
+PREFIX=${PREFIX:="/users/vanminh/empow-blockchain/data/iserver"}
 INET=${INET:="mainnet"}
 VERSION=${VERSION:="latest"}
 

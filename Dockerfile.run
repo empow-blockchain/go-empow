@@ -1,4 +1,4 @@
-FROM iostio/iost-dev
+FROM empowio/empow-dev
 
 # Install project
 WORKDIR /workdir

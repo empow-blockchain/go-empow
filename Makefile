@@ -1,11 +1,11 @@
 GO = go
 
-VERSION = 3.1.1
+VERSION = latest
 COMMIT = $(shell git rev-parse --short HEAD)
 PROJECT = github.com/empow-blockchain/go-empow
-DOCKER_IMAGE = iostio/iost-node:$(VERSION)-$(COMMIT)
-DOCKER_RELEASE_IMAGE = iostio/iost-node:$(VERSION)
-DOCKER_DEVIMAGE = iostio/iost-dev:$(VERSION)
+DOCKER_IMAGE = empowio/empow-node:$(VERSION)-$(COMMIT)
+DOCKER_RELEASE_IMAGE = empowio/empow-node:$(VERSION)
+DOCKER_DEVIMAGE = empowio/empow-dev:$(VERSION)
 TARGET_DIR = target
 CLUSTER = devnet
 

@@ -70,7 +70,7 @@ func genconfig() {
 	WitnessInfo := make([]*common.Witness, 0)
 	for i := 0; i < *master; i++ {
 		witness := &common.Witness{
-			ID:             fmt.Sprintf("producer%03d", i),
+			Address:        fmt.Sprintf("producer%03d", i),
 			Owner:          ids[i],
 			Active:         ids[i],
 			SignatureBlock: ids[i],
@@ -80,7 +80,7 @@ func genconfig() {
 	}
 
 	adminInfo := &common.Witness{
-		ID:      "admin",
+		Address: "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas",
 		Owner:   "Gcv8c2tH8qZrUYnKdEEdTtASsxivic2834MQW6mgxqto",
 		Active:  "Gcv8c2tH8qZrUYnKdEEdTtASsxivic2834MQW6mgxqto",
 		Balance: int64(5000000000),
@@ -93,9 +93,9 @@ func genconfig() {
 	}
 
 	foundationInfo := &common.Witness{
-		ID:      "foundation",
-		Owner:   "Gcv8c2tH8qZrUYnKdEEdTtASsxivic2834MQW6mgxqto",
-		Active:  "Gcv8c2tH8qZrUYnKdEEdTtASsxivic2834MQW6mgxqto",
+		Address: "EM2ZsFENubSHxLVjCkuFAmiG5reWvd8oXi29vErvjDVnazwmC",
+		Owner:   "4vBcgvzDTBk3WruafcnxfkY7FgQqEsib3L6dNGuw9J58",
+		Active:  "4vBcgvzDTBk3WruafcnxfkY7FgQqEsib3L6dNGuw9J58",
 		Balance: 0,
 	}
 
@@ -166,7 +166,7 @@ func genconfig() {
 
 	for i := 0; i < *master+*slave; i++ {
 		ACC := &common.ACCConfig{
-			ID:        fmt.Sprintf("producer%03d", i),
+			Address:   fmt.Sprintf("producer%03d", i),
 			SecKey:    seckeys[i],
 			Algorithm: "ed25519",
 		}
