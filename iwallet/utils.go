@@ -38,7 +38,7 @@ func checkArgsNumber(cmd *cobra.Command, args []string, argNames ...string) erro
 
 func checkAccount(cmd *cobra.Command) error {
 	if accountName == "" {
-		return errorWithHelp(cmd, "please provide the account name with flag --account/-a")
+		return errorWithHelp(cmd, "please provide the address with flag --address/-a")
 	}
 	return nil
 }
@@ -218,13 +218,13 @@ func loadAccountByName(name string, ensureDecrypt bool) (*AccountInfo, error) {
 			return loadAccountFromKeyPair(fileName)
 		}
 	}
-	return nil, fmt.Errorf("account is not imported. use 'iwallet account import %s <private-key>' to import it", name)
+	return nil, fmt.Errorf("address is not imported. use 'iwallet wallet import %s <private-key>' to import it", name)
 }
 
 // LoadKeyPair ...
 func LoadKeyPair(name string) (*account.KeyPair, error) {
 	if name == "" {
-		return nil, fmt.Errorf("you must provide account name")
+		return nil, fmt.Errorf("you must provide address name")
 	}
 	dir, err := getAccountDir()
 	if err != nil {
@@ -347,7 +347,7 @@ func handleMultiSig(tx *rpcpb.TransactionRequest, signatureFiles []string, signK
 		for _, f := range signKeyFiles {
 			accInfo, err := loadAccountFromFile(f, true)
 			if err != nil {
-				return fmt.Errorf("failed to load account from file %v: %v", f, err)
+				return fmt.Errorf("failed to load address from file %v: %v", f, err)
 			}
 			kp, err := accInfo.Keypairs["active"].toKeyPair()
 			if err != nil {

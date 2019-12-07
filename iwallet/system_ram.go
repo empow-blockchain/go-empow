@@ -13,8 +13,8 @@ var buyCmd = &cobra.Command{
 	Aliases: []string{"buy"},
 	Short:   "Buy ram from system",
 	Long:    `Buy ram from system`,
-	Example: `  iwallet sys buy 100 --account test0
-  iwallet sys buy 100 --account test0 --ram_receiver test1`,
+	Example: `  iwallet sys buy 100 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt
+  iwallet sys buy 100 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt --ram_receiver test1`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := checkArgsNumber(cmd, args, "amount"); err != nil {
 			return err
@@ -38,8 +38,8 @@ var sellCmd = &cobra.Command{
 	Aliases: []string{"sell"},
 	Short:   "Sell unused ram to system",
 	Long:    `Sell unused ram to system`,
-	Example: `  iwallet sys sell 100 --account test0
-  iwallet sys sell 100 --account test0 --token_receiver test1`,
+	Example: `  iwallet sys sell 100 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt
+  iwallet sys sell 100 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt --token_receiver test1`,
 	Args: buyCmd.Args,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if other == "" {
@@ -55,7 +55,7 @@ var rtransCmd = &cobra.Command{
 	Aliases: []string{"ram-trans", "rtrans"},
 	Short:   "Transfer ram",
 	Long:    `Transfer ram`,
-	Example: `  iwallet sys ram-transfer test1 100 --account test0`,
+	Example: `  iwallet sys ram-transfer test1 100 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := checkArgsNumber(cmd, args, "receiver", "amount"); err != nil {
 			return err

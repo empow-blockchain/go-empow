@@ -3,7 +3,7 @@ package iwallet
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/empow-blockchain/go-empow/rpc/pb"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
 	"github.com/empow-blockchain/go-empow/sdk"
 )
 
@@ -12,7 +12,7 @@ var sendCmd = &cobra.Command{
 	Use:     "send txFile",
 	Short:   "Send transaction onto blockchain by given json file",
 	Long:    `Send transaction onto blockchain by given json file`,
-	Example: `  iwallet send tx.json --account test0`,
+	Example: `  iwallet send tx.json --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := checkArgsNumber(cmd, args, "txFile"); err != nil {
 			return err

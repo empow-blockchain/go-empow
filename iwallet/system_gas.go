@@ -11,8 +11,8 @@ var pledgeCmd = &cobra.Command{
 	Aliases: []string{"pledge"},
 	Short:   "Pledge EMPOW to obtain gas",
 	Long:    `Pledge EMPOW to obtain gas`,
-	Example: `  iwallet sys pledge 100 --account test0
-  iwallet sys pledge 100 --account test0 --gas_user test1`,
+	Example: `  iwallet sys pledge 100 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt
+  iwallet sys pledge 100 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt --gas_user EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := checkArgsNumber(cmd, args, "amount"); err != nil {
 			return err
@@ -35,8 +35,8 @@ var unpledgeCmd = &cobra.Command{
 	Aliases: []string{"unpledge"},
 	Short:   "Undo pledge",
 	Long:    `Undo pledge and get back the EMPOW pledged earlier`,
-	Example: `  iwallet sys unpledge 100 --account test0
-  iwallet sys pledge 100 --account test0 --gas_user test1`,
+	Example: `  iwallet sys unpledge 100 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt
+  iwallet sys pledge 100 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt --gas_user EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB`,
 	Args: pledgeCmd.Args,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if gasUser == "" {

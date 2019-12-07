@@ -4,7 +4,7 @@ readonly GRPC_URL="127.0.0.1:30002"
 readonly WITNESS_NUM=1
 
 readonly WITNESS_NAME=(
-producer000
+EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB
 )
 
 readonly WITNESS_SECKEY=(
@@ -13,6 +13,6 @@ readonly WITNESS_SECKEY=(
 
 for (( i = 0; i < ${WITNESS_NUM}; i++ ))
 do
-    iwallet -s ${GRPC_URL} account --import ${WITNESS_NAME[i]} ${WITNESS_SECKEY[i]}
-    iwallet -s ${GRPC_URL} --account ${WITNESS_NAME[i]} call 'vote_producer.empow' 'logInProducer' '["'${WITNESS_NAME[i]}'"]'
+    iwallet -s ${GRPC_URL} wallet --import ${WITNESS_NAME[i]} ${WITNESS_SECKEY[i]}
+    iwallet -s ${GRPC_URL} --address ${WITNESS_NAME[i]} call 'vote_producer.empow' 'logInProducer' '["'${WITNESS_NAME[i]}'"]'
 done

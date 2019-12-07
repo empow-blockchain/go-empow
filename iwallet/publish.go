@@ -14,8 +14,8 @@ var publishCmd = &cobra.Command{
 	Aliases: []string{"pub"},
 	Short:   "Publish a contract",
 	Long:    `Publish a contract by a contract and an abi file`,
-	Example: `  iwallet publish ./example.js ./example.js.abi --account test0
-  iwallet publish -u ./example.js ./example.js.abi ContractXXX --account test0`,
+	Example: `  iwallet publish ./example.js ./example.js.abi --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt
+  iwallet publish -u ./example.js ./example.js.abi ContractXXX --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		var err error
 		if update {

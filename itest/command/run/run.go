@@ -61,7 +61,7 @@ var Flags = []cli.Flag{
 	},
 	cli.StringFlag{
 		Name:  "aname",
-		Value: "producer000",
+		Value: "EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB",
 		Usage: "The account name to check/run actions",
 	},
 	cli.StringFlag{

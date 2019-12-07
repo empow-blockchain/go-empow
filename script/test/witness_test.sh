@@ -2,9 +2,9 @@
 
 readonly HTTP_URL="http://127.0.0.1:30001"
 readonly GRPC_URL="127.0.0.1:30002"
-readonly VOTE_ACCOUNT="admin"
+readonly VOTE_ACCOUNT="EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas"
 readonly VOTE_ACCOUNT_SECKEY="2yquS3ySrGWPEKywCPzX4RTJugqRh7kJSo5aehsLYPEWkUxBWA39oMrZ7ZxuM4fgyXYs2cPwh5n8aNNpH5x2VyK1"
-readonly REPLACE_WITNESS="producer000"
+readonly REPLACE_WITNESS="EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB"
 
 readonly WITNESS_NUM=0
 
@@ -18,8 +18,8 @@ function err
 
 function init_state
 {
-    iwallet -s ${GRPC_URL} account --import ${VOTE_ACCOUNT} ${VOTE_ACCOUNT_SECKEY}
-    iwallet -s ${GRPC_URL} --account ${VOTE_ACCOUNT} call "vote_producer.empow" "unvote" '["'${VOTE_ACCOUNT}'", "'${REPLACE_WITNESS}'", "3000000"]'
+    iwallet -s ${GRPC_URL} wallet import ${VOTE_ACCOUNT} ${VOTE_ACCOUNT_SECKEY}
+    iwallet -s ${GRPC_URL} --address ${VOTE_ACCOUNT} call "vote_producer.empow" "unvote" '["'${VOTE_ACCOUNT}'", "'${REPLACE_WITNESS}'", "3000000"]'
 }
 
 function get_now_height
@@ -60,7 +60,7 @@ function check_witness
     local i
     for (( i = 0; i < ${WITNESS_NUM}; i++ ))
     do
-        iwallet -s ${GRPC_URL} --account ${VOTE_ACCOUNT} call "vote_producer.empow" "vote" '["'${VOTE_ACCOUNT}'", "'${WITNESS_NAME[i]}'", "3000000"]'
+        iwallet -s ${GRPC_URL} --address ${VOTE_ACCOUNT} call "vote_producer.empow" "vote" '["'${VOTE_ACCOUNT}'", "'${WITNESS_NAME[i]}'", "3000000"]'
 
         witness_pubkey=$(get_pubkey_by_witness ${WITNESS_NAME[i]})
         echo "${WITNESS_NAME[i]}'s pubkey is $witness_pubkey"
@@ -72,13 +72,13 @@ function check_witness
         else
             err "${WITNESS_NAME[i]} gen block failed!"
         fi
-        iwallet -s ${GRPC_URL} --account ${VOTE_ACCOUNT} call "vote_producer.empow" "unvote" '["'${VOTE_ACCOUNT}'", "'${WITNESS_NAME[i]}'", "3000000"]'
+        iwallet -s ${GRPC_URL} --address ${VOTE_ACCOUNT} call "vote_producer.empow" "unvote" '["'${VOTE_ACCOUNT}'", "'${WITNESS_NAME[i]}'", "3000000"]'
     done
 }
 
 function reset_state
 {
-    iwallet -s ${GRPC_URL} --account ${VOTE_ACCOUNT} call "vote_producer.empow" "vote" '["'${VOTE_ACCOUNT}'", "'${REPLACE_WITNESS}'", "3000000"]'
+    iwallet -s ${GRPC_URL} --address ${VOTE_ACCOUNT} call "vote_producer.empow" "vote" '["'${VOTE_ACCOUNT}'", "'${REPLACE_WITNESS}'", "3000000"]'
 }
 
 init_state

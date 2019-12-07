@@ -5,7 +5,7 @@ readonly HTTP_URL="http://127.0.0.1:30001"
 readonly WITNESS_NUM=1
 
 readonly WITNESS_NAME=(
-producer000
+EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB
 )
 
 for (( i = 0; i < ${WITNESS_NUM}; i++ ))

@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/empow-blockchain/go-empow/rpc/pb"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
 	"github.com/empow-blockchain/go-empow/sdk"
 )
 
@@ -22,7 +22,7 @@ var voteCmd = &cobra.Command{
 	Aliases: []string{"vote"},
 	Short:   "Vote a producer",
 	Long:    `Vote a producer by given amount of EMPOWs`,
-	Example: `  iwallet sys vote producer000 1000000 --account test0`,
+	Example: `  iwallet sys vote EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB 1000000 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := checkArgsNumber(cmd, args, "producerID", "amount"); err != nil {
 			return err
@@ -41,7 +41,7 @@ var unvoteCmd = &cobra.Command{
 	Aliases: []string{"unvote"},
 	Short:   "Unvote a producer",
 	Long:    `Unvote a producer by given amount of EMPOWs`,
-	Example: `  iwallet sys unvote producer000 1000000 --account test0`,
+	Example: `  iwallet sys unvote EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB 1000000 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args:    voteCmd.Args,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return saveOrSendAction("vote_producer.empow", "unvote", accountName, args[0], args[1])
@@ -53,8 +53,8 @@ var registerCmd = &cobra.Command{
 	Aliases: []string{"register", "reg"},
 	Short:   "Register as producer",
 	Long:    `Register as producer`,
-	Example: `  iwallet sys register XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX --account test0
-  iwallet sys register XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX --account test1 --location PEK --url iost.io --net_id 123 --partner`,
+	Example: `  iwallet sys register XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt
+  iwallet sys register XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt --location PEK --url iost.io --net_id 123 --partner`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := checkArgsNumber(cmd, args, "publicKey"); err != nil {
 			return err
@@ -73,7 +73,7 @@ var unregisterCmd = &cobra.Command{
 	Aliases: []string{"unregister", "unreg"},
 	Short:   "Unregister from a producer",
 	Long:    `Unregister from a producer`,
-	Example: `  iwallet sys unregister --account test0`,
+	Example: `  iwallet sys unregister --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		return checkAccount(cmd)
 	},
@@ -89,7 +89,7 @@ var pcleanCmd = &cobra.Command{
 	Aliases: []string{"pclean"},
 	Short:   "Clean producer info",
 	Long:    `Clean producer info`,
-	Example: `  iwallet sys pclean --account test0`,
+	Example: `  iwallet sys pclean --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		return checkAccount(cmd)
 	},
@@ -106,7 +106,7 @@ var ploginCmd = &cobra.Command{
 	Aliases: []string{"plogin"},
 	Short:   "Producer login as online state",
 	Long:    `Producer login as online state`,
-	Example: `  iwallet sys plogin --account test0`,
+	Example: `  iwallet sys plogin --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		return checkAccount(cmd)
 	},
@@ -122,7 +122,7 @@ var plogoutCmd = &cobra.Command{
 	Aliases: []string{"plogout"},
 	Short:   "Producer logout as offline state",
 	Long:    `Producer logout as offline state`,
-	Example: `  iwallet sys plogout --account test0`,
+	Example: `  iwallet sys plogout --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		return checkAccount(cmd)
 	},
@@ -146,7 +146,7 @@ var pinfoCmd = &cobra.Command{
 	Aliases: []string{"pinfo"},
 	Short:   "Show producer info",
 	Long:    `Show producer info`,
-	Example: `  iwallet sys pinfo producer000`,
+	Example: `  iwallet sys pinfo EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := checkArgsNumber(cmd, args, "producerID"); err != nil {
 			return err
@@ -211,9 +211,9 @@ var pupdateCmd = &cobra.Command{
 	Aliases: []string{"pupdate"},
 	Short:   "Update producer info",
 	Long:    `Update producer info`,
-	Example: `  iwallet sys pupdate --account test0
-  iwallet sys pupdate --account test1 --pubkey XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  iwallet sys pupdate --account test2 --location PEK --url iost.io --net_id 123`,
+	Example: `  iwallet sys pupdate --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt
+  iwallet sys pupdate --address EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB --pubkey XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  iwallet sys pupdate --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt --location PEK --url iost.io --net_id 123`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		return checkAccount(cmd)
 	},
@@ -247,8 +247,8 @@ var predeemCmd = &cobra.Command{
 	Short:   "Redeem the contribution value obtained by the block producing to EMPOW tokens",
 	Long: `Redeem the contribution value obtained by the block producing to EMPOW tokens
 	Omitting amount argument or zero amount will redeem all contribution value.`,
-	Example: `  iwallet sys producer-redeem --account test0
-  iwallet sys producer-redeem 10 --account test0`,
+	Example: `  iwallet sys producer-redeem --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt
+  iwallet sys producer-redeem 10 --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 {
 			if err := checkFloat(cmd, args[0], "amount"); err != nil {
@@ -271,7 +271,7 @@ var pwithdrawCmd = &cobra.Command{
 	Aliases: []string{"pwithdraw"},
 	Short:   "Withdraw all voting reward for producer",
 	Long:    `Withdraw all voting reward for producer`,
-	Example: `  iwallet sys producer-withdraw --account test0`,
+	Example: `  iwallet sys producer-withdraw --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		return checkAccount(cmd)
 	},
@@ -288,7 +288,7 @@ var vwithdrawCmd = &cobra.Command{
 	Aliases: []string{"vwithdraw"},
 	Short:   "Withdraw all voting reward for voter",
 	Long:    `Withdraw all voting reward for voter`,
-	Example: `  iwallet sys voter-withdraw --account test0`,
+	Example: `  iwallet sys voter-withdraw --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		return checkAccount(cmd)
 	},
@@ -305,26 +305,26 @@ func init() {
 	systemCmd.AddCommand(unvoteCmd)
 
 	systemCmd.AddCommand(registerCmd)
-	registerCmd.Flags().StringVarP(&target, "target", "", "", "target account (default is the account by flag --account himself/herself)")
+	registerCmd.Flags().StringVarP(&target, "target", "", "", "target address (default is the account by flag --address himself/herself)")
 	registerCmd.Flags().StringVarP(&location, "location", "", "", "location info")
 	registerCmd.Flags().StringVarP(&url, "url", "", "", "url address")
 	registerCmd.Flags().StringVarP(&networkID, "net_id", "", "", "network ID")
 	registerCmd.Flags().BoolVarP(&isPartner, "partner", "", false, "if is partner instead of producer")
 	systemCmd.AddCommand(unregisterCmd)
-	unregisterCmd.Flags().StringVarP(&target, "target", "", "", "target account (default is the account by flag --account himself/herself)")
+	unregisterCmd.Flags().StringVarP(&target, "target", "", "", "target address (default is the account by flag --address himself/herself)")
 	systemCmd.AddCommand(pcleanCmd)
-	pcleanCmd.Flags().StringVarP(&target, "target", "", "", "target account (default is the account by flag --account himself/herself)")
+	pcleanCmd.Flags().StringVarP(&target, "target", "", "", "target address (default is the account by flag --address himself/herself)")
 
 	systemCmd.AddCommand(ploginCmd)
-	ploginCmd.Flags().StringVarP(&target, "target", "", "", "target account (default is the account by flag --account himself/herself)")
+	ploginCmd.Flags().StringVarP(&target, "target", "", "", "target address (default is the account by flag --address himself/herself)")
 	systemCmd.AddCommand(plogoutCmd)
-	plogoutCmd.Flags().StringVarP(&target, "target", "", "", "target account (default is the account by flag --account himself/herself)")
+	plogoutCmd.Flags().StringVarP(&target, "target", "", "", "target address (default is the account by flag --address himself/herself)")
 
 	systemCmd.AddCommand(pinfoCmd)
 	systemCmd.AddCommand(plistCmd)
 
 	systemCmd.AddCommand(pupdateCmd)
-	pupdateCmd.Flags().StringVarP(&target, "target", "", "", "target account (default is the account by flag --account himself/herself)")
+	pupdateCmd.Flags().StringVarP(&target, "target", "", "", "target address (default is the account by flag --address himself/herself)")
 	pupdateCmd.Flags().StringVarP(&publicKey, "pubkey", "", "", "publick key")
 	pupdateCmd.Flags().StringVarP(&location, "location", "", "", "location info")
 	pupdateCmd.Flags().StringVarP(&url, "url", "", "", "url address")
@@ -332,7 +332,7 @@ func init() {
 
 	systemCmd.AddCommand(predeemCmd)
 	systemCmd.AddCommand(pwithdrawCmd)
-	pwithdrawCmd.Flags().StringVarP(&target, "target", "", "", "target account (default is the account by flag --account himself/herself)")
+	pwithdrawCmd.Flags().StringVarP(&target, "target", "", "", "target address (default is the account by flag --address himself/herself)")
 	systemCmd.AddCommand(vwithdrawCmd)
-	vwithdrawCmd.Flags().StringVarP(&target, "target", "", "", "target account (default is the account by flag --account himself/herself)")
+	vwithdrawCmd.Flags().StringVarP(&target, "target", "", "", "target address (default is the account by flag --address himself/herself)")
 }
