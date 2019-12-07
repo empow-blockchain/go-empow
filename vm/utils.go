@@ -2,11 +2,21 @@ package vm
 
 import (
 	"fmt"
+
 	"github.com/empow-blockchain/go-empow/common"
 	"github.com/empow-blockchain/go-empow/core/tx"
 	"github.com/empow-blockchain/go-empow/vm/database"
 	"github.com/empow-blockchain/go-empow/vm/native"
 )
+
+// CheckAddressExist ...
+func CheckAddressExist(address string, dbVisitor *database.Visitor) (err error) {
+	exist := dbVisitor.MHas("auth.empow-auth", address)
+	if exist {
+		return nil
+	}
+	return fmt.Errorf("address not exist on blockchain. transfer some token to %v active", address)
+}
 
 // CheckTxGasLimitValid ...
 func CheckTxGasLimitValid(t *tx.Tx, currentGas *common.Fixed, dbVisitor *database.Visitor) (err error) {
@@ -14,7 +24,7 @@ func CheckTxGasLimitValid(t *tx.Tx, currentGas *common.Fixed, dbVisitor *databas
 	if !currentGas.LessThan(gasLimit) {
 		return nil
 	}
-	defaultErr := fmt.Errorf("gas not enough: user %v has %v < %v", t.Publisher, currentGas.ToString(), gasLimit.ToString())
+	defaultErr := fmt.Errorf("gas not enough: address %v has %v < %v", t.Publisher, currentGas.ToString(), gasLimit.ToString())
 	if !(len(t.Actions) == 1 && t.Actions[0].Contract == native.GasContractName && t.Actions[0].ActionName == "pledge") {
 		return defaultErr
 	}

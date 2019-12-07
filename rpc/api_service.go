@@ -593,6 +593,10 @@ func (as *APIService) SendTransaction(ctx context.Context, req *rpcpb.Transactio
 		return nil, err
 	}
 	currentGas := dbVisitor.TotalGasAtTime(t.Publisher, headBlock.Head.Time)
+	err = vm.CheckAddressExist(t.Publisher, dbVisitor)
+	if err != nil {
+		return nil, err
+	}
 	err = vm.CheckTxGasLimitValid(t, currentGas, dbVisitor)
 	if err != nil {
 		return nil, err
@@ -791,7 +795,7 @@ func (as *APIService) GetCandidateBonus(ctx context.Context, req *rpcpb.GetAccou
 		ilog.Errorf("Parsing str %v to float64 failed. err=%v", v, err)
 		return nil, err
 	}
-	if votes < 2100000 {
+	if votes < 500000 {
 		votes = 0
 	}
 	ret.Bonus = candCoef*votes - candMask
