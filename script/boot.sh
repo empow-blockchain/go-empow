@@ -190,7 +190,7 @@ docker-compose pull
 # Get genesis info
 #
 
-$CURL "https://empow.io/$INET//genesis.tar.gz" | tar zxC $PREFIX
+$CURL "https://empow.io/$INET/genesis.tar.gz" | tar zxC $PREFIX
 $CURL "https://empow.io/$INET/iserver.yml" -o $PREFIX/iserver.yml
 
 #
