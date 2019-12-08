@@ -146,10 +146,14 @@ class IssueContract {
         // issue to producer with block reward
         this._issueEM("bonus.empow", onePercentAmount.toFixed(decimal));
         this._issueEM("social.empow", onePercentAmount.toFixed(decimal))
-        this._issueEM(contractName, onePercentAmount.toFixed(decimal));
+        this._issueEM("stake.empow", halfOnePercentAmount.toFixed(8))
+        this._issueEM(contractName, halfOnePercentAmount.toFixed(decimal));
 
         // topup for social
         blockchain.callWithAuth("social.empow", "topup", [onePercentAmount.toFixed(decimal)])
+
+        // topup for social
+        blockchain.callWithAuth("stake.empow", "topup", [halfOnePercentAmount.toFixed(decimal)])
 
         // issue to producer with vote percent
         const succ = blockchain.callWithAuth("vote_producer.empow", "topupCandidateBonus", [
@@ -157,15 +161,6 @@ class IssueContract {
             contractName
         ])[0];
         if (!succ) {
-            // transfer bonus to foundation if topup failed
-            blockchain.transfer(contractName, foundationAcc, halfOnePercentAmount.toFixed(decimal), "");
-        }
-
-        // issue to stake
-        const succ1 = blockchain.callWithAuth("stake.empow", "topup", [
-            halfOnePercentAmount.toFixed(decimal)
-        ])[0];
-        if (!succ1) {
             // transfer bonus to foundation if topup failed
             blockchain.transfer(contractName, foundationAcc, halfOnePercentAmount.toFixed(decimal), "");
         }

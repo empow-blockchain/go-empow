@@ -15,7 +15,7 @@ snapshot:
 p2p:
   listenaddr: 0.0.0.0:30000
   seednodes:
-  chainid: 1020
+  chainid: 1024
   version: 1
   datapath: /var/lib/iserver/p2p/
   inboundConn: 20
@@ -46,9 +46,9 @@ metrics:
   username:
   password:
   enable: false
-  id: iost-testnet:visitor00
+  id: empow-testnet:visitor00
 debug:
   listenaddr: 0.0.0.0:30003
 version:
-  netname: "debugnet"
+  netname: "testnet"
   protocolversion: "1.0"

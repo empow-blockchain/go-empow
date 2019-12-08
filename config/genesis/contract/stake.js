@@ -106,8 +106,6 @@ class Stake {
         this._requireAuth("base.empow", "active")
         amount = this._fixAmount(amount);
 
-        blockchain.deposit("issue.empow", amount.toFixed(), "");
-
         // calc interest per 1 EM stake
         const totalStakeAmount = storage.get(TOTAL_STAKE_AMOUNT)
         let interest = amount
