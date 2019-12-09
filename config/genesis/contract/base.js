@@ -1,7 +1,6 @@
 const producerPermission = "active";
 const voteStatInterval = 1200;
-// const issueInterval = 172800;
-const issueInterval = 200;
+const issueInterval = 172800;
 
 class Base {
     init() {
