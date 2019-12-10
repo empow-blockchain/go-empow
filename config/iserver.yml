@@ -15,7 +15,7 @@ snapshot:
 p2p:
   listenaddr: 0.0.0.0:30000
   seednodes:
-  chainid: 1020
+  chainid: 1024
   version: 1
   datapath: p2p/
   inboundConn: 20
