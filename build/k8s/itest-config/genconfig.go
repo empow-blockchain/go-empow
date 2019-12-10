@@ -20,7 +20,7 @@ func main() {
 	flag.Parse()
 
 	bank := itest.NewAccount(
-		"admin",
+		"EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas",
 		"2yquS3ySrGWPEKywCPzX4RTJugqRh7kJSo5aehsLYPEWkUxBWA39oMrZ7ZxuM4fgyXYs2cPwh5n8aNNpH5x2VyK1",
 		"ed25519",
 	)

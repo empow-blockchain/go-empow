@@ -1,19 +1,21 @@
 package run
 
 import (
-	"github.com/empow-blockchain/go-empow/account"
-	"github.com/empow-blockchain/go-empow/crypto"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/empow-blockchain/go-empow/account"
+	"github.com/empow-blockchain/go-empow/crypto"
+
 	"fmt"
+	"math/rand"
+
 	"github.com/empow-blockchain/go-empow/core/tx"
 	"github.com/empow-blockchain/go-empow/ilog"
 	"github.com/empow-blockchain/go-empow/itest"
 	"github.com/urfave/cli"
-	"math/rand"
 )
 
 // BenchmarkAccountCommand is the subcommand for benchmark.
@@ -58,8 +60,8 @@ func generateAccountTxs(it *itest.ITest, accounts []*itest.Account, tps int) ([]
 		case tIndex < 5:
 			// signUp
 			from := accounts[rand.Intn(len(accounts))]
-			act11 := tx.NewAction("token.empow", "transfer", fmt.Sprintf(`["em","%v","%v","%v",""]`, "admin", from.ID, 10))
-			act12 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v","%v","%v"]`, "admin", from.ID, 10))
+			act11 := tx.NewAction("token.empow", "transfer", fmt.Sprintf(`["em","%v","%v","%v",""]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", from.ID, 10))
+			act12 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v","%v","%v"]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", from.ID, 10))
 			trx1, err := it.GetDefaultAccount().Sign(itest.NewTransaction([]*tx.Action{act11, act12}))
 			if err != nil {
 				return nil, err

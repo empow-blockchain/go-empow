@@ -678,39 +678,6 @@
         ]
       }
     },
-    "/getVoterBonus/{name}/{by_longest_chain}": {
-      "get": {
-        "operationId": "GetVoterBonus",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/rpcpbVoterBonus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name",
-            "description": "account name",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "by_longest_chain",
-            "description": "get account by longest chain's head block or last irreversible block",
-            "in": "path",
-            "required": true,
-            "type": "boolean",
-            "format": "boolean"
-          }
-        ],
-        "tags": [
-          "ApiService"
-        ]
-      }
-    },
     "/sendTx": {
       "post": {
         "summary": "send transaction",
@@ -2019,25 +1986,6 @@
         }
       },
       "description": "The message defines the account's vote info."
-    },
-    "rpcpbVoterBonus": {
-      "type": "object",
-      "properties": {
-        "bonus": {
-          "type": "number",
-          "format": "double",
-          "title": "the totol voter bonus"
-        },
-        "detail": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "number",
-            "format": "double"
-          },
-          "title": "the voter bonus detail"
-        }
-      },
-      "description": "The message defines the getVoterBonus response."
     }
   }
 }

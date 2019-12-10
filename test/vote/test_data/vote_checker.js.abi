@@ -54,17 +54,6 @@
             }]
         },
         {
-            "name": "topupVoterBonus",
-            "args": [
-                "string",
-                "string"
-            ],
-            "amountLimit": [{
-                "token": "*",
-                "val": "unlimited"
-            }]
-        },
-        {
             "name": "voterWithdraw",
             "args": [
             ],

@@ -6,10 +6,11 @@ package rpcpb
 import (
 	context "context"
 	fmt "fmt"
+	math "math"
+
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
-	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1946,17 +1947,13 @@ func (m *GasRatioResponse) GetMedianGasRatio() float64 {
 // The message defines account struct.
 type Account struct {
 	// account name
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	// account balance
 	Balance float64 `protobuf:"fixed64,2,opt,name=balance,proto3" json:"balance,omitempty"`
 	// gas information
 	GasInfo *Account_GasInfo `protobuf:"bytes,3,opt,name=gas_info,json=gasInfo,proto3" json:"gas_info,omitempty"`
 	// ram information
 	RamInfo *Account_RAMInfo `protobuf:"bytes,4,opt,name=ram_info,json=ramInfo,proto3" json:"ram_info,omitempty"`
-	// account permission
-	Permissions map[string]*Account_Permission `protobuf:"bytes,5,rep,name=permissions,proto3" json:"permissions,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// account groups
-	Groups map[string]*Account_Group `protobuf:"bytes,6,rep,name=groups,proto3" json:"groups,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// frozen balance information
 	FrozenBalances []*FrozenBalance `protobuf:"bytes,7,rep,name=frozen_balances,json=frozenBalances,proto3" json:"frozen_balances,omitempty"`
 	// vote information
@@ -1991,9 +1988,9 @@ func (m *Account) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Account proto.InternalMessageInfo
 
-func (m *Account) GetName() string {
+func (m *Account) GetAddress() string {
 	if m != nil {
-		return m.Name
+		return m.Address
 	}
 	return ""
 }
@@ -2015,20 +2012,6 @@ func (m *Account) GetGasInfo() *Account_GasInfo {
 func (m *Account) GetRamInfo() *Account_RAMInfo {
 	if m != nil {
 		return m.RamInfo
-	}
-	return nil
-}
-
-func (m *Account) GetPermissions() map[string]*Account_Permission {
-	if m != nil {
-		return m.Permissions
-	}
-	return nil
-}
-
-func (m *Account) GetGroups() map[string]*Account_Group {
-	if m != nil {
-		return m.Groups
 	}
 	return nil
 }
@@ -2240,196 +2223,10 @@ func (m *Account_RAMInfo) GetTotal() int64 {
 	return 0
 }
 
-// The message defines permission item.
-type Account_Item struct {
-	// permission name or key pair id
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	// whether it's a key pair
-	IsKeyPair bool `protobuf:"varint,2,opt,name=is_key_pair,json=isKeyPair,proto3" json:"is_key_pair,omitempty"`
-	// permission weight
-	Weight int64 `protobuf:"varint,3,opt,name=weight,proto3" json:"weight,omitempty"`
-	// permission
-	Permission           string   `protobuf:"bytes,4,opt,name=permission,proto3" json:"permission,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Account_Item) Reset()         { *m = Account_Item{} }
-func (m *Account_Item) String() string { return proto.CompactTextString(m) }
-func (*Account_Item) ProtoMessage()    {}
-func (*Account_Item) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1b773bf3e696f610, []int{22, 3}
-}
-
-func (m *Account_Item) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Account_Item.Unmarshal(m, b)
-}
-func (m *Account_Item) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Account_Item.Marshal(b, m, deterministic)
-}
-func (m *Account_Item) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Account_Item.Merge(m, src)
-}
-func (m *Account_Item) XXX_Size() int {
-	return xxx_messageInfo_Account_Item.Size(m)
-}
-func (m *Account_Item) XXX_DiscardUnknown() {
-	xxx_messageInfo_Account_Item.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Account_Item proto.InternalMessageInfo
-
-func (m *Account_Item) GetId() string {
-	if m != nil {
-		return m.Id
-	}
-	return ""
-}
-
-func (m *Account_Item) GetIsKeyPair() bool {
-	if m != nil {
-		return m.IsKeyPair
-	}
-	return false
-}
-
-func (m *Account_Item) GetWeight() int64 {
-	if m != nil {
-		return m.Weight
-	}
-	return 0
-}
-
-func (m *Account_Item) GetPermission() string {
-	if m != nil {
-		return m.Permission
-	}
-	return ""
-}
-
-// The message defines a permission group.
-type Account_Group struct {
-	// group name
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// permission items
-	Items                []*Account_Item `protobuf:"bytes,2,rep,name=items,proto3" json:"items,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_unrecognized     []byte          `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
-}
-
-func (m *Account_Group) Reset()         { *m = Account_Group{} }
-func (m *Account_Group) String() string { return proto.CompactTextString(m) }
-func (*Account_Group) ProtoMessage()    {}
-func (*Account_Group) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1b773bf3e696f610, []int{22, 4}
-}
-
-func (m *Account_Group) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Account_Group.Unmarshal(m, b)
-}
-func (m *Account_Group) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Account_Group.Marshal(b, m, deterministic)
-}
-func (m *Account_Group) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Account_Group.Merge(m, src)
-}
-func (m *Account_Group) XXX_Size() int {
-	return xxx_messageInfo_Account_Group.Size(m)
-}
-func (m *Account_Group) XXX_DiscardUnknown() {
-	xxx_messageInfo_Account_Group.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Account_Group proto.InternalMessageInfo
-
-func (m *Account_Group) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *Account_Group) GetItems() []*Account_Item {
-	if m != nil {
-		return m.Items
-	}
-	return nil
-}
-
-// The message defines the permission struct.
-type Account_Permission struct {
-	// permission name
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// permission groups
-	GroupNames []string `protobuf:"bytes,2,rep,name=group_names,json=groupNames,proto3" json:"group_names,omitempty"`
-	// permission items
-	Items []*Account_Item `protobuf:"bytes,3,rep,name=items,proto3" json:"items,omitempty"`
-	// permission threshold
-	Threshold            int64    `protobuf:"varint,4,opt,name=threshold,proto3" json:"threshold,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Account_Permission) Reset()         { *m = Account_Permission{} }
-func (m *Account_Permission) String() string { return proto.CompactTextString(m) }
-func (*Account_Permission) ProtoMessage()    {}
-func (*Account_Permission) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1b773bf3e696f610, []int{22, 5}
-}
-
-func (m *Account_Permission) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Account_Permission.Unmarshal(m, b)
-}
-func (m *Account_Permission) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Account_Permission.Marshal(b, m, deterministic)
-}
-func (m *Account_Permission) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Account_Permission.Merge(m, src)
-}
-func (m *Account_Permission) XXX_Size() int {
-	return xxx_messageInfo_Account_Permission.Size(m)
-}
-func (m *Account_Permission) XXX_DiscardUnknown() {
-	xxx_messageInfo_Account_Permission.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Account_Permission proto.InternalMessageInfo
-
-func (m *Account_Permission) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *Account_Permission) GetGroupNames() []string {
-	if m != nil {
-		return m.GroupNames
-	}
-	return nil
-}
-
-func (m *Account_Permission) GetItems() []*Account_Item {
-	if m != nil {
-		return m.Items
-	}
-	return nil
-}
-
-func (m *Account_Permission) GetThreshold() int64 {
-	if m != nil {
-		return m.Threshold
-	}
-	return 0
-}
-
 // The message defines the get account request.
 type GetAccountRequest struct {
 	// account name
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Address string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// get account by longest chain's head block or last irreversible block
 	ByLongestChain       bool     `protobuf:"varint,2,opt,name=by_longest_chain,json=byLongestChain,proto3" json:"by_longest_chain,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -2462,9 +2259,9 @@ func (m *GetAccountRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetAccountRequest proto.InternalMessageInfo
 
-func (m *GetAccountRequest) GetName() string {
+func (m *GetAccountRequest) GetAddress() string {
 	if m != nil {
-		return m.Name
+		return m.Address
 	}
 	return ""
 }
@@ -3655,56 +3452,6 @@ func (m *SubscribeResponse) GetEvent() *Event {
 	return nil
 }
 
-// The message defines the getVoterBonus response.
-type VoterBonus struct {
-	// the totol voter bonus
-	Bonus float64 `protobuf:"fixed64,1,opt,name=bonus,proto3" json:"bonus,omitempty"`
-	// the voter bonus detail
-	Detail               map[string]float64 `protobuf:"bytes,2,rep,name=detail,proto3" json:"detail,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"fixed64,2,opt,name=value,proto3"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
-}
-
-func (m *VoterBonus) Reset()         { *m = VoterBonus{} }
-func (m *VoterBonus) String() string { return proto.CompactTextString(m) }
-func (*VoterBonus) ProtoMessage()    {}
-func (*VoterBonus) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1b773bf3e696f610, []int{43}
-}
-
-func (m *VoterBonus) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_VoterBonus.Unmarshal(m, b)
-}
-func (m *VoterBonus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_VoterBonus.Marshal(b, m, deterministic)
-}
-func (m *VoterBonus) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_VoterBonus.Merge(m, src)
-}
-func (m *VoterBonus) XXX_Size() int {
-	return xxx_messageInfo_VoterBonus.Size(m)
-}
-func (m *VoterBonus) XXX_DiscardUnknown() {
-	xxx_messageInfo_VoterBonus.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_VoterBonus proto.InternalMessageInfo
-
-func (m *VoterBonus) GetBonus() float64 {
-	if m != nil {
-		return m.Bonus
-	}
-	return 0
-}
-
-func (m *VoterBonus) GetDetail() map[string]float64 {
-	if m != nil {
-		return m.Detail
-	}
-	return nil
-}
-
 // The message defines the getCandidateBonus response.
 type CandidateBonus struct {
 	// the candidate bonus
@@ -3950,14 +3697,9 @@ func init() {
 	proto.RegisterType((*GetProducerVoteInfoResponse)(nil), "rpcpb.GetProducerVoteInfoResponse")
 	proto.RegisterType((*GasRatioResponse)(nil), "rpcpb.GasRatioResponse")
 	proto.RegisterType((*Account)(nil), "rpcpb.Account")
-	proto.RegisterMapType((map[string]*Account_Group)(nil), "rpcpb.Account.GroupsEntry")
-	proto.RegisterMapType((map[string]*Account_Permission)(nil), "rpcpb.Account.PermissionsEntry")
 	proto.RegisterType((*Account_PledgeInfo)(nil), "rpcpb.Account.PledgeInfo")
 	proto.RegisterType((*Account_GasInfo)(nil), "rpcpb.Account.GasInfo")
 	proto.RegisterType((*Account_RAMInfo)(nil), "rpcpb.Account.RAMInfo")
-	proto.RegisterType((*Account_Item)(nil), "rpcpb.Account.Item")
-	proto.RegisterType((*Account_Group)(nil), "rpcpb.Account.Group")
-	proto.RegisterType((*Account_Permission)(nil), "rpcpb.Account.Permission")
 	proto.RegisterType((*GetAccountRequest)(nil), "rpcpb.GetAccountRequest")
 	proto.RegisterType((*Contract)(nil), "rpcpb.Contract")
 	proto.RegisterType((*Contract_ABI)(nil), "rpcpb.Contract.ABI")
@@ -3981,8 +3723,6 @@ func init() {
 	proto.RegisterType((*SubscribeRequest)(nil), "rpcpb.SubscribeRequest")
 	proto.RegisterType((*SubscribeRequest_Filter)(nil), "rpcpb.SubscribeRequest.Filter")
 	proto.RegisterType((*SubscribeResponse)(nil), "rpcpb.SubscribeResponse")
-	proto.RegisterType((*VoterBonus)(nil), "rpcpb.VoterBonus")
-	proto.RegisterMapType((map[string]float64)(nil), "rpcpb.VoterBonus.DetailEntry")
 	proto.RegisterType((*CandidateBonus)(nil), "rpcpb.CandidateBonus")
 	proto.RegisterType((*GetTokenInfoRequest)(nil), "rpcpb.GetTokenInfoRequest")
 	proto.RegisterType((*TokenInfo)(nil), "rpcpb.TokenInfo")
@@ -4301,7 +4041,6 @@ type ApiServiceClient interface {
 	ExecTransaction(ctx context.Context, in *TransactionRequest, opts ...grpc.CallOption) (*TxReceipt, error)
 	// subscribe an event
 	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (ApiService_SubscribeClient, error)
-	GetVoterBonus(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*VoterBonus, error)
 	GetCandidateBonus(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*CandidateBonus, error)
 	GetTokenInfo(ctx context.Context, in *GetTokenInfoRequest, opts ...grpc.CallOption) (*TokenInfo, error)
 }
@@ -4535,15 +4274,6 @@ func (x *apiServiceSubscribeClient) Recv() (*SubscribeResponse, error) {
 	return m, nil
 }
 
-func (c *apiServiceClient) GetVoterBonus(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*VoterBonus, error) {
-	out := new(VoterBonus)
-	err := c.cc.Invoke(ctx, "/rpcpb.ApiService/GetVoterBonus", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *apiServiceClient) GetCandidateBonus(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*CandidateBonus, error) {
 	out := new(CandidateBonus)
 	err := c.cc.Invoke(ctx, "/rpcpb.ApiService/GetCandidateBonus", in, out, opts...)
@@ -4608,7 +4338,6 @@ type ApiServiceServer interface {
 	ExecTransaction(context.Context, *TransactionRequest) (*TxReceipt, error)
 	// subscribe an event
 	Subscribe(*SubscribeRequest, ApiService_SubscribeServer) error
-	GetVoterBonus(context.Context, *GetAccountRequest) (*VoterBonus, error)
 	GetCandidateBonus(context.Context, *GetAccountRequest) (*CandidateBonus, error)
 	GetTokenInfo(context.Context, *GetTokenInfoRequest) (*TokenInfo, error)
 }
@@ -5016,24 +4745,6 @@ func (x *apiServiceSubscribeServer) Send(m *SubscribeResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _ApiService_GetVoterBonus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAccountRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).GetVoterBonus(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/rpcpb.ApiService/GetVoterBonus",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetVoterBonus(ctx, req.(*GetAccountRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ApiService_GetCandidateBonus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetAccountRequest)
 	if err := dec(in); err != nil {
@@ -5157,10 +4868,6 @@ var _ApiService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExecTransaction",
 			Handler:    _ApiService_ExecTransaction_Handler,
-		},
-		{
-			MethodName: "GetVoterBonus",
-			Handler:    _ApiService_GetVoterBonus_Handler,
 		},
 		{
 			MethodName: "GetCandidateBonus",

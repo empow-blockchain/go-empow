@@ -229,7 +229,7 @@ func (s *EMPOWDevSDK) GetRAMInfo() (*rpcpb.RAMInfoResponse, error) {
 }
 
 // GetAccountInfo return account info
-func (s *EMPOWDevSDK) GetAccountInfo(id string) (*rpcpb.Account, error) {
+func (s *EMPOWDevSDK) GetAccountInfo(address string) (*rpcpb.Account, error) {
 	if s.rpcConn == nil {
 		if err := s.Connect(); err != nil {
 			return nil, err
@@ -237,7 +237,7 @@ func (s *EMPOWDevSDK) GetAccountInfo(id string) (*rpcpb.Account, error) {
 		defer s.CloseConn()
 	}
 	client := rpcpb.NewApiServiceClient(s.rpcConn)
-	req := &rpcpb.GetAccountRequest{Name: id, ByLongestChain: s.useLongestChain}
+	req := &rpcpb.GetAccountRequest{Address: address, ByLongestChain: s.useLongestChain}
 	value, err := client.GetAccount(context.Background(), req)
 	if err != nil {
 		return nil, err

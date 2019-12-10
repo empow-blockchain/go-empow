@@ -103,8 +103,8 @@ func Test_VoteBonus(t *testing.T) {
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc1.ID), acc0.ID, acc0.KeyPair)
 	assert.Nil(t, err)
 	assert.Empty(t, r.Status.Message)
-	assert.Equal(t, int64(156434972+14625017), s.Visitor.TokenBalance("em", acc1.ID))                  // 14625017 = (402187976*(2/55))
-	assert.Equal(t, int64(100402187976-14625017), s.Visitor.TokenBalance("em", "vote_producer.empow")) // half to voterBonus
+	assert.Equal(t, int64(156434972+14625017), s.Visitor.TokenBalance("em", acc1.ID)) // 14625017 = (402187976*(2/55))
+	assert.Equal(t, int64(100402187976-14625017), s.Visitor.TokenBalance("em", "vote_producer.empow"))
 
 	r, err = s.Call("vote_producer.empow", "candidateWithdraw", fmt.Sprintf(`["%s"]`, acc1.ID), acc1.ID, acc1.KeyPair)
 	assert.Nil(t, err)

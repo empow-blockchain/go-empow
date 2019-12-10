@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"testing"
 
+	"github.com/empow-blockchain/go-empow/ilog"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
 	"github.com/golang/mock/gomock"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/empow-blockchain/go-empow/ilog"
-	"github.com/empow-blockchain/go-empow/rpc/pb"
 	"google.golang.org/grpc"
 )
 
@@ -207,7 +207,7 @@ func newMockAPI() rpcpb.ApiServiceServer {
 	}, nil)
 
 	api.EXPECT().GetAccount(gomock.Any(), gomock.Any()).AnyTimes().Return(&rpcpb.Account{
-		Name:    "admin",
+		Address: "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas",
 		Balance: 20000.3,
 		GasInfo: &rpcpb.Account_GasInfo{
 			CurrentTotal:  1000.2,
@@ -218,27 +218,6 @@ func newMockAPI() rpcpb.ApiServiceServer {
 			},
 		},
 		RamInfo: &rpcpb.Account_RAMInfo{Available: 111111},
-		Permissions: map[string]*rpcpb.Account_Permission{
-			"owner": {
-				Name:       "owner",
-				GroupNames: []string{"active", "owner"},
-				Items: []*rpcpb.Account_Item{
-					{Id: "aaa", IsKeyPair: false, Weight: 1, Permission: "aaa"},
-					{Id: "bbb", IsKeyPair: true, Weight: 2, Permission: "bbbb"},
-				},
-				Threshold: 3,
-			},
-		},
-		Groups: map[string]*rpcpb.Account_Group{
-			"group1": {
-				Name: "group1",
-
-				Items: []*rpcpb.Account_Item{
-					{Id: "aaa", IsKeyPair: false, Weight: 1, Permission: "aaa"},
-					{Id: "bbb", IsKeyPair: true, Weight: 2, Permission: "bbbb"},
-				},
-			},
-		},
 		FrozenBalances: []*rpcpb.FrozenBalance{
 			{Amount: 111.2, Time: 2343242},
 		},

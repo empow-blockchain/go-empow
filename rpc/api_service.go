@@ -225,7 +225,7 @@ func (as *APIService) GetBlockByNumber(ctx context.Context, req *rpcpb.GetBlockB
 
 // GetAccount returns account information corresponding to the given account name.
 func (as *APIService) GetAccount(ctx context.Context, req *rpcpb.GetAccountRequest) (*rpcpb.Account, error) {
-	err := checkIDValid(req.GetName())
+	err := checkIDValid(req.GetAddress())
 	if err != nil {
 		return nil, err
 	}
@@ -235,16 +235,16 @@ func (as *APIService) GetAccount(ctx context.Context, req *rpcpb.GetAccountReque
 		return nil, err
 	}
 	// pack basic account information
-	acc, _ := host.ReadAuth(dbVisitor, req.GetName())
+	acc, _ := host.ReadAuth(dbVisitor, req.GetAddress())
 	if acc == nil {
 		return nil, errors.New("account not found")
 	}
 	ret := toPbAccount(acc)
 
 	// pack balance and ram information
-	balance := dbVisitor.TokenBalanceFixed("em", req.GetName()).ToFloat()
+	balance := dbVisitor.TokenBalanceFixed("em", req.GetAddress()).ToFloat()
 	ret.Balance = balance
-	ramInfo := dbVisitor.RAMHandler.GetAccountRAMInfo(req.GetName())
+	ramInfo := dbVisitor.RAMHandler.GetAccountRAMInfo(req.GetAddress())
 	ret.RamInfo = &rpcpb.Account_RAMInfo{
 		Available: ramInfo.Available,
 		Used:      ramInfo.Used,
@@ -258,12 +258,12 @@ func (as *APIService) GetAccount(ctx context.Context, req *rpcpb.GetAccountReque
 	} else {
 		blkTime = as.bc.LinkedRoot().Head.Time
 	}
-	pGas := dbVisitor.PGasAtTime(req.GetName(), blkTime)
-	tGas := dbVisitor.TGas(req.GetName())
+	pGas := dbVisitor.PGasAtTime(req.GetAddress(), blkTime)
+	tGas := dbVisitor.TGas(req.GetAddress())
 	totalGas := pGas.Add(tGas)
-	gasLimit := dbVisitor.GasLimit(req.GetName())
-	gasRate := dbVisitor.GasPledgeTotal(req.GetName()).Multiply(database.GasIncreaseRate)
-	pledgedInfo := dbVisitor.PledgerInfo(req.GetName())
+	gasLimit := dbVisitor.GasLimit(req.GetAddress())
+	gasRate := dbVisitor.GasPledgeTotal(req.GetAddress()).Multiply(database.GasIncreaseRate)
+	pledgedInfo := dbVisitor.PledgerInfo(req.GetAddress())
 	ret.GasInfo = &rpcpb.Account_GasInfo{
 		CurrentTotal:    totalGas.ToFloat(),
 		PledgeGas:       pGas.ToFloat(),
@@ -279,12 +279,12 @@ func (as *APIService) GetAccount(ctx context.Context, req *rpcpb.GetAccountReque
 	}
 
 	// pack frozen balance information
-	frozen := dbVisitor.AllFreezedTokenBalanceFixed("em", req.GetName())
+	frozen := dbVisitor.AllFreezedTokenBalanceFixed("em", req.GetAddress())
 	unfrozen, stillFrozen := as.getUnfrozenToken(frozen, req.ByLongestChain)
 	ret.FrozenBalances = stillFrozen
 	ret.Balance += unfrozen
 
-	voteInfo := dbVisitor.GetAccountVoteInfo(req.GetName())
+	voteInfo := dbVisitor.GetAccountVoteInfo(req.GetAddress())
 	for _, v := range voteInfo {
 		ret.VoteInfos = append(ret.VoteInfos, &rpcpb.VoteInfo{
 			Option:       v.Option,
@@ -665,79 +665,9 @@ func (as *APIService) Subscribe(req *rpcpb.SubscribeRequest, res rpcpb.ApiServic
 	}
 }
 
-// GetVoterBonus returns the bonus a voter can claim.
-func (as *APIService) GetVoterBonus(ctx context.Context, req *rpcpb.GetAccountRequest) (*rpcpb.VoterBonus, error) {
-	err := checkIDValid(req.GetName())
-	if err != nil {
-		return nil, err
-	}
-	ret := &rpcpb.VoterBonus{
-		Detail: make(map[string]float64),
-	}
-	dbVisitor, bcn, err := as.getStateDBVisitor(req.ByLongestChain)
-	if err != nil {
-		return nil, err
-	}
-	h := host.NewHost(host.NewContext(nil), dbVisitor, bcn.Head.Rules(), nil, nil)
-
-	voter := req.GetName()
-	value, _ := h.GlobalMapGet("vote.empow", "u_1", voter)
-	if value == nil {
-		return ret, nil
-	}
-	var userVotes map[string][]interface{}
-	err = json.Unmarshal([]byte(value.(string)), &userVotes)
-	if err != nil {
-		ilog.Errorf("JSON decoding failed. str=%v, err=%v", value, err)
-		return nil, err
-	}
-
-	for k, v := range userVotes {
-		votes, err := strconv.ParseFloat(v[0].(string), 64)
-		if err != nil {
-			ilog.Errorf("Parsing str %v to float64 failed. err=%v", v[0], err)
-			continue
-		}
-		voterCoef := float64(0)
-		value, _ := h.GlobalMapGet("vote_producer.empow", "voterCoef", k)
-		if value != nil {
-			vc := value.(string)
-			if len(vc) > 1 {
-				vc = vc[1 : len(vc)-1]
-			}
-			voterCoef, err = strconv.ParseFloat(vc, 64)
-			if err != nil {
-				ilog.Errorf("Parsing str %v to float64 failed. err=%v", vc, err)
-				return nil, err
-			}
-		}
-		voterMask := float64(0)
-		value, _ = h.GlobalMapGet("vote_producer.empow", "v_"+k, voter)
-		if value != nil {
-			vm := value.(string)
-			if len(vm) > 1 {
-				vm = vm[1 : len(vm)-1]
-			}
-			voterMask, err = strconv.ParseFloat(vm, 64)
-			if err != nil {
-				ilog.Errorf("Parsing str %v to float64 failed. err=%v", vm, err)
-				return nil, err
-			}
-
-		}
-		earning := voterCoef*votes - voterMask
-		earning = math.Trunc(earning*1e8) / 1e8
-		if earning > 0 {
-			ret.Detail[k] = earning
-			ret.Bonus += earning
-		}
-	}
-	return ret, nil
-}
-
 // GetCandidateBonus returns the bonus a candidate can claim.
 func (as *APIService) GetCandidateBonus(ctx context.Context, req *rpcpb.GetAccountRequest) (*rpcpb.CandidateBonus, error) {
-	err := checkIDValid(req.GetName())
+	err := checkIDValid(req.GetAddress())
 	if err != nil {
 		return nil, err
 	}
@@ -748,7 +678,7 @@ func (as *APIService) GetCandidateBonus(ctx context.Context, req *rpcpb.GetAccou
 	}
 	h := host.NewHost(host.NewContext(nil), dbVisitor, bcn.Head.Rules(), nil, nil)
 
-	candidate := req.GetName()
+	candidate := req.GetAddress()
 	candCoef := float64(0)
 	value, _ := h.GlobalGet("vote_producer.empow", "candCoef")
 	if value != nil {

@@ -12,7 +12,7 @@ import (
 
 	"github.com/empow-blockchain/go-empow/core/tx"
 	"github.com/empow-blockchain/go-empow/ilog"
-	"github.com/empow-blockchain/go-empow/rpc/pb"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
 	"google.golang.org/grpc"
 )
 
@@ -88,7 +88,7 @@ func (c *Client) GetReceipt(hash string) (*Receipt, error) {
 }
 
 // GetAccount will get account by name
-func (c *Client) GetAccount(name string) (*Account, error) {
+func (c *Client) GetAccount(address string) (*Account, error) {
 	grpc, err := c.GetGRPC()
 	if err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func (c *Client) GetAccount(name string) (*Account, error) {
 	resp, err := grpc.GetAccount(
 		context.Background(),
 		&rpcpb.GetAccountRequest{
-			Name:           name,
+			Address:        address,
 			ByLongestChain: true,
 		},
 	)
@@ -107,7 +107,7 @@ func (c *Client) GetAccount(name string) (*Account, error) {
 
 	// TODO: Get account permission by resp
 	account := &Account{
-		ID:      name,
+		ID:      address,
 		balance: strconv.FormatFloat(resp.GetBalance(), 'f', -1, 64),
 	}
 

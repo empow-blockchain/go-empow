@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/empow-blockchain/go-empow/account"
+
 	"github.com/empow-blockchain/go-empow/core/contract"
 
 	"reflect"
@@ -193,6 +195,8 @@ func (t *ITest) CreateAccount(creator *Account, name string, check bool) (*Accou
 	key := t.keys[kIndex]
 	cIndex := rand.Intn(len(t.clients))
 	client := t.clients[cIndex]
+
+	name = account.PubkeyToAddress(key.Pubkey)
 
 	account, err := client.CreateAccount(creator, name, key, check)
 	if err != nil {

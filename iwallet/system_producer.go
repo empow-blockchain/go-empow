@@ -283,23 +283,6 @@ var pwithdrawCmd = &cobra.Command{
 	},
 }
 
-var vwithdrawCmd = &cobra.Command{
-	Use:     "voter-withdraw",
-	Aliases: []string{"vwithdraw"},
-	Short:   "Withdraw all voting reward for voter",
-	Long:    `Withdraw all voting reward for voter`,
-	Example: `  iwallet sys voter-withdraw --address EM2ZsDPRrJHHKgc7w719Ds9X9Z7QCcuMB4bFxMynDR2TYfQqt`,
-	Args: func(cmd *cobra.Command, args []string) error {
-		return checkAccount(cmd)
-	},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if target == "" {
-			target = accountName
-		}
-		return saveOrSendAction("vote_producer.empow", "voterWithdraw", target)
-	},
-}
-
 func init() {
 	systemCmd.AddCommand(voteCmd)
 	systemCmd.AddCommand(unvoteCmd)
@@ -333,6 +316,4 @@ func init() {
 	systemCmd.AddCommand(predeemCmd)
 	systemCmd.AddCommand(pwithdrawCmd)
 	pwithdrawCmd.Flags().StringVarP(&target, "target", "", "", "target address (default is the account by flag --address himself/herself)")
-	systemCmd.AddCommand(vwithdrawCmd)
-	vwithdrawCmd.Flags().StringVarP(&target, "target", "", "", "target address (default is the account by flag --address himself/herself)")
 }

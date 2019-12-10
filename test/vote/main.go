@@ -3,26 +3,27 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/empow-blockchain/go-empow/sdk"
 	"log"
 	"math/rand"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/empow-blockchain/go-empow/sdk"
+
 	"github.com/empow-blockchain/go-empow/account"
-	"github.com/empow-blockchain/go-empow/rpc/pb"
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
 
 	"github.com/empow-blockchain/go-empow/iwallet"
 )
 
 var (
-	iostSDKs     = make(map[string]*sdk.EMPOWDevSDK)
-	witness      = []string{}
-	accounts     = []string{}
-	server       = "localhost:30002"
-	contractName = ""
-	pledgeGAS    = int64(0)
+	iostSDKs      = make(map[string]*sdk.EMPOWDevSDK)
+	witness       = []string{}
+	accounts      = []string{}
+	server        = "localhost:30002"
+	contractName  = ""
+	pledgeGAS     = int64(0)
 	exchangeEMPOW = false
 )
 
@@ -38,7 +39,7 @@ func parseFlag() {
 	a := flag.String("a", "", "account names")         // format: acc1,acc2
 	w := flag.String("w", "", "witness account names") // format: acc1,acc2
 	p := flag.Int64("p", 0, "pledge gas for admin")    // format: 1234
-	e := flag.Bool("e", false, "call exchangeEMPOW")    // format: true
+	e := flag.Bool("e", false, "call exchangeEMPOW")   // format: true
 	flag.Parse()
 
 	server = *s
@@ -57,7 +58,7 @@ func parseFlag() {
 
 func initSDKs() {
 	accs := append(accounts, witness...)
-	accs = append(accs, "admin")
+	accs = append(accs, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas")
 	for _, a := range accs {
 		iostSDK := sdk.NewEMPOWDevSDK()
 		iostSDK.SetChainID(1024)
@@ -76,12 +77,12 @@ func initSDKs() {
 }
 
 func prepareAccounts() {
-	iostSDK := iostSDKs["admin"]
-	kp, err := iwallet.LoadKeyPair("admin")
+	iostSDK := iostSDKs["EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas"]
+	kp, err := iwallet.LoadKeyPair("EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas")
 	if err != nil {
 		panic(err)
 	}
-	iostSDK.SetAccount("admin", kp)
+	iostSDK.SetAccount("EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", kp)
 	if pledgeGAS > 0 {
 		err = iostSDK.PledgeForGasAndRAM(pledgeGAS, 0)
 		if err != nil {
@@ -123,15 +124,13 @@ func run() {
 	withdrawBlockBonus()
 	withdrawVoteBonus()
 	unvote()
-	topupVoterBonus()
-	withdrawVoterBonus()
 	checkResult()
 }
 
 func publish() {
 	codePath := os.Getenv("GOPATH") + "/src/github.com/empow-blockchain/go-empow/test/vote/test_data/vote_checker.js"
 	abiPath := codePath + ".abi"
-	_, txHash, err := iostSDKs["admin"].PublishContract(codePath, abiPath, "", false, "")
+	_, txHash, err := iostSDKs["EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas"].PublishContract(codePath, abiPath, "", false, "")
 	if err != nil {
 		log.Fatalf("publish contract error: %v", err)
 	}
@@ -157,7 +156,7 @@ func unvote() {
 }
 
 func issueEM() {
-	iostSDKs["admin"].SendTxFromActions([]*rpcpb.Action{
+	iostSDKs["EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas"].SendTxFromActions([]*rpcpb.Action{
 		sdk.NewAction(contractName, "issueEM", `[]`),
 	})
 }
@@ -183,26 +182,8 @@ func withdrawVoteBonus() {
 	}
 }
 
-func topupVoterBonus() {
-	iostSDK := iostSDKs["admin"]
-	for _, acc := range witness {
-		iostSDK.SendTxFromActions([]*rpcpb.Action{
-			sdk.NewAction(contractName, "topupVoterBonus", fmt.Sprintf(`["%v", "%v"]`, acc, (rand.Intn(10)+2)*100000)),
-		})
-	}
-}
-
-func withdrawVoterBonus() {
-	for _, acc := range accounts {
-		iostSDK := iostSDKs[acc]
-		iostSDK.SendTxFromActions([]*rpcpb.Action{
-			sdk.NewAction(contractName, "voterWithdraw", `[]`),
-		})
-	}
-}
-
 func checkResult() {
-	iostSDKs["admin"].SendTxFromActions([]*rpcpb.Action{
+	iostSDKs["EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas"].SendTxFromActions([]*rpcpb.Action{
 		sdk.NewAction(contractName, "checkResult", `[]`),
 	})
 }

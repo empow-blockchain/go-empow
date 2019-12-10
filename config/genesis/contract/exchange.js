@@ -2,10 +2,11 @@ const ADMIN_PERMISSION = "active";
 
 class Exchange {
     init() {
+
     }
 
     can_update(data) {
-        this._requireAuth("admin", ADMIN_PERMISSION);
+        this._requireAuth("EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", ADMIN_PERMISSION);
         return true;
     }
 

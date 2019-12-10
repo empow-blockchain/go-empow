@@ -198,8 +198,8 @@ var BenchmarkToken721Action = func(c *cli.Context) error {
 				tokenOffset++
 				from := accounts[rand.Intn(len(accounts))]
 
-				act0 := tx.NewAction("ram.empow", "buy", fmt.Sprintf(`["%v", "%v", %v]`, "admin", from.ID, 1000))
-				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
+				act0 := tx.NewAction("ram.empow", "buy", fmt.Sprintf(`["%v", "%v", %v]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", from.ID, 1000))
+				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", from.ID, 10))
 				tx0 := itest.NewTransaction([]*tx.Action{act0, act1})
 				trx, err := it.GetDefaultAccount().Sign(tx0)
 				if err != nil {
@@ -225,8 +225,8 @@ var BenchmarkToken721Action = func(c *cli.Context) error {
 				}
 				issuer := accountMap[tokenMap[tokenSym].issuer]
 				to := accounts[rand.Intn(len(accounts))]
-				act0 := tx.NewAction("ram.empow", "buy", fmt.Sprintf(`["%v", "%v", %v]`, "admin", issuer.ID, 1000))
-				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", issuer.ID, 10))
+				act0 := tx.NewAction("ram.empow", "buy", fmt.Sprintf(`["%v", "%v", %v]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", issuer.ID, 1000))
+				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", issuer.ID, 10))
 				tx0 := itest.NewTransaction([]*tx.Action{act0, act1})
 				trx, err := it.GetDefaultAccount().Sign(tx0)
 				if err != nil {
@@ -260,8 +260,8 @@ var BenchmarkToken721Action = func(c *cli.Context) error {
 					break
 				}
 				to := accounts[rand.Intn(len(accounts))]
-				act0 := tx.NewAction("ram.empow", "buy", fmt.Sprintf(`["%v", "%v", %v]`, "admin", from.ID, 1000))
-				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
+				act0 := tx.NewAction("ram.empow", "buy", fmt.Sprintf(`["%v", "%v", %v]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", from.ID, 1000))
+				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", from.ID, 10))
 				tx0 := itest.NewTransaction([]*tx.Action{act0, act1})
 				trx, err := it.GetDefaultAccount().Sign(tx0)
 				if err != nil {
@@ -290,7 +290,7 @@ var BenchmarkToken721Action = func(c *cli.Context) error {
 					tokenSym = tokenList[0]
 				}
 				from := accountMap[tokenMap[tokenSym].acclist[rand.Intn(len(tokenMap[tokenSym].acclist))]]
-				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
+				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", from.ID, 10))
 				tx0 := itest.NewTransaction([]*tx.Action{act1})
 				trx, err := it.GetDefaultAccount().Sign(tx0)
 				if err != nil {
@@ -316,7 +316,7 @@ var BenchmarkToken721Action = func(c *cli.Context) error {
 				}
 				from := accounts[rand.Intn(len(accounts))]
 				tokenID := rand.Intn(tokenMap[tokenSym].supply)
-				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
+				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", from.ID, 10))
 				tx0 := itest.NewTransaction([]*tx.Action{act1})
 				trx, err := it.GetDefaultAccount().Sign(tx0)
 				if err != nil {
@@ -347,7 +347,7 @@ var BenchmarkToken721Action = func(c *cli.Context) error {
 					idx = rand.Intn(len(v))
 					break
 				}
-				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
+				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", from.ID, 10))
 				tx0 := itest.NewTransaction([]*tx.Action{act1})
 				trx, err := it.GetDefaultAccount().Sign(tx0)
 				if err != nil {
@@ -373,7 +373,7 @@ var BenchmarkToken721Action = func(c *cli.Context) error {
 				}
 				from := accounts[rand.Intn(len(accounts))]
 				tokenID := rand.Intn(tokenMap[tokenSym].supply)
-				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "admin", from.ID, 10))
+				act1 := tx.NewAction("gas.empow", "pledge", fmt.Sprintf(`["%v", "%v", "%v"]`, "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas", from.ID, 10))
 				tx0 := itest.NewTransaction([]*tx.Action{act1})
 				trx, err := it.GetDefaultAccount().Sign(tx0)
 				if err != nil {

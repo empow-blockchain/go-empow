@@ -3,9 +3,10 @@ package run
 import (
 	"context"
 	"fmt"
-	"github.com/empow-blockchain/go-empow/rpc/pb"
 	"math/rand"
 	"time"
+
+	rpcpb "github.com/empow-blockchain/go-empow/rpc/pb"
 
 	"github.com/empow-blockchain/go-empow/ilog"
 	"github.com/empow-blockchain/go-empow/itest"
@@ -90,7 +91,7 @@ func loopGetStorage(it *itest.ITest, interval float64) {
 		} else if r == 3 {
 			_, _, _, err = c.GetContractStorage("token.empow", "TBadmin", "em")
 		} else if r == 4 {
-			_, _, _, err = c.GetContractStorage("vote_producer.empow", "producerTable", "admin")
+			_, _, _, err = c.GetContractStorage("vote_producer.empow", "producerTable", "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas")
 		}
 		if err != nil {
 			ilog.Errorf("cannot get contract storage %v", err)
@@ -159,7 +160,7 @@ func loopGetAccount(it *itest.ITest, interval float64) {
 			continue
 		}
 		_, err = c.GetAccount(context.Background(), &rpcpb.GetAccountRequest{
-			Name:           "admin",
+			Address:        "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas",
 			ByLongestChain: rand.Int()%2 == 0,
 		})
 		if err != nil {

@@ -8,12 +8,13 @@ import (
 	"strconv"
 	"sync"
 
+	"strings"
+
 	"github.com/empow-blockchain/go-empow/account"
 	"github.com/empow-blockchain/go-empow/common"
 	"github.com/empow-blockchain/go-empow/core/tx"
 	"github.com/empow-blockchain/go-empow/crypto"
 	"github.com/empow-blockchain/go-empow/ilog"
-	"strings"
 )
 
 // Account is account of user

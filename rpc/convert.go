@@ -102,46 +102,9 @@ func toPbBlock(blk *block.Block, complete bool) *rpcpb.Block {
 	return ret
 }
 
-func toPbItem(item *account.Item) *rpcpb.Account_Item {
-	return &rpcpb.Account_Item{
-		Id:         item.ID,
-		Permission: item.Permission,
-		IsKeyPair:  item.IsKeyPair,
-		Weight:     int64(item.Weight),
-	}
-}
-
-func toPbGroup(group *account.Group) *rpcpb.Account_Group {
-	ret := &rpcpb.Account_Group{Name: group.Name}
-	for _, u := range group.Items {
-		ret.Items = append(ret.Items, toPbItem(u))
-	}
-	return ret
-}
-
-func toPbPermission(permission *account.Permission) *rpcpb.Account_Permission {
-	ret := &rpcpb.Account_Permission{
-		Name:       permission.Name,
-		GroupNames: permission.Groups,
-		Threshold:  int64(permission.Threshold),
-	}
-	for _, u := range permission.Items {
-		ret.Items = append(ret.Items, toPbItem(u))
-	}
-	return ret
-}
-
 func toPbAccount(acc *account.Account) *rpcpb.Account {
 	ret := &rpcpb.Account{
-		Name:        acc.Address,
-		Permissions: make(map[string]*rpcpb.Account_Permission),
-		Groups:      make(map[string]*rpcpb.Account_Group),
-	}
-	for k, p := range acc.Permissions {
-		ret.Permissions[k] = toPbPermission(p)
-	}
-	for k, g := range acc.Groups {
-		ret.Groups[k] = toPbGroup(g)
+		Address: acc.Address,
 	}
 	return ret
 }

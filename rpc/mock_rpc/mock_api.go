@@ -6,9 +6,10 @@ package main
 
 import (
 	context "context"
-	gomock "github.com/golang/mock/gomock"
-	pb "github.com/empow-blockchain/go-empow/rpc/pb"
 	reflect "reflect"
+
+	pb "github.com/empow-blockchain/go-empow/rpc/pb"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockApiServiceServer is a mock of ApiServiceServer interface
@@ -318,19 +319,6 @@ func (m *MockApiServiceServer) GetTxReceiptByTxHash(arg0 context.Context, arg1 *
 // GetTxReceiptByTxHash indicates an expected call of GetTxReceiptByTxHash
 func (mr *MockApiServiceServerMockRecorder) GetTxReceiptByTxHash(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTxReceiptByTxHash", reflect.TypeOf((*MockApiServiceServer)(nil).GetTxReceiptByTxHash), arg0, arg1)
-}
-
-// GetVoterBonus mocks base method
-func (m *MockApiServiceServer) GetVoterBonus(arg0 context.Context, arg1 *pb.GetAccountRequest) (*pb.VoterBonus, error) {
-	ret := m.ctrl.Call(m, "GetVoterBonus", arg0, arg1)
-	ret0, _ := ret[0].(*pb.VoterBonus)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetVoterBonus indicates an expected call of GetVoterBonus
-func (mr *MockApiServiceServerMockRecorder) GetVoterBonus(arg0, arg1 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVoterBonus", reflect.TypeOf((*MockApiServiceServer)(nil).GetVoterBonus), arg0, arg1)
 }
 
 // SendTransaction mocks base method

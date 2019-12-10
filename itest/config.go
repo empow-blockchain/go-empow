@@ -13,7 +13,7 @@ const (
 	DefaultITestConfig = `
 {
   "bank":{
-    "id": "admin",
+    "id": "EM2ZsSw7RWYC229Z1ib7ujKhken9GFR7dBkTTEbBWMKeLpVas",
     "seckey": "2yquS3ySrGWPEKywCPzX4RTJugqRh7kJSo5aehsLYPEWkUxBWA39oMrZ7ZxuM4fgyXYs2cPwh5n8aNNpH5x2VyK1",
     "algorithm":"ed25519"
   },
