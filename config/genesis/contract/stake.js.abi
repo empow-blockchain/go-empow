@@ -43,6 +43,12 @@
             ]
         },
         {
+            "name": "withdrawAll",
+            "args": [
+                "string"
+            ]
+        },
+        {
             "name": "unstake",
             "args": [
                 "string",

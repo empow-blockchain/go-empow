@@ -54,6 +54,165 @@ func Test_Stake(t *testing.T) {
 		So(database.MustUnmarshal(s.Visitor.Get("stake.empow-c_user_2")), ShouldEqual, "1")
 		So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_0")), ShouldEqual, `{"lastBlockWithdraw":0,"unstake":false,"amount":"100"}`)
 
+		Convey("test multi package", func() {
+			r, err = s.Call("stake.empow", "stake", fmt.Sprintf(`["%v", "%v"]`, acc2.ID, 200), acc2.ID, acc2.KeyPair)
+
+			So(err, ShouldBeNil)
+			So(r.Status.Message, ShouldEqual, "")
+			So(database.MustUnmarshal(s.Visitor.Get("stake.empow-c_user_2")), ShouldEqual, "2")
+
+			r, err = s.Call("stake.empow", "stake", fmt.Sprintf(`["%v", "%v"]`, acc2.ID, 300), acc2.ID, acc2.KeyPair)
+
+			So(err, ShouldBeNil)
+			So(r.Status.Message, ShouldEqual, "")
+			So(database.MustUnmarshal(s.Visitor.Get("stake.empow-c_user_2")), ShouldEqual, "3")
+
+			Convey("test withdraw all 2", func() {
+				prepareNewProducerVote(t, s, acc0)
+
+				s.Head.Time += 24 * 60 * 60 * 1e9 // +1 day
+				s.Head.Number += 24 * 60 * 60 * 2 // +1 day
+
+				r, err = s.Call("base.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+
+				currentBalance := s.Visitor.TokenBalance("em", acc2.ID)
+
+				r, err = s.Call("stake.empow", "withdraw", fmt.Sprintf(`["%v", %v]`, acc2.ID, 1), acc2.ID, acc2.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_1")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":false,"amount":"200"}`)
+				So(s.Visitor.TokenBalance("em", acc2.ID), ShouldEqual, currentBalance+16666666)
+
+				s.Head.Time += 24 * 60 * 60 * 1e9 // +1 day
+				s.Head.Number += 24 * 60 * 60 * 2 // +1 day
+
+				r, err = s.Call("base.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+
+				r, err = s.Call("stake.empow", "withdrawAll", fmt.Sprintf(`["%v"]`, acc2.ID), acc2.ID, acc2.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_0")), ShouldEqual, `{"lastBlockWithdraw":345600,"unstake":false,"amount":"100"}`)
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_1")), ShouldEqual, `{"lastBlockWithdraw":345600,"unstake":false,"amount":"200"}`)
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_2")), ShouldEqual, `{"lastBlockWithdraw":345600,"unstake":false,"amount":"300"}`)
+				So(s.Visitor.TokenBalance("em", acc2.ID), ShouldEqual, 40099999999) // currentBalance+(8333333+16666666+25000000)*2
+			})
+
+			Convey("test withdraw all 3", func() {
+				prepareNewProducerVote(t, s, acc0)
+
+				s.Head.Time += 24 * 60 * 60 * 1e9 // +1 day
+				s.Head.Number += 24 * 60 * 60 * 2 // +1 day
+
+				r, err = s.Call("base.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+
+				currentBalance := s.Visitor.TokenBalance("em", acc2.ID)
+
+				r, err = s.Call("stake.empow", "withdraw", fmt.Sprintf(`["%v", %v]`, acc2.ID, 1), acc2.ID, acc2.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_1")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":false,"amount":"200"}`)
+				So(s.Visitor.TokenBalance("em", acc2.ID), ShouldEqual, currentBalance+16666666)
+
+				r, err = s.Call("stake.empow", "withdrawAll", fmt.Sprintf(`["%v"]`, acc2.ID), acc2.ID, acc2.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_0")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":false,"amount":"100"}`)
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_1")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":false,"amount":"200"}`)
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_2")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":false,"amount":"300"}`)
+				So(s.Visitor.TokenBalance("em", acc2.ID), ShouldEqual, currentBalance+8333333+16666666+25000000)
+			})
+
+			Convey("test withdraw all 4", func() {
+				prepareNewProducerVote(t, s, acc0)
+
+				s.Head.Time += 24 * 60 * 60 * 1e9 // +1 day
+				s.Head.Number += 24 * 60 * 60 * 2 // +1 day
+
+				r, err = s.Call("base.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+
+				currentBalance := s.Visitor.TokenBalance("em", acc2.ID)
+
+				r, err = s.Call("stake.empow", "unstake", fmt.Sprintf(`["%v", %v]`, acc2.ID, 1), acc2.ID, acc2.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_1")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":true,"amount":"200"}`)
+				So(s.Visitor.TokenBalance("em", acc2.ID), ShouldEqual, currentBalance+16666666)
+
+				r, err = s.Call("stake.empow", "withdrawAll", fmt.Sprintf(`["%v"]`, acc2.ID), acc2.ID, acc2.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_0")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":false,"amount":"100"}`)
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_1")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":true,"amount":"200"}`)
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_2")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":false,"amount":"300"}`)
+				So(s.Visitor.TokenBalance("em", acc2.ID), ShouldEqual, currentBalance+8333333+16666666+25000000)
+
+				s.Head.Time += 24 * 60 * 60 * 1e9 // +1 day
+				s.Head.Number += 24 * 60 * 60 * 2 // +1 day
+
+				r, err = s.Call("base.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+
+				currentBalance = s.Visitor.TokenBalance("em", acc2.ID)
+
+				r, err = s.Call("stake.empow", "withdrawAll", fmt.Sprintf(`["%v"]`, acc2.ID), acc2.ID, acc2.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_0")), ShouldEqual, `{"lastBlockWithdraw":345600,"unstake":false,"amount":"100"}`)
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_1")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":true,"amount":"200"}`)
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_2")), ShouldEqual, `{"lastBlockWithdraw":345600,"unstake":false,"amount":"300"}`)
+				So(s.Visitor.TokenBalance("em", acc2.ID), ShouldEqual, currentBalance+8333333+25000000)
+			})
+
+			Convey("test withdraw all", func() {
+				prepareNewProducerVote(t, s, acc0)
+
+				s.Head.Time += 24 * 60 * 60 * 1e9 // +1 day
+				s.Head.Number += 24 * 60 * 60 * 2 // +1 day
+
+				r, err = s.Call("base.empow", "issueEM", `[]`, acc0.ID, acc0.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+
+				currentBalance := s.Visitor.TokenBalance("em", acc2.ID)
+
+				r, err = s.Call("stake.empow", "withdrawAll", fmt.Sprintf(`["%v"]`, acc2.ID), acc2.ID, acc2.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldEqual, "")
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_0")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":false,"amount":"100"}`)
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_1")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":false,"amount":"200"}`)
+				So(database.MustUnmarshal(s.Visitor.Get("stake.empow-p_user_2_2")), ShouldEqual, `{"lastBlockWithdraw":172800,"unstake":false,"amount":"300"}`)
+				So(s.Visitor.TokenBalance("em", acc2.ID), ShouldEqual, currentBalance+8333333+16666666+25000000)
+
+				r, err = s.Call("stake.empow", "withdrawAll", fmt.Sprintf(`["%v"]`, acc2.ID), acc2.ID, acc2.KeyPair)
+
+				So(err, ShouldBeNil)
+				So(r.Status.Message, ShouldContainSubstring, "All package can't withdraw")
+			})
+		})
+
 		Convey("test topup", func() {
 
 			prepareNewProducerVote(t, s, acc0)
