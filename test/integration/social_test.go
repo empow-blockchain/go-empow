@@ -481,3 +481,51 @@ func Test_Report(t *testing.T) {
 		So(r.GasUsage, ShouldEqual, 3776700)
 	})
 }
+
+func Test_Follow(t *testing.T) {
+	ilog.Stop()
+
+	Convey("test follow", t, func() {
+		s := NewSimulator()
+		defer s.Clear()
+
+		createAccountsWithResource(s)
+		prepareSocial(t, s, acc0)
+
+		So(database.MustUnmarshal(s.Visitor.MGet("social.empow-f_user_0", acc1.ID)), ShouldBeNil)
+
+		r, err := s.Call("social.empow", "follow", fmt.Sprintf(`["%v", "user_0"]`, acc1.ID), acc1.ID, acc1.KeyPair)
+		So(err, ShouldBeNil)
+		So(r.Status.Message, ShouldEqual, "")
+		So(database.MustUnmarshal(s.Visitor.MGet("social.empow-f_user_0", acc1.ID)), ShouldEqual, "true")
+
+		r, err = s.Call("social.empow", "unfollow", fmt.Sprintf(`["%v", "user_0"]`, acc1.ID), acc1.ID, acc1.KeyPair)
+		So(err, ShouldBeNil)
+		So(r.Status.Message, ShouldEqual, "")
+		So(database.MustUnmarshal(s.Visitor.MGet("social.empow-f_user_0", acc1.ID)), ShouldBeNil)
+	})
+}
+
+func Test_UpdateProfile(t *testing.T) {
+	ilog.Stop()
+
+	Convey("test update profile", t, func() {
+		s := NewSimulator()
+		defer s.Clear()
+
+		createAccountsWithResource(s)
+		prepareSocial(t, s, acc0)
+
+		r, err := s.Call("social.empow", "updateProfile", `["user_1", {"avatar": "test","firstname": "violet","lastname": "hair","birthday": "23/08/2019"}]`, acc1.ID, acc1.KeyPair)
+
+		So(err, ShouldBeNil)
+		So(r.Status.Message, ShouldEqual, "")
+		So(database.MustUnmarshal(s.Visitor.Get("social.empow-u_user_1")), ShouldEqual, `{"avatar":"test","birthday":"23/08/2019","firstname":"violet","lastname":"hair"}`)
+
+		r, err = s.Call("social.empow", "updateProfile", `["user_1", {"avatar": "haha","firstname": "haha","lastname": "haha","birthday": "haha"}]`, acc1.ID, acc1.KeyPair)
+
+		So(err, ShouldBeNil)
+		So(r.Status.Message, ShouldEqual, "")
+		So(database.MustUnmarshal(s.Visitor.Get("social.empow-u_user_1")), ShouldEqual, `{"avatar":"haha","birthday":"haha","firstname":"haha","lastname":"haha"}`)
+	})
+}
