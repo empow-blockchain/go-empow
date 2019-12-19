@@ -329,11 +329,12 @@ class Social {
             if(!commentObj) {
                 throw new Error("Comment not exist > " + parentId)
             }
+            
+            commentObj = JSON.parse(commentObj)
 
             commentId = parentId
             subCommentId = commentObj.totalReply
 
-            commentObj = JSON.parse(commentObj)
             let subCommentObj = {
                 type: "reply",
                 postId: postId,
