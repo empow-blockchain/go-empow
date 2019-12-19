@@ -145,24 +145,24 @@ class Stake {
         return true
     }
 
-    withdraw(address, packageNumber) {
+    withdraw(address, packageId) {
         this._requireAuth(address, "active")
         // check package exist
-        const packageInfoString = storage.get(PACKAGE_INFO_PREFIX + address + "_" + packageNumber)
+        const packageInfoString = storage.get(PACKAGE_INFO_PREFIX + address + "_" + packageId)
         if(!packageInfoString) {
-            throw new Error("package not exist > " + packageNumber)
+            throw new Error("package not exist > " + packageId)
         }
         let packageInfo = JSON.parse(packageInfoString)
         // check package unstake
         if(packageInfo.unstake) {
-            throw new Error("package has been unstake > " + packageNumber)
+            throw new Error("package has been unstake > " + packageId)
         }
         // calc interest
         const bn = block.number
         const totalDayStake = Math.floor((bn - packageInfo.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
 
         if(totalDayStake <= 0) {
-            throw new Error("package withdraw less than 1 day > " + packageNumber)
+            throw new Error("package withdraw less than 1 day > " + packageId)
         }
 
         let amountCanWithdraw = this._calcInterest(packageInfo.amount, totalDayStake)
@@ -175,8 +175,8 @@ class Stake {
 
         blockchain.withdraw(address, amountCanWithdraw.toFixed(8), "withdraw stake")
         packageInfo.lastBlockWithdraw = bn
-        this._updatePackageInfo(address, packageNumber, packageInfo)
-        blockchain.receipt(JSON.stringify([address, amountCanWithdraw.toFixed(8)]))
+        this._updatePackageInfo(address, packageId, packageInfo)
+        blockchain.receipt(JSON.stringify([address, amountCanWithdraw.toFixed(8), packageId]))
     }
 
     withdrawAll(address) {
@@ -222,17 +222,17 @@ class Stake {
         blockchain.receipt(JSON.stringify([address, amountCanWithdraw.toFixed(8)]))
     }
 
-    unstake (address, packageNumber) {
+    unstake (address, packageId) {
         this._requireAuth(address, "active")
 
-        const packageInfoString = storage.get(PACKAGE_INFO_PREFIX + address + "_" + packageNumber)
+        const packageInfoString = storage.get(PACKAGE_INFO_PREFIX + address + "_" + packageId)
         if(!packageInfoString) {
-            throw new Error("package not exist > " + packageNumber)
+            throw new Error("package not exist > " + packageId)
         }
         let packageInfo = JSON.parse(packageInfoString)
 
         if(packageInfo.unstake) {
-            throw new Error("package has been unstake > " + packageNumber)
+            throw new Error("package has been unstake > " + packageId)
         }
 
         // check remain interest
@@ -250,7 +250,7 @@ class Stake {
 
             blockchain.withdraw(address, amountCanWithdraw.toFixed(8), "withdraw stake")
             packageInfo.lastBlockWithdraw = bn
-            this._updatePackageInfo(address, packageNumber, packageInfo)
+            this._updatePackageInfo(address, packageId, packageInfo)
             blockchain.receipt(JSON.stringify([address, amountCanWithdraw.toFixed(8)]))
         }
 
@@ -261,9 +261,9 @@ class Stake {
 
         this._updateTotalStakeAmount(stakeAmount.negated())
         packageInfo.unstake = true
-        this._updatePackageInfo(address, packageNumber, packageInfo)
+        this._updatePackageInfo(address, packageId, packageInfo)
 
-        blockchain.receipt(JSON.stringify([address, packageInfo.amount]))
+        blockchain.receipt(JSON.stringify([address, packageInfo.amount, packageId]))
     }
 }
 
