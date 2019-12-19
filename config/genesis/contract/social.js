@@ -426,7 +426,7 @@ class Social {
     updateProfile(address, info) {
         this._requireAuth(address, "active")
         storage.put(USER_PREFIX + address, JSON.stringify(info))
-        blockchain.receipt(JSON.stringify(info))
+        blockchain.receipt(JSON.stringify([address, info]))
     }
 
     // admin only
