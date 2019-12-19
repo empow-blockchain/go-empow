@@ -42,7 +42,7 @@
                 "string",
                 "string",
                 "string",
-                "number",
+                "string",
                 "string"
             ]
         },
@@ -52,6 +52,27 @@
                 "string",
                 "string",
                 "string"
+            ]
+        },
+        {
+            "name": "follow",
+            "args": [
+                "string",
+                "string"
+            ]
+        },
+        {
+            "name": "unfollow",
+            "args": [
+                "string",
+                "string"
+            ]
+        },
+        {
+            "name": "updateProfile",
+            "args": [
+                "string",
+                "json"
             ]
         },
         {

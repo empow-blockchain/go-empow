@@ -6,6 +6,8 @@ const REPLY_COMMENT_PREFIX = "rc_"
 const REPORT_PREFIX = "r_"
 const LEVEL_PREFIX = "lv_"
 const INTEREST_PREEFIX = "i_"
+const USER_PREFIX = "u_"
+const USER_FOLLOW_PREFIX = "f_"
 const TOTAl_LIKE = "totalLike"
 const LIKE_BY_LEVEL = "likeByLevel"
 const REST_AMOUNT = "restAmount"
@@ -59,8 +61,9 @@ class Social {
     }
 
     _contentValidate(content) {
-        if(!Array.isArray(content)) throw new Error("content must be array")
-        if(content.length <= 0 || content.length > 5) throw new Error("content must be length greater than 0 and less than 5 > " + content.length)
+        if(typeof content !== "object") {
+            throw new Error("content must be object")
+        }
     }
 
     _tagValidate(tag) {
@@ -110,11 +113,11 @@ class Social {
         
         this._requireAuth(address, "active")
         this._titleValidate(title)
-        this._contentValidate(content)
         this._tagValidate(tag)
 
         let id = tx.time
         let postObj = {
+            postId: id.toString(),
             time: id,
             title: title,
             content: content,
@@ -135,7 +138,7 @@ class Social {
         storage.put(POST_PREFIX + id, JSON.stringify(postObj))
         storage.put(POST_STATISTIC_PREFIX + id, JSON.stringify(postStatisticObj))
 
-        blockchain.receipt(JSON.stringify([id]))
+        blockchain.receipt(JSON.stringify([id.toString()]))
     }
 
     like(address, postId) {
@@ -303,9 +306,16 @@ class Social {
         if(content.length <= 0) {
             throw new Error("Content not blank > " + content)
         }
+
+        let commentId = postStatisticObj.totalComment
+        let subCommentId = 0 
         
         if(type === "comment") {
             const commentObj = {
+                type: "comment",
+                postId: postId,
+                commentId: postStatisticObj.totalComment,
+                parentId: 0,
                 totalReply: 0,
                 content: content
             }
@@ -320,15 +330,25 @@ class Social {
                 throw new Error("Comment not exist > " + parentId)
             }
 
+            commentId = parentId
+            subCommentId = commentObj.totalReply
+
             commentObj = JSON.parse(commentObj)
-            storage.put(REPLY_COMMENT_PREFIX + postId + "_" + parentId + "_" + commentObj.totalReply, content)
+            let subCommentObj = {
+                type: "reply",
+                postId: postId,
+                commentId: subCommentId,
+                parentId: parentId,
+                content: content
+            }
+            storage.put(REPLY_COMMENT_PREFIX + postId + "_" + parentId + "_" + commentObj.totalReply, JSON.stringify(subCommentObj))
             commentObj.totalReply++
             storage.put(COMMENT_PREFIX + postId + "_" + parentId, JSON.stringify(commentObj))
             postStatisticObj.totalCommentAndReply++
             storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
         }
 
-        blockchain.receipt(JSON.stringify([type, postId, parentId]))
+        blockchain.receipt(JSON.stringify([type, postId, commentId, subCommentId]))
     }
 
     report(address, postId, tag) {
@@ -368,6 +388,47 @@ class Social {
         blockchain.receipt(JSON.stringify([address, postId, tag]))
     }
 
+    follow (address, target) {
+        this._requireAuth(address, "active")
+        // check target exist
+        if(!storage.globalMapHas("auth.empow", "auth", target)) {
+            throw new Error("Follow user not exist > " + target)
+        }
+        // check is following
+        if(storage.mapHas(USER_FOLLOW_PREFIX + target, address)) {
+            throw new Error("You are following this user > " + target)
+        }
+
+        // set follow
+        storage.mapPut(USER_FOLLOW_PREFIX + target, address, "true")
+
+        blockchain.receipt(JSON.stringify([address, target]))
+    }
+
+    unfollow(address, target) {
+        this._requireAuth(address, "active")
+        // check target exist
+        if(!storage.globalMapHas("auth.empow", "auth", target)) {
+            throw new Error("Follow user not exist > " + target)
+        }
+        // check is following
+        if(!storage.mapHas(USER_FOLLOW_PREFIX + target, address)) {
+            throw new Error("You have not followed this user > " + target)
+        }
+
+        // del follow
+        storage.mapDel(USER_FOLLOW_PREFIX + target, address)
+
+        blockchain.receipt(JSON.stringify([address, target]))
+    }
+
+    updateProfile(address, info) {
+        this._requireAuth(address, "active")
+        storage.put(USER_PREFIX + address, JSON.stringify(info))
+        blockchain.receipt(JSON.stringify(info))
+    }
+
+    // admin only
     upLevel(address, level) {
         const admin = storage.get("adminAddress");
         const whitelist = ["auth.empow", admin];
@@ -393,7 +454,6 @@ class Social {
         this._updateLevel(address, level)
     }
 
-    // admin only
     addReportTag(tag) {
         const admin = storage.get("adminAddress");
         this._requireAuth(admin, "active")
