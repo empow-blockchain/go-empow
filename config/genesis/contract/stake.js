@@ -61,14 +61,16 @@ class Stake {
 
     _addNewPackage(address, data) {
         let countPackage = storage.get(COUNT_PACKAGE_PREFIX + address)
+        let packageId = 0
 
         if(countPackage) {
-            this._updatePackageInfo(address, countPackage, data)
-        } else {
-            this._updatePackageInfo(address, "0", data)
+            packageId = countPackage
         }
-
+        
+        this._updatePackageInfo(address, packageId, data)
         this._updateAddressCountPackage(address, 1)
+        
+        return packageId
     }
 
     _fixAmount(amount) {
@@ -118,10 +120,10 @@ class Stake {
             unstake: false,
             amount: amount
         }
-        this._addNewPackage(address, packageInfo)
+        const packageId = this._addNewPackage(address, packageInfo)
         this._updateTotalStakeAmount(amount)
 
-        blockchain.receipt(JSON.stringify([address, amount]))
+        blockchain.receipt(JSON.stringify([address, amount, packageId]))
     }
 
     topup(amount) {
