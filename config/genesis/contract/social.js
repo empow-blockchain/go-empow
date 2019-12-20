@@ -455,6 +455,7 @@ class Social {
         if(!currentLevel || level <= currentLevel) return true;
 
         this._updateLevel(address, level)
+        blockchain.receipt(JSON.stringify([address, level]))
     }
 
     addReportTag(tag) {
