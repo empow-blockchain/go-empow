@@ -312,6 +312,7 @@ class Social {
         
         if(type === "comment") {
             const commentObj = {
+                address: address,
                 type: "comment",
                 postId: postId,
                 commentId: postStatisticObj.totalComment,
@@ -336,6 +337,7 @@ class Social {
             subCommentId = commentObj.totalReply
 
             let subCommentObj = {
+                address: address,
                 type: "reply",
                 postId: postId,
                 commentId: subCommentId,
