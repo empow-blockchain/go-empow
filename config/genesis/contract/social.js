@@ -314,6 +314,7 @@ class Social {
             const commentObj = {
                 address: address,
                 type: "comment",
+                time: tx.time,
                 postId: postId,
                 commentId: postStatisticObj.totalComment,
                 parentId: -1,
@@ -338,6 +339,7 @@ class Social {
 
             let subCommentObj = {
                 address: address,
+                time: tx.time,
                 type: "reply",
                 postId: postId,
                 commentId: subCommentId,
