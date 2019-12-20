@@ -316,7 +316,7 @@ class Social {
                 type: "comment",
                 postId: postId,
                 commentId: postStatisticObj.totalComment,
-                parentId: 0,
+                parentId: -1,
                 totalReply: 0,
                 content: content
             }
