@@ -116,9 +116,12 @@ class Stake {
         blockchain.callWithAuth("token.empow", "transfer", ["em", address, blockchain.contractName(), amount, "stake EM"])
         // create package info
         let packageInfo = {
+            startBlock: block.number,
             lastBlockWithdraw: block.number,
             unstake: false,
-            amount: amount
+            amount: amount,
+            startTime: tx.time,
+            lastWithdrawTime: tx.time
         }
         const packageId = this._addNewPackage(address, packageInfo)
         this._updateTotalStakeAmount(amount)
@@ -175,6 +178,7 @@ class Stake {
 
         blockchain.withdraw(address, amountCanWithdraw.toFixed(8), "withdraw stake")
         packageInfo.lastBlockWithdraw = bn
+        packageInfo.lastWithdrawTime = tx.time
         this._updatePackageInfo(address, packageId, packageInfo)
         blockchain.receipt(JSON.stringify([address, amountCanWithdraw.toFixed(8), packageId]))
     }
@@ -206,6 +210,7 @@ class Stake {
             maxAmountCanWithdraw = maxAmountCanWithdraw.plus(this._calcMaxInterest(packageInfo.amount, totalDayStake))
             // update package info
             packageInfo.lastBlockWithdraw = bn
+            packageInfo.lastWithdrawTime = tx.time
             this._updatePackageInfo(address, i, packageInfo)
         }
 
@@ -250,6 +255,7 @@ class Stake {
 
             blockchain.withdraw(address, amountCanWithdraw.toFixed(8), "withdraw stake")
             packageInfo.lastBlockWithdraw = bn
+            packageInfo.lastWithdrawTime = tx.time
             this._updatePackageInfo(address, packageId, packageInfo)
             blockchain.receipt(JSON.stringify([address, amountCanWithdraw.toFixed(8)]))
         }

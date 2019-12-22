@@ -1,4 +1,5 @@
 const premiumUsernamePriceUSD = 10 // $10/premium username
+const USERNAME_ARRAY_PREFIX = "u_"
 
 class Account {
     init() {
@@ -15,11 +16,8 @@ class Account {
         const admin = storage.get("adminAddress");
         return blockchain.requireAuth(admin, "active");
     }
-    _saveAccount(account, payer) {
-        if (payer === undefined) {
-            payer = account.address
-        }
-        storage.mapPut("auth", account.address, JSON.stringify(account), payer);
+    _saveAccount(account) {
+        storage.mapPut("auth", account.address, JSON.stringify(account));
     }
 
     _loadAccount(id) {
@@ -139,6 +137,19 @@ class Account {
         }
     }
 
+    _addUsernameToArray(address, username) {
+        let arr = storage.get(USERNAME_ARRAY_PREFIX + address)
+
+        if(!arr) {
+            arr = [username]
+        } else {
+            arr = JSON.parse(arr)
+            arr.push(username)
+        }
+
+        storage.put(USERNAME_ARRAY_PREFIX + address, JSON.stringify(arr))
+    }
+
     /**
      * @param  {string} address - this is a string
      *
@@ -175,7 +186,7 @@ class Account {
             threshold: 100,
         };
         account.groups = {};
-        this._saveAccount(account, blockchain.contractName());
+        this._saveAccount(account);
         if (block.number !== 0) {
             const defaultGasPledge = "15";
             const defaultRamBuy = 200; // 200 bytes
@@ -195,7 +206,10 @@ class Account {
         // require auth address
         this._ra(address, "active")
         // save to storage with prefix "newbie."
-        storage.mapPut("username", "newbie." + username, address, address);
+        storage.mapPut("username", "newbie." + username, address);
+        // add username to username array
+        this._addUsernameToArray(address, "newbie." + username)
+        blockchain.receipt(JSON.stringify([address, "newbie." + username]))
     }
 
     addPremiumUsername(address, username) {
@@ -220,7 +234,10 @@ class Account {
         // reward vote point
         blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, "1000"])
         // save to storage
-        storage.mapPut("username",username, address, address);
+        storage.mapPut("username",username, address);
+        // add username to array
+        this._addUsernameToArray(address,username)
+        blockchain.receipt(JSON.stringify([address,username]))
     }
 }
 

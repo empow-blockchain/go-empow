@@ -131,6 +131,55 @@ class Social {
             totalComment: 0,
             totalCommentAndReply: 0,
             totalReport: 0,
+            totalShare: 0,
+            realLikeArray: [0],
+            lastBlockWithdraw: block.number
+        }
+
+        storage.put(POST_PREFIX + id, JSON.stringify(postObj))
+        storage.put(POST_STATISTIC_PREFIX + id, JSON.stringify(postStatisticObj))
+
+        blockchain.receipt(JSON.stringify([id.toString()]))
+    }
+
+    share(address, postId, title) {
+        this._requireAuth(address, "active")
+        this._titleValidate(title)
+        // check exist post
+        let postObj = storage.get(POST_PREFIX + postId)
+        if(!postObj) {
+            throw new Error("PostId not exist > " + postId)
+        }
+        postObj = JSON.parse(postObj)
+        // check postId is share post
+        if(postObj.content.type === "share") {
+            postId = postObj.content.data
+        }
+        // +1 share to postId
+        let postStatisticObj = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId))
+        postStatisticObj.totalShare++
+        storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
+        // post
+        let id = tx.time
+        postObj = {
+            postId: id.toString(),
+            time: id,
+            title: title,
+            content: {
+                type: "share",
+                data: postId
+            },
+            tag: [],
+        }
+
+        postStatisticObj = {
+            author: address,
+            totalLike:  0,
+            realLike: 0,
+            totalComment: 0,
+            totalCommentAndReply: 0,
+            totalReport: 0,
+            totalShare: 0,
             realLikeArray: [0],
             lastBlockWithdraw: block.number
         }
@@ -399,11 +448,14 @@ class Social {
         if(!storage.globalMapHas("auth.empow", "auth", target)) {
             throw new Error("Follow user not exist > " + target)
         }
+        //
+        if(address === target) {
+            throw new Error("Can't follow yoursefl > " + target)
+        }
         // check is following
         if(storage.mapHas(USER_FOLLOW_PREFIX + target, address)) {
             throw new Error("You are following this user > " + target)
         }
-
         // set follow
         storage.mapPut(USER_FOLLOW_PREFIX + target, address, "true")
 
