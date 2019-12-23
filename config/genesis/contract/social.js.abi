@@ -28,7 +28,7 @@
             "args": [
                 "string",
                 "string",
-                "json",
+                "string",
             ]
         },
         {
