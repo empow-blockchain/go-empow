@@ -12,7 +12,7 @@
 - Run the boot script to start a full node:
 
 	`
-curl https://raw.githubusercontent.com/empow-blockchain/go-empow/master/script/boot.sh | INET=mainnet bash
+curl https://raw.githubusercontent.com/empow-blockchain/go-empow/master/script/boot.sh | INET=testnet bash
 `
 
 	*INET : mainnet, testnet (default: mainnet)*
