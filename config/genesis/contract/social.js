@@ -187,7 +187,7 @@ class Social {
         storage.put(POST_PREFIX + id, JSON.stringify(postObj))
         storage.put(POST_STATISTIC_PREFIX + id, JSON.stringify(postStatisticObj))
 
-        blockchain.receipt(JSON.stringify([id.toString()]))
+        blockchain.receipt(JSON.stringify([id.toString(), postId]))
     }
 
     like(address, postId) {
