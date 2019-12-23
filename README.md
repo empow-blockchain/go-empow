@@ -1,4 +1,4 @@
-# EMPOW - A Secure & Scalable Blockchain for Smart Services
+# EMPOW BLOCKCHAIN - Social Network on Blockchain
 
 ### How to run full node
 
