@@ -1,5 +1,6 @@
 const premiumUsernamePriceUSD = 10 // $10/premium username
 const USERNAME_ARRAY_PREFIX = "u_"
+const SELECTED_USERNAME_PREFIX = "s_"
 
 class Account {
     init() {
@@ -237,6 +238,19 @@ class Account {
         storage.mapPut("username",username, address);
         // add username to array
         this._addUsernameToArray(address,username)
+        blockchain.receipt(JSON.stringify([address,username]))
+    }
+
+    selectUsername(username) {
+    	if (!this._hasUsername(username)) {
+            throw new Error("username not exist > " + username);
+        }
+
+        let address = storage.mapGet("username", username)
+        this._ra(address, "active")
+
+        storage.put(SELECTED_USERNAME_PREFIX + address, username)
+
         blockchain.receipt(JSON.stringify([address,username]))
     }
 }

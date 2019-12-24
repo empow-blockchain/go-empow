@@ -29,6 +29,10 @@
           "token": "*",
           "val": "unlimited"
       }]
+    },
+    {
+      "name": "selectUsername",
+      "args": ["string"]
     }
   ]
 }
