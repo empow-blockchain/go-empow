@@ -197,12 +197,12 @@ $CURL "https://empow.io/$INET/iserver.yml" -o $PREFIX/iserver.yml
 # Config producer
 #
 
-ADDRESS=$(cat $PRODUCER_KEY_FILE | ${PYTHON} -c 'import sys,json;print(json.load(sys.stdin)["Address"])')
+#ADDRESS=$(cat $PRODUCER_KEY_FILE | ${PYTHON} -c 'import sys,json;print(json.load(sys.stdin)["Address"])')
 PUBKEY=$(cat $PRODUCER_KEY_FILE | ${PYTHON} -c 'import sys,json;print(json.load(sys.stdin)["Pubkey"])')
 PRIKEY=$(cat $PRODUCER_KEY_FILE | ${PYTHON} -c 'import sys,json;print(json.load(sys.stdin)["Seckey"])')
 
 #sed -i.bak 's/  id: .*$/  id: '$PUBKEY'/g' iserver.yml
-sed -i.bak 's/  address: .*$/  address: '$ADDRESS'/g' iserver.yml
+#sed -i.bak 's/  address: .*$/  address: '$ADDRESS'/g' iserver.yml
 sed -i.bak 's/  seckey: .*$/  seckey: '$PRIKEY'/g' iserver.yml
 
 #
