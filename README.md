@@ -16,3 +16,38 @@ curl https://raw.githubusercontent.com/empow-blockchain/go-empow/master/script/b
 `
 
 	*INET : mainnet, testnet (default: mainnet)*
+
+### Build Empow Blockchain
+- Install Golang
+
+- Install Git LFS
+
+- Config Environment Variable (GOPATH)
+
+	- Edit file `~/.profile`
+	
+	- Add these 2 lines to the end of the file
+	```shell
+	export GOPATH=$(go env GOPATH)
+	export PATH=$PATH:$GOPATH/bin
+	```
+
+- Pull code from github to golang folder
+
+	```shell
+	go get -d github.com/empow-blockchain/go-empow
+	```
+
+- Build code
+
+	```shell
+	cd $GOPATH/src/github.com/empow-blockchain/go-empow
+	git lfs pull
+	make build install
+	cd vm/v8vm/v8/; make deploy; cd ../../..
+	```
+- Run blockchain
+
+	```shell
+	iserver  -f ./config/iserver.yml
+	```
