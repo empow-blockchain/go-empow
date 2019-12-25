@@ -1,6 +1,6 @@
 acc:
-  address: EMuhyqfpRxjLd6qipVVQZWSd8g2yTrFmqmn6f
-  seckey: 1rANSfcRzr4HkhbUFZ7L1Zp69JZZHiDDq5v7dNSbbEqeU4jxy3fszV4HGiaLQEyqVpS1dKT9g7zCVRxBVzuiUzB
+  address: EM2ZsSi4y3AYqvhbfyzHwDKShtpiNpCQK4WsgTgavup51N2UB
+  seckey: 3eJWo8AgyuqZwJ7Z9K7m9V7ZsYCQCqheKwJd6dTXNNfoDJ7znsBKDhcc4cs8yeGSBaxAcpctj6qJvWKQbvXTXaK
   algorithm: ed25519
 genesis: /var/lib/iserver/genesis
 vm:
