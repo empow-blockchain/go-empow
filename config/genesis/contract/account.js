@@ -223,7 +223,7 @@ class Account {
         this._ra(address, "active")
         const EMPrice = storage.get('EMPrice')
         const EMneedToPay = new Float64(premiumUsernamePriceUSD).div(EMPrice)
-        blockchain.callWithAuth("token.empow", "transfer", ["em", address, "deadaddr", EMneedToPay, "pay premium username"]);
+        blockchain.callWithAuth("token.empow", "transfer", ["em", address, "deadaddr", EMneedToPay.toFixed(), "pay premium username"]);
         // pledge gas and buy ram
         const halfEMAmount = EMneedToPay.div(2).toFixed(8)
         const ramPrice = blockchain.callWithAuth("ram.empow", "getPrice", [])
