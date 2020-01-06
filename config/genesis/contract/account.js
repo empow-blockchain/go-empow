@@ -233,7 +233,7 @@ class Account {
         // update level
         blockchain.callWithAuth("social.empow", "upLevel", [address, "2"])
         // reward vote point
-        blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, EMneedToPay.toFixed()])
+        blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, "1000"])
         // save to storage
         storage.mapPut("username",username, address);
         // add username to array
