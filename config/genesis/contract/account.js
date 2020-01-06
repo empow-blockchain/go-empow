@@ -231,9 +231,9 @@ class Account {
         blockchain.callWithAuth("gas.empow", "pledge", [blockchain.contractName(), address, halfEMAmount]);
         blockchain.callWithAuth("ram.empow", "buy", [blockchain.contractName(), address, ramAmount * 1.00]);
         // update level
-        blockchain.callWithAuth("social.empow", "upLevel", [address, 2])
+        blockchain.callWithAuth("social.empow", "upLevel", [address, "2"])
         // reward vote point
-        blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, "1000"])
+        blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, EMneedToPay.toFixed()])
         // save to storage
         storage.mapPut("username",username, address);
         // add username to array
