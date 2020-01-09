@@ -421,11 +421,12 @@ class Social {
             throw new Error("report tag not exist > " + tag)
         }
 
+        // Turn it on when fork new blockchain
         // check report 2 times
-        const reported = storage.mapHas(REPORT_PREFIX + postId + "_" + address, tag)
-        if(reported) {
-            throw new Error("can report 2 times > " + address)
-        }
+        // const reported = storage.mapHas(REPORT_PREFIX + postId + "_" + address, tag)
+        // if(reported) {
+        //     throw new Error("can report 2 times > " + address)
+        // }
         
         // check level
         let level = Math.floor(storage.get(LEVEL_PREFIX + address))
@@ -448,7 +449,8 @@ class Social {
         postStatisticObj.totalReport++
         storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
 
-        storage.mapPut(REPORT_PREFIX + postId + "_" + address, tag ,"true")
+        // Turn it on when fork new blockchain
+        // storage.mapPut(REPORT_PREFIX + postId + "_" + address, tag ,"true")
 
         blockchain.receipt(JSON.stringify([address, postId, tag]))
     }
