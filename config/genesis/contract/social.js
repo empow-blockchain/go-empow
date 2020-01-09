@@ -508,7 +508,7 @@ class Social {
             throw new Error("block tag not exist > " + tag)
         }
         
-        storage.mapPut(BLOCK_TAG_PREFIX + address, tag, true)
+        storage.mapPut(BLOCK_TAG_PREFIX + address, tag, "true")
         
         blockchain.receipt(JSON.stringify([address, tag]))
     }
@@ -525,7 +525,7 @@ class Social {
             throw new Error("block tag not exist > " + tag)
         }
         
-        storage.mapPut(BLOCK_TAG_PREFIX + address, tag, false)
+        storage.mapPut(BLOCK_TAG_PREFIX + address, tag, "false")
         
         blockchain.receipt(JSON.stringify([address, tag]))
     }
