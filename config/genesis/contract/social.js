@@ -422,7 +422,7 @@ class Social {
         }
 
         // check report 2 times
-        const reported = storage.get(REPORT_PREFIX + postId + "_" + address)
+        const reported = storage.mapHas(REPORT_PREFIX + postId + "_" + address, tag)
         if(reported) {
             throw new Error("can report 2 times > " + address)
         }
@@ -448,7 +448,7 @@ class Social {
         postStatisticObj.totalReport++
         storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
 
-        storage.put(REPORT_PREFIX + postId + "_" + address, "true")
+        storage.mapPut(REPORT_PREFIX + postId + "_" + address, tag ,"true")
 
         blockchain.receipt(JSON.stringify([address, postId, tag]))
     }
@@ -525,7 +525,11 @@ class Social {
             throw new Error("block tag not exist > " + tag)
         }
         
-        storage.mapPut(BLOCK_TAG_PREFIX + address, tag, "false")
+        if(!storage.mapHas(BLOCK_TAG_PREFIX + address, tag)) {
+            throw new Error("you have not blocked this tag > " + tag)
+        }
+        
+        storage.mapDel(BLOCK_TAG_PREFIX + address, tag)
         
         blockchain.receipt(JSON.stringify([address, tag]))
     }
