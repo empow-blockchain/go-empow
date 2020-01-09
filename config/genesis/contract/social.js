@@ -498,7 +498,7 @@ class Social {
     
     blockContent (address, tag) {
         this._requireAuth(address, "active")
-        let reportTagArray = storage.get(REPORT_TAG_ARRAY))
+        let reportTagArray = storage.get(REPORT_TAG_ARRAY)
         
         if(!reportTagArray) throw new Error("report tag array not exist")
         
@@ -515,7 +515,7 @@ class Social {
     
     unblockContent (address, tag) {
         this._requireAuth(address, "active")
-        let reportTagArray = storage.get(REPORT_TAG_ARRAY))
+        let reportTagArray = storage.get(REPORT_TAG_ARRAY)
         
         if(!reportTagArray) throw new Error("report tag array not exist")
         
