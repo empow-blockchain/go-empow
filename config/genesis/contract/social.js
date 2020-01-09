@@ -576,6 +576,7 @@ class Social {
         }
         
         storage.put(REPORT_TAG_ARRAY, JSON.stringify(reportTagArray))
+        blockchain.receipt(JSON.stringify([tag]))
     }
 }
 
