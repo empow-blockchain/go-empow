@@ -437,7 +437,7 @@ class Social {
         }
         
         let likeByLevel = JSON.parse(storage.get(LIKE_BY_LEVEL))
-        let amountReport = new Float64(likeByLevel[level])
+        let amountReport = new Float64(likeByLevel[level - 1])
         
         if(storage.mapHas(REPORT_PREFIX + postId, tag)) {
             let current = Math.floor(storage.mapGet(REPORT_PREFIX + postId, tag))
