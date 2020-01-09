@@ -12,6 +12,7 @@ const TOTAl_LIKE = "totalLike"
 const LIKE_BY_LEVEL = "likeByLevel"
 const REST_AMOUNT = "restAmount"
 const REPORT_TAG_ARRAY = "reportTagArray"
+const BLOCK_TAG_PREFIX = "bt_"
 
 const BLOCK_NUMBER_PER_DAY = 172800
 
@@ -426,12 +427,22 @@ class Social {
             throw new Error("can report 2 times > " + address)
         }
         
+        // check level
+        let level = Math.floor(storage.get(LEVEL_PREFIX + address))
+
+        if(!level) {
+            storage.put(LEVEL_PREFIX + address, "1")
+            level = 1
+        }
+        
+        let likeByLevel = JSON.parse(storage.get(LIKE_BY_LEVEL))
+        let amountReport = new Float64(likeByLevel[level])
+        
         if(storage.mapHas(REPORT_PREFIX + postId, tag)) {
             let current = Math.floor(storage.mapGet(REPORT_PREFIX + postId, tag))
-            current++
-            storage.mapPut(REPORT_PREFIX + postId, tag, current.toString())
+            storage.mapPut(REPORT_PREFIX + postId, tag, amountReport.plus(current).toString())
         } else {
-            storage.mapPut(REPORT_PREFIX + postId, tag, "1")
+            storage.mapPut(REPORT_PREFIX + postId, tag, amountReport.toString())
         }
 
         postStatisticObj.totalReport++
@@ -484,6 +495,40 @@ class Social {
         storage.put(USER_PREFIX + address, JSON.stringify(info))
         blockchain.receipt(JSON.stringify([address, info]))
     }
+    
+    blockContent (address, tag) {
+        this._requireAuth(address, "active")
+        let reportTagArray = storage.get(REPORT_TAG_ARRAY))
+        
+        if(!reportTagArray) throw new Error("report tag array not exist")
+        
+        reportTagArray = JSON.parse(reportTagArray)
+        
+        if(reportTagArray.indexOf(tag) === -1) {
+            throw new Error("block tag not exist > " + tag)
+        }
+        
+        storage.mapPut(BLOCK_TAG_PREFIX + address, tag, true)
+        
+        blockchain.receipt(JSON.stringify([address, tag]))
+    }
+    
+    unblockContent (address, tag) {
+        this._requireAuth(address, "active")
+        let reportTagArray = storage.get(REPORT_TAG_ARRAY))
+        
+        if(!reportTagArray) throw new Error("report tag array not exist")
+        
+        reportTagArray = JSON.parse(reportTagArray)
+        
+        if(reportTagArray.indexOf(tag) === -1) {
+            throw new Error("block tag not exist > " + tag)
+        }
+        
+        storage.mapPut(BLOCK_TAG_PREFIX + address, tag, false)
+        
+        blockchain.receipt(JSON.stringify([address, tag]))
+    }
 
     // admin only
     upLevel(address, level) {
@@ -516,13 +561,20 @@ class Social {
         const admin = storage.get("adminAddress");
         this._requireAuth(admin, "active")
 
-        let reportTagArray = JSON.parse(storage.get(REPORT_TAG_ARRAY))
-
-        if(reportTagArray.indexOf(tag) !== -1) {
-            throw new Error("tag is exist > " + tag)
+        let reportTagArray = storage.get(REPORT_TAG_ARRAY)
+        
+        if(reportTagArray) {
+            reportTagArray = JSON.parse(reportTagArray)
+            
+            if(reportTagArray.indexOf(tag) !== -1) {
+                throw new Error("tag is exist > " + tag)
+            }
+            
+            reportTagArray.push(tag)
+        } else {
+            reportTagArray = []
         }
-
-        reportTagArray.push(tag)
+        
         storage.put(REPORT_TAG_ARRAY, JSON.stringify(reportTagArray))
     }
 }
