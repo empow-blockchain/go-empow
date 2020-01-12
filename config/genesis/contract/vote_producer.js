@@ -351,7 +351,7 @@ class VoteContract {
     }
 
     // update the information of a producer
-    updateProducer(account, pubkey, loc, url, netId) {
+    updateProducer(account, avatar, name, pubkey, loc, url, netId) {
         this._requireAuthList(this._getAccountList(account), VOTE_PERMISSION);
         if (!storage.mapHas("producerTable", account)) {
             throw new Error("producer not exists");
@@ -369,6 +369,8 @@ class VoteContract {
             this._mapDel("producerKeyToId", pro.pubkey, account);
             this._mapPut("producerKeyToId", pubkey, account, publisher);
         }
+        pro.avatar = avatar;
+        pro.name = name;
         pro.pubkey = pubkey;
         pro.loc = loc;
         pro.url = url;
