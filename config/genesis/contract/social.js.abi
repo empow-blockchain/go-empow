@@ -63,6 +63,12 @@
             ]
         },
         {
+            "name": "delete",
+            "args": [
+                "string"
+            ]
+        },
+        {
             "name": "follow",
             "args": [
                 "string",

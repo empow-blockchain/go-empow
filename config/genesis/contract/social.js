@@ -31,9 +31,9 @@ class Social {
         storage.put(LIKE_BY_LEVEL, JSON.stringify(likeAmount))
     }
 
-    initAdmin (adminAddress) {
+    initAdmin(adminAddress) {
         const bn = block.number;
-        if(bn !== 0) {
+        if (bn !== 0) {
             throw new Error("init out of genesis block")
         }
         storage.put("adminAddress", adminAddress);
@@ -46,30 +46,30 @@ class Social {
     }
 
     _postValidate(title, content, tag) {
-        if(tag.length === undefined || tag.length === 0) {
+        if (tag.length === undefined || tag.length === 0) {
             throw new Error("Tag is not correct format")
         }
 
-        if(title.length > 255) {
+        if (title.length > 255) {
             throw new Error("Title is greater than 255 characters")
         }
     }
 
     _titleValidate(title) {
-        if(title.length <= 0 || title.length > 255) {
+        if (title.length <= 0 || title.length > 255) {
             throw new Error("title must be length greater than 0 and less than 255 > " + title.length)
         }
     }
 
     _contentValidate(content) {
-        if(typeof content !== "object") {
+        if (typeof content !== "object") {
             throw new Error("content must be object")
         }
     }
 
     _tagValidate(tag) {
-        if(!Array.isArray(tag)) throw new Error("tag must be array")
-        if(tag.length > 50) throw new Error("tag must be length less than 50 > " + tag.length)
+        if (!Array.isArray(tag)) throw new Error("tag must be array")
+        if (tag.length > 50) throw new Error("tag must be length less than 50 > " + tag.length)
     }
 
     _fixAmount(amount) {
@@ -83,7 +83,7 @@ class Social {
     _updateTotalLike(amount) {
         let totalLike = storage.get(TOTAl_LIKE)
 
-        if(!totalLike) {
+        if (!totalLike) {
             storage.put(TOTAl_LIKE, amount.toString())
         } else {
             storage.put(TOTAl_LIKE, amount.plus(totalLike).toString())
@@ -110,8 +110,8 @@ class Social {
         storage.put(REST_AMOUNT, amount.plus(restAmount).toString())
     }
 
-    post (address, title, content, tag) {
-        
+    post(address, title, content, tag) {
+
         this._requireAuth(address, "active")
         this._titleValidate(title)
         this._tagValidate(tag)
@@ -127,7 +127,7 @@ class Social {
 
         let postStatisticObj = {
             author: address,
-            totalLike:  0,
+            totalLike: 0,
             realLike: 0,
             totalComment: 0,
             totalCommentAndReply: 0,
@@ -148,16 +148,19 @@ class Social {
         this._titleValidate(title)
         // check exist post
         let postObj = storage.get(POST_PREFIX + postId)
-        if(!postObj) {
+        if (!postObj) {
             throw new Error("PostId not exist > " + postId)
         }
         postObj = JSON.parse(postObj)
         // check postId is share post
-        if(postObj.content.type === "share") {
+        if (postObj.content.type === "share") {
             postId = postObj.content.data
         }
         // +1 share to postId
         let postStatisticObj = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId))
+        if(postStatisticObj.deleted) {
+            throw new Error("PostId not exist > " + postId)
+        }
         postStatisticObj.totalShare++
         storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
         // post
@@ -175,7 +178,7 @@ class Social {
 
         postStatisticObj = {
             author: address,
-            totalLike:  0,
+            totalLike: 0,
             realLike: 0,
             totalComment: 0,
             totalCommentAndReply: 0,
@@ -195,25 +198,28 @@ class Social {
         this._requireAuth(address, "active")
         // check exist post
         let postStatisticObj = storage.get(POST_STATISTIC_PREFIX + postId)
-        if(!postStatisticObj) {
+        if (!postStatisticObj) {
             throw new Error("PostId not exist > " + postId)
         }
         postStatisticObj = JSON.parse(postStatisticObj)
+        if(postStatisticObj.deleted) {
+            throw new Error("PostId not exist > " + postId)
+        }
 
         // check author like
-        if(address === postStatisticObj.author) {
+        if (address === postStatisticObj.author) {
             throw new Error("You can't like own post > " + postStatisticObj.author)
         }
 
         // check is exist like on this post
-        if(storage.mapHas(LIKE_PREFIX + postId, address)) {
+        if (storage.mapHas(LIKE_PREFIX + postId, address)) {
             throw new Error("You have been like this postId > " + postId)
         }
 
         // check level
         let level = Math.floor(storage.get(LEVEL_PREFIX + address))
 
-        if(!level) {
+        if (!level) {
             storage.put(LEVEL_PREFIX + address, "1")
             level = 1
         }
@@ -226,7 +232,7 @@ class Social {
         let bn = block.number
         let totalDayLike = Math.floor((bn - postStatisticObj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
 
-        if(typeof postStatisticObj.realLikeArray[totalDayLike] !== "number") {
+        if (typeof postStatisticObj.realLikeArray[totalDayLike] !== "number") {
             postStatisticObj.realLikeArray[totalDayLike] = 0
         }
 
@@ -247,10 +253,13 @@ class Social {
     likeWithdraw(postId) {
         // check exist post
         let postStatisticObj = storage.get(POST_STATISTIC_PREFIX + postId)
-        if(!postStatisticObj) {
-             throw new Error("PostId not exist > " + postId)
+        if (!postStatisticObj) {
+            throw new Error("PostId not exist > " + postId)
         }
         postStatisticObj = JSON.parse(postStatisticObj)
+        if(postStatisticObj.deleted) {
+            throw new Error("PostId not exist > " + postId)
+        }
         let address = postStatisticObj.author
 
         this._requireAuth(address, "active")
@@ -259,11 +268,11 @@ class Social {
         const bn = block.number
         let totalDayLike = Math.floor((bn - postStatisticObj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
 
-        if(totalDayLike === 0) {
+        if (totalDayLike === 0) {
             throw new Error("You can withdraw like after 1 day")
         }
 
-        if(typeof postStatisticObj.realLikeArray[totalDayLike] !== "number") {
+        if (typeof postStatisticObj.realLikeArray[totalDayLike] !== "number") {
             postStatisticObj.realLikeArray[totalDayLike] = 0
         }
 
@@ -272,34 +281,34 @@ class Social {
         let maxiumWithdraw = new Float64("0")
         const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
 
-        for(let i = currentDay; i >= 0; i--) {
-            if(postStatisticObj.realLikeArray.length - count < 0) {
+        for (let i = currentDay; i >= 0; i--) {
+            if (postStatisticObj.realLikeArray.length - count < 0) {
                 break
             }
 
             let realLike = postStatisticObj.realLikeArray[postStatisticObj.realLikeArray.length - count]
-            if(typeof realLike !== "number") {
+            if (typeof realLike !== "number") {
                 count++
                 continue
             }
             realLike = new Float64(realLike)
 
             let amountEMPerLike = storage.get(INTEREST_PREEFIX + i)
-            if(!amountEMPerLike) continue
-            
+            if (!amountEMPerLike) continue
+
             maxiumWithdraw = maxiumWithdraw.plus(realLike)
             canWithdraw = canWithdraw.plus(realLike.multi(amountEMPerLike))
 
             count++
         }
 
-        if(canWithdraw.gt(maxiumWithdraw)) {
+        if (canWithdraw.gt(maxiumWithdraw)) {
             // update rest amount
             this._updateRestAmount(canWithdraw.minus(maxiumWithdraw))
             canWithdraw = maxiumWithdraw
         }
 
-        if(canWithdraw.eq(0)) {
+        if (canWithdraw.eq(0)) {
             throw new Error("Amount EM can withdraw is zero")
         }
 
@@ -317,50 +326,30 @@ class Social {
         blockchain.receipt(JSON.stringify([address, postId, canWithdraw.toFixed(8)]))
     }
 
-    topup(amount) {
-        this._requireAuth("base.empow", "active")
-        amount = this._fixAmount(amount);
-
-        // calc interest per 1 like
-        let totalLike = storage.get(TOTAl_LIKE)
-        if(Math.floor(totalLike) === 0) {
-            totalLike = "1"
-        }
-        let interest = amount
-        if(totalLike !== "0") {
-            interest = amount.div(totalLike)
-        }
-
-        // update interest
-        const bn = block.number
-        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
-        storage.put(INTEREST_PREEFIX + currentDay, interest.toFixed(8))
-
-        // reset total like
-        this._resetTotalLike()
-    }
-
     comment(address, postId, type, parentId, content) {
         this._requireAuth(address, "active")
         // check exist post
         let postStatisticObj = storage.get(POST_STATISTIC_PREFIX + postId)
-        if(!postStatisticObj) {
-             throw new Error("PostId not exist > " + postId)
+        if (!postStatisticObj) {
+            throw new Error("PostId not exist > " + postId)
         }
         postStatisticObj = JSON.parse(postStatisticObj)
+        if(postStatisticObj.deleted) {
+            throw new Error("PostId not exist > " + postId)
+        }
 
-        if(type !== "comment" && type !== "reply") {
+        if (type !== "comment" && type !== "reply") {
             throw new Error("Wrong comment type > " + type)
         }
 
-        if(content.length <= 0) {
+        if (content.length <= 0) {
             throw new Error("Content not blank > " + content)
         }
 
         let commentId = postStatisticObj.totalComment
-        let subCommentId = 0 
-        
-        if(type === "comment") {
+        let subCommentId = 0
+
+        if (type === "comment") {
             const commentObj = {
                 address: address,
                 type: "comment",
@@ -378,10 +367,10 @@ class Social {
         } else {
             // check exist comment
             let commentObj = storage.get(COMMENT_PREFIX + postId + "_" + parentId)
-            if(!commentObj) {
+            if (!commentObj) {
                 throw new Error("Comment not exist > " + parentId)
             }
-            
+
             commentObj = JSON.parse(commentObj)
 
             commentId = parentId
@@ -410,14 +399,17 @@ class Social {
         this._requireAuth(address, "active")
         // check post exist
         let postStatisticObj = storage.get(POST_STATISTIC_PREFIX + postId)
-        if(!postStatisticObj) {
-             throw new Error("PostId not exist > " + postId)
+        if (!postStatisticObj) {
+            throw new Error("PostId not exist > " + postId)
         }
         postStatisticObj = JSON.parse(postStatisticObj)
+        if(postStatisticObj.deleted) {
+            throw new Error("PostId not exist > " + postId)
+        }
         // check tag exist
         const reportTagArray = JSON.parse(storage.get(REPORT_TAG_ARRAY))
-        
-        if(reportTagArray.indexOf(tag) === -1) {
+
+        if (reportTagArray.indexOf(tag) === -1) {
             throw new Error("report tag not exist > " + tag)
         }
 
@@ -427,19 +419,19 @@ class Social {
         // if(reported) {
         //     throw new Error("can report 2 times > " + address)
         // }
-        
+
         // check level
         let level = Math.floor(storage.get(LEVEL_PREFIX + address))
 
-        if(!level) {
+        if (!level) {
             storage.put(LEVEL_PREFIX + address, "1")
             level = 1
         }
-        
+
         let likeByLevel = JSON.parse(storage.get(LIKE_BY_LEVEL))
         let amountReport = new Float64(likeByLevel[level - 1])
-        
-        if(storage.mapHas(REPORT_PREFIX + postId, tag)) {
+
+        if (storage.mapHas(REPORT_PREFIX + postId, tag)) {
             let current = Math.floor(storage.mapGet(REPORT_PREFIX + postId, tag))
             storage.mapPut(REPORT_PREFIX + postId, tag, amountReport.plus(current).toString())
         } else {
@@ -455,18 +447,47 @@ class Social {
         blockchain.receipt(JSON.stringify([address, postId, tag]))
     }
 
-    follow (address, target) {
+    delete(postId) {
+        // check exist post
+        let postStatisticObj = storage.get(POST_STATISTIC_PREFIX + postId)
+        if (!postStatisticObj) {
+            throw new Error("PostId not exist > " + postId)
+        }
+        postStatisticObj = JSON.parse(postStatisticObj)
+        let address = postStatisticObj.author
+
+        const admin = storage.get("adminAddress");
+        const whitelist = [admin, address];
+        let auth = false;
+        for (const c of whitelist) {
+            if (blockchain.requireAuth(c, "active")) {
+                auth = true;
+                break;
+            }
+        }
+        if (!auth) {
+            throw new Error("permission denied");
+        }
+        
+        // delete
+        postStatisticObj.deleted = true
+        storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
+
+        blockchain.receipt(JSON.stringify([postId]))
+    }
+
+    follow(address, target) {
         this._requireAuth(address, "active")
         // check target exist
-        if(!storage.globalMapHas("auth.empow", "auth", target)) {
+        if (!storage.globalMapHas("auth.empow", "auth", target)) {
             throw new Error("Follow user not exist > " + target)
         }
         //
-        if(address === target) {
+        if (address === target) {
             throw new Error("Can't follow yoursefl > " + target)
         }
         // check is following
-        if(storage.mapHas(USER_FOLLOW_PREFIX + target, address)) {
+        if (storage.mapHas(USER_FOLLOW_PREFIX + target, address)) {
             throw new Error("You are following this user > " + target)
         }
         // set follow
@@ -478,11 +499,11 @@ class Social {
     unfollow(address, target) {
         this._requireAuth(address, "active")
         // check target exist
-        if(!storage.globalMapHas("auth.empow", "auth", target)) {
+        if (!storage.globalMapHas("auth.empow", "auth", target)) {
             throw new Error("Follow user not exist > " + target)
         }
         // check is following
-        if(!storage.mapHas(USER_FOLLOW_PREFIX + target, address)) {
+        if (!storage.mapHas(USER_FOLLOW_PREFIX + target, address)) {
             throw new Error("You have not followed this user > " + target)
         }
 
@@ -497,46 +518,69 @@ class Social {
         storage.put(USER_PREFIX + address, JSON.stringify(info))
         blockchain.receipt(JSON.stringify([address, info]))
     }
-    
-    blockContent (address, tag) {
+
+    blockContent(address, tag) {
         this._requireAuth(address, "active")
         let reportTagArray = storage.get(REPORT_TAG_ARRAY)
-        
-        if(!reportTagArray) throw new Error("report tag array not exist")
-        
+
+        if (!reportTagArray) throw new Error("report tag array not exist")
+
         reportTagArray = JSON.parse(reportTagArray)
-        
-        if(reportTagArray.indexOf(tag) === -1) {
+
+        if (reportTagArray.indexOf(tag) === -1) {
             throw new Error("block tag not exist > " + tag)
         }
-        
+
         storage.mapPut(BLOCK_TAG_PREFIX + address, tag, "true")
-        
+
         blockchain.receipt(JSON.stringify([address, tag]))
     }
-    
-    unblockContent (address, tag) {
+
+    unblockContent(address, tag) {
         this._requireAuth(address, "active")
         let reportTagArray = storage.get(REPORT_TAG_ARRAY)
-        
-        if(!reportTagArray) throw new Error("report tag array not exist")
-        
+
+        if (!reportTagArray) throw new Error("report tag array not exist")
+
         reportTagArray = JSON.parse(reportTagArray)
-        
-        if(reportTagArray.indexOf(tag) === -1) {
+
+        if (reportTagArray.indexOf(tag) === -1) {
             throw new Error("block tag not exist > " + tag)
         }
-        
-        if(!storage.mapHas(BLOCK_TAG_PREFIX + address, tag)) {
+
+        if (!storage.mapHas(BLOCK_TAG_PREFIX + address, tag)) {
             throw new Error("you have not blocked this tag > " + tag)
         }
-        
+
         storage.mapDel(BLOCK_TAG_PREFIX + address, tag)
-        
+
         blockchain.receipt(JSON.stringify([address, tag]))
     }
 
     // admin only
+    topup(amount) {
+        this._requireAuth("base.empow", "active")
+        amount = this._fixAmount(amount);
+
+        // calc interest per 1 like
+        let totalLike = storage.get(TOTAl_LIKE)
+        if (Math.floor(totalLike) === 0) {
+            totalLike = "1"
+        }
+        let interest = amount
+        if (totalLike !== "0") {
+            interest = amount.div(totalLike)
+        }
+
+        // update interest
+        const bn = block.number
+        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
+        storage.put(INTEREST_PREEFIX + currentDay, interest.toFixed(8))
+
+        // reset total like
+        this._resetTotalLike()
+    }
+    
     upLevel(address, level) {
         const admin = storage.get("adminAddress");
         const whitelist = ["auth.empow", admin];
@@ -553,11 +597,11 @@ class Social {
 
         let currentLevel = Math.floor(storage.get(LEVEL_PREFIX + address))
 
-        if(!currentLevel) {
+        if (!currentLevel) {
             currentLevel = 1
         }
 
-        if(!currentLevel || level <= currentLevel) return true;
+        if (!currentLevel || level <= currentLevel) return true;
 
         this._updateLevel(address, level)
         blockchain.receipt(JSON.stringify([address, level]))
@@ -568,19 +612,19 @@ class Social {
         this._requireAuth(admin, "active")
 
         let reportTagArray = storage.get(REPORT_TAG_ARRAY)
-        
-        if(reportTagArray) {
+
+        if (reportTagArray) {
             reportTagArray = JSON.parse(reportTagArray)
-            
-            if(reportTagArray.indexOf(tag) !== -1) {
+
+            if (reportTagArray.indexOf(tag) !== -1) {
                 throw new Error("tag is exist > " + tag)
             }
-            
+
             reportTagArray.push(tag)
         } else {
             reportTagArray = []
         }
-        
+
         storage.put(REPORT_TAG_ARRAY, JSON.stringify(reportTagArray))
         blockchain.receipt(JSON.stringify([tag]))
     }
