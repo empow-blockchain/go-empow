@@ -190,9 +190,9 @@ class Account {
         this._saveAccount(account);
         if (block.number !== 0) {
             const defaultGasPledge = "15";
-            const defaultRamBuy = 200; // 200 bytes
+            // const defaultRamBuy = 200; // 200 bytes
             blockchain.callWithAuth("gas.empow", "pledge", [blockchain.contractName(), address, defaultGasPledge]);
-            blockchain.callWithAuth("ram.empow", "buy", [blockchain.contractName(), address, defaultRamBuy]);
+            // blockchain.callWithAuth("ram.empow", "buy", [blockchain.contractName(), address, defaultRamBuy]);
         }
 
         blockchain.receipt(JSON.stringify([address, owner, active]));
@@ -201,6 +201,16 @@ class Account {
     addNormalUsername (address, username) {
         if (this._hasUsername("newbie." + username)) {
             throw new Error("username existed > " + "newbie." + username);
+        }
+        // check can buy free username one time
+        let addressUsernameArray = storage.get(USERNAME_ARRAY_PREFIX + address)
+        if(addressUsernameArray) {
+            addressUsernameArray = JSON.parse(addressUsernameArray)
+            for(let i = 0; i < addressUsernameArray.length; i++) {
+                if(addressUsernameArray[i].indexOf("newbie.") !== -1) {
+                    throw new Error("You can only buy free username 1 time")
+                }
+            }
         }
         // check isvailid username
         this._checkNormalUsername(username)

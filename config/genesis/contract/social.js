@@ -3,7 +3,6 @@ const POST_STATISTIC_PREFIX = "s_"
 const LIKE_PREFIX = "l_"
 const COMMENT_PREFIX = "c_"
 const REPLY_COMMENT_PREFIX = "rc_"
-const REPORT_PREFIX = "r_"
 const LEVEL_PREFIX = "lv_"
 const INTEREST_PREEFIX = "i_"
 const USER_PREFIX = "u_"
@@ -11,10 +10,22 @@ const USER_FOLLOW_PREFIX = "f_"
 const TOTAl_LIKE = "totalLike"
 const LIKE_BY_LEVEL = "likeByLevel"
 const REST_AMOUNT = "restAmount"
-const REPORT_TAG_ARRAY = "reportTagArray"
 const BLOCK_TAG_PREFIX = "bt_"
-
 const BLOCK_NUMBER_PER_DAY = 172800
+const REPORT_TAG_ARRAY = "reportTagArray"
+const REPORT_PENDING_ARRAY = "reportPendingArray"
+const REPORT_VALIDATOR_PREFIX = "rp_"
+const REPORT_VALIDATOR_PER_POST = 9
+const REPORT_VALIDATOR_REWARD = 10
+
+/* rp_postId_tag = [
+    {
+        address: 
+        status:
+    }
+]
+
+*/
 
 class Social {
 
@@ -26,8 +37,7 @@ class Social {
     }
 
     initLevel() {
-        let likeAmount = [0.01, 10, 15, 18, 20, 25, 30]
-
+        let likeAmount = [0, 10, 15, 18, 20, 25, 30]
         storage.put(LIKE_BY_LEVEL, JSON.stringify(likeAmount))
     }
 
@@ -110,6 +120,20 @@ class Social {
         storage.put(REST_AMOUNT, amount.plus(restAmount).toString())
     }
 
+    _checkPostExist(postId) {
+        let postStatisticObj = storage.get(POST_STATISTIC_PREFIX + postId)
+        if (!postStatisticObj) {
+            throw new Error("PostId not exist > " + postId)
+        }
+
+        postStatisticObj = JSON.parse(postStatisticObj)
+        if (postStatisticObj.deleted) {
+            throw new Error("PostId not exist > " + postId)
+        }
+
+        return postStatisticObj
+    }
+
     post(address, title, content, tag) {
 
         this._requireAuth(address, "active")
@@ -131,7 +155,6 @@ class Social {
             realLike: 0,
             totalComment: 0,
             totalCommentAndReply: 0,
-            totalReport: 0,
             totalShare: 0,
             realLikeArray: [0],
             lastBlockWithdraw: block.number
@@ -147,20 +170,13 @@ class Social {
         this._requireAuth(address, "active")
         this._titleValidate(title)
         // check exist post
-        let postObj = storage.get(POST_PREFIX + postId)
-        if (!postObj) {
-            throw new Error("PostId not exist > " + postId)
-        }
-        postObj = JSON.parse(postObj)
+        let postStatisticObj = this._checkPostExist(postId)
+        let postObj = JSON.parse(storage.get(POST_PREFIX + postId))
         // check postId is share post
         if (postObj.content.type === "share") {
             postId = postObj.content.data
         }
         // +1 share to postId
-        let postStatisticObj = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId))
-        if(postStatisticObj.deleted) {
-            throw new Error("PostId not exist > " + postId)
-        }
         postStatisticObj.totalShare++
         storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
         // post
@@ -182,7 +198,6 @@ class Social {
             realLike: 0,
             totalComment: 0,
             totalCommentAndReply: 0,
-            totalReport: 0,
             totalShare: 0,
             realLikeArray: [0],
             lastBlockWithdraw: block.number
@@ -197,15 +212,7 @@ class Social {
     like(address, postId) {
         this._requireAuth(address, "active")
         // check exist post
-        let postStatisticObj = storage.get(POST_STATISTIC_PREFIX + postId)
-        if (!postStatisticObj) {
-            throw new Error("PostId not exist > " + postId)
-        }
-        postStatisticObj = JSON.parse(postStatisticObj)
-        if(postStatisticObj.deleted) {
-            throw new Error("PostId not exist > " + postId)
-        }
-
+        let postStatisticObj = this._checkPostExist(postId)
         // check author like
         if (address === postStatisticObj.author) {
             throw new Error("You can't like own post > " + postStatisticObj.author)
@@ -224,42 +231,37 @@ class Social {
             level = 1
         }
 
-        let likeByLevel = JSON.parse(storage.get(LIKE_BY_LEVEL))
-        let amountLike = likeByLevel[level - 1]
-
         // update post statistic
         postStatisticObj.totalLike++
-        let bn = block.number
-        let totalDayLike = Math.floor((bn - postStatisticObj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
 
-        if (typeof postStatisticObj.realLikeArray[totalDayLike] !== "number") {
-            postStatisticObj.realLikeArray[totalDayLike] = 0
+        let likeByLevel = JSON.parse(storage.get(LIKE_BY_LEVEL))
+        let amountLike = likeByLevel[level - 1]
+        if (amountLike > 0) {
+            let bn = block.number
+            let totalDayLike = Math.floor((bn - postStatisticObj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
+
+            if (typeof postStatisticObj.realLikeArray[totalDayLike] !== "number") {
+                postStatisticObj.realLikeArray[totalDayLike] = 0
+            }
+
+            postStatisticObj.realLikeArray[totalDayLike] += amountLike
+            postStatisticObj.realLike += amountLike
+
+            // update total like today
+            this._updateTotalLike(new Float64(amountLike))
         }
-
-        postStatisticObj.realLikeArray[totalDayLike] += amountLike
-        postStatisticObj.realLike += amountLike
 
         storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
 
         // like
         storage.mapPut(LIKE_PREFIX + postId, address, JSON.stringify(amountLike))
 
-        // update total like
-        this._updateTotalLike(new Float64(amountLike))
-
         blockchain.receipt(JSON.stringify([address, postId]))
     }
 
     likeWithdraw(postId) {
         // check exist post
-        let postStatisticObj = storage.get(POST_STATISTIC_PREFIX + postId)
-        if (!postStatisticObj) {
-            throw new Error("PostId not exist > " + postId)
-        }
-        postStatisticObj = JSON.parse(postStatisticObj)
-        if(postStatisticObj.deleted) {
-            throw new Error("PostId not exist > " + postId)
-        }
+        let postStatisticObj = this._checkPostExist(postId)
         let address = postStatisticObj.author
 
         this._requireAuth(address, "active")
@@ -329,14 +331,7 @@ class Social {
     comment(address, postId, type, parentId, content) {
         this._requireAuth(address, "active")
         // check exist post
-        let postStatisticObj = storage.get(POST_STATISTIC_PREFIX + postId)
-        if (!postStatisticObj) {
-            throw new Error("PostId not exist > " + postId)
-        }
-        postStatisticObj = JSON.parse(postStatisticObj)
-        if(postStatisticObj.deleted) {
-            throw new Error("PostId not exist > " + postId)
-        }
+        let postStatisticObj = this._checkPostExist(postId)
 
         if (type !== "comment" && type !== "reply") {
             throw new Error("Wrong comment type > " + type)
@@ -398,14 +393,7 @@ class Social {
     report(address, postId, tag) {
         this._requireAuth(address, "active")
         // check post exist
-        let postStatisticObj = storage.get(POST_STATISTIC_PREFIX + postId)
-        if (!postStatisticObj) {
-            throw new Error("PostId not exist > " + postId)
-        }
-        postStatisticObj = JSON.parse(postStatisticObj)
-        if(postStatisticObj.deleted) {
-            throw new Error("PostId not exist > " + postId)
-        }
+        let postStatisticObj = this._checkPostExist(postId)
         // check tag exist
         const reportTagArray = JSON.parse(storage.get(REPORT_TAG_ARRAY))
 
@@ -413,38 +401,77 @@ class Social {
             throw new Error("report tag not exist > " + tag)
         }
 
-        // Turn it on when fork new blockchain
-        // check report 2 times
-        // const reported = storage.mapHas(REPORT_PREFIX + postId + "_" + address, tag)
-        // if(reported) {
-        //     throw new Error("can report 2 times > " + address)
-        // }
-
-        // check level
-        let level = Math.floor(storage.get(LEVEL_PREFIX + address))
-
-        if (!level) {
-            storage.put(LEVEL_PREFIX + address, "1")
-            level = 1
+        // check post is tagged
+        if (postStatisticObj[tag]) {
+            throw new Error("this post has been tagged > " + tag)
         }
 
-        let likeByLevel = JSON.parse(storage.get(LIKE_BY_LEVEL))
-        let amountReport = new Float64(likeByLevel[level - 1])
+        // check post is exist on reportPendingArray
+        if(postStatisticObj.inReportPending) {
+            throw new Error("this post in report pending > " + postId)
+        }
 
-        if (storage.mapHas(REPORT_PREFIX + postId, tag)) {
-            let current = Math.floor(storage.mapGet(REPORT_PREFIX + postId, tag))
-            storage.mapPut(REPORT_PREFIX + postId, tag, amountReport.plus(current).toString())
+        // push to reportPendingArray
+        let reportObj = {
+            address: address,
+            postId: postId,
+            tag: tag
+        }
+
+        let reportPendingArray = storage.get(REPORT_PENDING_ARRAY)
+
+        if (!reportPendingArray) {
+            reportPendingArray = []
         } else {
-            storage.mapPut(REPORT_PREFIX + postId, tag, amountReport.toString())
+            reportPendingArray = JSON.parse(reportPendingArray)
         }
 
-        postStatisticObj.totalReport++
+        reportPendingArray.push(reportObj)
+
+        storage.put(REPORT_PENDING_ARRAY, JSON.stringify(reportPendingArray))
+
+        // update postStatisticObj
+        postStatisticObj.inReportPending = tag
         storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
 
-        // Turn it on when fork new blockchain
-        // storage.mapPut(REPORT_PREFIX + postId + "_" + address, tag ,"true")
-
         blockchain.receipt(JSON.stringify([address, postId, tag]))
+    }
+
+    validatePost(address, postId, status) {
+        this._requireAuth(address, "active")
+        // check post exist
+        let postStatisticObj = this._checkPostExist(postId)
+        if(!postStatisticObj.inReportPending) {
+            throw new Error("this post not in report pending")
+        }
+        // get validator info
+        let reportValidator = storage.get(REPORT_VALIDATOR_PREFIX + postId + "_" + postStatisticObj.inReportPending)
+
+        if(!reportValidator) {
+            reportValidator = []
+        } else {
+            reportValidator = JSON.parse(reportValidator)
+        }
+
+        if(reportValidator.length >= REPORT_VALIDATOR_PER_POST) {
+            throw new Error("this post has enough validator")
+        }
+
+        for(let i = 0; i < reportValidator.length; i++) {
+            if(reportValidator[i].address === address) {
+                throw new Error("you have already validate this post")
+            }
+        }
+
+        // push validator
+        reportValidator.push({
+            address: address,
+            status: status
+        })
+
+        storage.put(REPORT_VALIDATOR_PREFIX + postId + "_" + postStatisticObj.inReportPending, JSON.stringify(reportValidator))
+
+        blockchain.receipt(JSON.stringify([address, postId, status]))
     }
 
     delete(postId) {
@@ -468,7 +495,7 @@ class Social {
         if (!auth) {
             throw new Error("permission denied");
         }
-        
+
         // delete
         postStatisticObj.deleted = true
         storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
@@ -558,6 +585,94 @@ class Social {
     }
 
     // admin only
+    _assignReportTag (postId, tag) {
+        let postStatisticObj = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId))
+        postStatisticObj.tag = true
+        storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
+    }
+
+    _sendRewardToValidator (postId, validators) {
+        for(let i = 0; i < validators.length; i++) {
+            blockchain.callWithAuth("token.empow", "transfer", ["em", blockchain.contractName(), validators[i], REPORT_VALIDATOR_REWARD, "validate reward of: " + postId])
+        }
+    }
+
+    _checkValidate (postId, tag) {
+        let validator = storage.get(REPORT_VALIDATOR_PREFIX + postId + "_" + tag)
+        if(!validator) return false;
+        validator = JSON.parse(validator)
+        if(validator.length < REPORT_VALIDATOR_PER_POST) return false;
+
+        let countTrue = 0
+        let validatorTrue = []
+        
+        for(let i = 0; i < validator.length; i++) {
+            if(validator[i].status === true) {
+                countTrue++
+                validatorTrue.push(validator[i].address)
+            }
+        }
+
+        if(countTrue >= Math.round(REPORT_VALIDATOR_PER_POST / 2)) {
+            // assign tag for post
+            this._assignReportTag(postId, tag)
+            // send reward for validator
+            this._sendRewardToValidator(postId, validatorTrue)
+
+            return true
+        }
+
+        return false
+    }
+
+    _updateReportPendingArray(reportPendingArray, validatedCount) {
+        if(validatedCount === 0) return;
+
+        for(let i = 0; i < validatedCount; i++) {
+            reportPendingArray.shift()
+        }
+
+        storage.put(REPORT_PENDING_ARRAY, JSON.stringify(reportPendingArray))
+    }
+
+    checkReport() {
+        const admin = storage.get("adminAddress");
+        const whitelist = ["base.empow", admin];
+        let auth = false;
+        for (const c of whitelist) {
+            if (blockchain.requireAuth(c, "active")) {
+                auth = true;
+                break;
+            }
+        }
+        if (!auth) {
+            throw new Error("permission denied");
+        }
+
+        // get report pending array
+        let reportPendingArray = storage.get(REPORT_PENDING_ARRAY)
+        if(!reportPendingArray) return
+
+        let postValidated = []
+
+        for(let i = 0; i < reportPendingArray.length; i++) {
+            const postId = reportPendingArray[i]
+            const tag = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId)).inReportPending
+            const result = this._checkValidate(postId, tag)
+
+            if(result === false) {
+                this._updateReportPendingArray(reportPendingArray, postValidated.length)
+                blockchain.receipt(JSON.stringify(postValidated))
+                return
+            }
+            
+            postValidated.push(postId)
+        }
+
+        this._updateReportPendingArray(reportPendingArray, postValidated.length)
+        blockchain.receipt(JSON.stringify(postValidated))
+    }
+
     topup(amount) {
         this._requireAuth("base.empow", "active")
         amount = this._fixAmount(amount);
@@ -580,7 +695,7 @@ class Social {
         // reset total like
         this._resetTotalLike()
     }
-    
+
     upLevel(address, level) {
         const admin = storage.get("adminAddress");
         const whitelist = ["auth.empow", admin];

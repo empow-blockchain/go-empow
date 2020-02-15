@@ -1,6 +1,7 @@
 const producerPermission = "active";
 const voteStatInterval = 1200;
 const issueInterval = 172800;
+const checkReportInterval = 600;
 
 class Base {
     init() {
@@ -51,6 +52,10 @@ class Base {
         blockchain.callWithAuth("issue.empow", "issueEM", `[]`);
     }
 
+    _checkReport() {
+        blockchain.callWithAuth("social.empow", "checkReport", `[]`)
+    }
+
     _saveBlockInfo() {
         let json = storage.get("current_block_info");
         storage.put("chain_info_" + block.parentHash, JSON.stringify(json));
@@ -84,6 +89,9 @@ class Base {
         }
         if (bn%issueInterval === 0) {
             this._issue();
+        }
+        if(bn%checkReportInterval === 0) {
+            this._checkReport()
         }
         this._bonus(data);
     }

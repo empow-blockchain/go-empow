@@ -63,6 +63,14 @@
             ]
         },
         {
+            "name": "vaidatePost",
+            "args": [
+                "string",
+                "string",
+                "bool"
+            ]
+        },
+        {
             "name": "delete",
             "args": [
                 "string"
@@ -102,6 +110,10 @@
                 "string",
                 "json"
             ]
+        },
+        {
+            "name": "checkReport",
+            "args": []
         },
         {
             "name": "topup",
