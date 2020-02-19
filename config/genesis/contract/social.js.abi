@@ -63,7 +63,7 @@
             ]
         },
         {
-            "name": "vaidatePost",
+            "name": "validatePost",
             "args": [
                 "string",
                 "string",
