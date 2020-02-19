@@ -415,7 +415,8 @@ class Social {
         let reportObj = {
             address: address,
             postId: postId,
-            tag: tag
+            tag: tag,
+            time: tx.time
         }
 
         let reportPendingArray = storage.get(REPORT_PENDING_ARRAY)
@@ -652,17 +653,19 @@ class Social {
         // get report pending array
         let reportPendingArray = storage.get(REPORT_PENDING_ARRAY)
         if(!reportPendingArray) return
+        reportPendingArray = JSON.parse(reportPendingArray)
 
         let postValidated = []
 
         for(let i = 0; i < reportPendingArray.length; i++) {
-            const postId = reportPendingArray[i]
-            const tag = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId)).inReportPending
+            const postId = reportPendingArray[i].postId
+            const postStatisticObj = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId))
+            const tag = postStatisticObj.inReportPending
             const result = this._checkValidate(postId, tag)
 
             if(result === false) {
                 this._updateReportPendingArray(reportPendingArray, postValidated.length)
-                blockchain.receipt(JSON.stringify(postValidated))
+                if(postValidated.length > 0) blockchain.receipt(JSON.stringify(postValidated))
                 return
             }
             
@@ -670,7 +673,7 @@ class Social {
         }
 
         this._updateReportPendingArray(reportPendingArray, postValidated.length)
-        blockchain.receipt(JSON.stringify(postValidated))
+        if(postValidated.length > 0) blockchain.receipt(JSON.stringify(postValidated))
     }
 
     topup(amount) {
