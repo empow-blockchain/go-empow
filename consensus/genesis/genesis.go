@@ -91,7 +91,7 @@ func genGenesisTx(gConf *common.GenesisConfig) (*tx.Tx, *account.Account, error)
 	acts = append(acts, tx.NewAction("stake.empow", "initAdmin", fmt.Sprintf(`["%v"]`, adminInfo.Address)))
 
 	// deloy social.empow
-	code, err = compile("social.empow", gConf.ContractPath, "stake.js")
+	code, err = compile("social.empow", gConf.ContractPath, "social.js")
 	if err != nil {
 		return nil, nil, err
 	}
