@@ -526,6 +526,8 @@ class VoteContract {
     }
 
     switchOff(off) {
+        const admin = storage.get("adminAddress");
+        this._requireAuth(admin, ADMIN_PERMISSION);
         storage.put("switchOff", off ? "1" : "0");
     }
 
@@ -829,6 +831,13 @@ class VoteContract {
         }
 
         this._putScores(scores);
+    }
+
+    updateProducerNumber(producerNumber) {
+        const admin = storage.get("adminAddress");
+        this._requireAuth(admin, ADMIN_PERMISSION);
+
+        this._put("producerNumber", producerNumber);
     }
 }
 

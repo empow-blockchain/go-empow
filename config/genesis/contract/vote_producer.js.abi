@@ -146,6 +146,12 @@
             "args": [
                 "string"
             ]
+        },
+        {
+            "name": "updateProducerNumber",
+            "args": [
+                "string"
+            ]
         }
     ]
 }
