@@ -1,6 +1,6 @@
 GO = go
 
-VERSION = 0.1.1
+VERSION = 0.1.2
 COMMIT = $(shell git rev-parse --short HEAD)
 PROJECT = github.com/empow-blockchain/go-empow
 DOCKER_IMAGE = empowio/empow-node:$(VERSION)-$(COMMIT)

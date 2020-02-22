@@ -9,7 +9,7 @@ set -ue
 
 PREFIX=${PREFIX:="/data/iserver"}
 INET=${INET:="mainnet"}
-VERSION=${VERSION:="0.1.0"}
+VERSION=${VERSION:="0.1.2"}
 
 PRODUCER_KEY_FILE=keypair
 CURL="curl -fsSL"
