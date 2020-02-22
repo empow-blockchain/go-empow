@@ -606,11 +606,14 @@ class Social {
 
         let countTrue = 0
         let validatorTrue = []
+        let validatorFalse = []
         
         for(let i = 0; i < validator.length; i++) {
             if(validator[i].status === true) {
                 countTrue++
                 validatorTrue.push(validator[i].address)
+            } else {
+                validatorFalse.push(validator[i].address)
             }
         }
 
@@ -621,9 +624,10 @@ class Social {
             this._sendRewardToValidator(postId, validatorTrue)
 
             return true
+        } else {
+            this._sendRewardToValidator(postId, validatorFalse)
+            return false
         }
-
-        return false
     }
 
     _updateReportPendingArray(reportPendingArray, validatedCount) {
