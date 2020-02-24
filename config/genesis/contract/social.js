@@ -664,6 +664,12 @@ class Social {
         for(let i = 0; i < reportPendingArray.length; i++) {
             const postId = reportPendingArray[i].postId
             const postStatisticObj = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId))
+
+            if(postStatisticObj.deleted) {
+                postValidated.push(postId)
+                continue
+            }
+
             const tag = postStatisticObj.inReportPending
             const result = this._checkValidate(postId, tag)
 
