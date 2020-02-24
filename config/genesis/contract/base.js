@@ -95,7 +95,6 @@ class Base {
         }
         this._bonus(data);
     }
-
 }
 
 module.exports = Base;

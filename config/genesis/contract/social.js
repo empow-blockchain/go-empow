@@ -588,11 +588,22 @@ class Social {
     // admin only
     _assignReportTag (postId, tag) {
         let postStatisticObj = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId))
-        postStatisticObj.tag = true
+        postStatisticObj[tag] = true
+        delete postStatisticObj.inReportPending
+        storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
+    }
+
+    _removeInReportPending(postId) {
+        let postStatisticObj = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId))
+        delete postStatisticObj.inReportPending
         storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
     }
 
     _sendRewardToValidator (postId, validators) {
+        let balance = new Float64(blockchain.callWithAuth("token.empow", "balanceOf", ["em", blockchain.contractName()])[0])
+
+        if(balance.lt(REPORT_VALIDATOR_REWARD * validators.length)) return
+
         for(let i = 0; i < validators.length; i++) {
             blockchain.callWithAuth("token.empow", "transfer", ["em", blockchain.contractName(), validators[i], REPORT_VALIDATOR_REWARD.toString(), "validate reward of: " + postId])
         }
@@ -600,9 +611,9 @@ class Social {
 
     _checkValidate (postId, tag) {
         let validator = storage.get(REPORT_VALIDATOR_PREFIX + postId + "_" + tag)
-        if(!validator) return false;
+        if(!validator) return {done: false, status: false}
         validator = JSON.parse(validator)
-        if(validator.length < REPORT_VALIDATOR_PER_POST) return false;
+        if(validator.length < REPORT_VALIDATOR_PER_POST) return {done: false, status: false};
 
         let countTrue = 0
         let validatorTrue = []
@@ -622,11 +633,11 @@ class Social {
             this._assignReportTag(postId, tag)
             // send reward for validator
             this._sendRewardToValidator(postId, validatorTrue)
-
-            return true
+            return {done: true, status: true}
         } else {
+            this._removeInReportPending(postId)
             this._sendRewardToValidator(postId, validatorFalse)
-            return false
+            return {done: true, status: false}
         }
     }
 
@@ -673,13 +684,15 @@ class Social {
             const tag = postStatisticObj.inReportPending
             const result = this._checkValidate(postId, tag)
 
-            if(result === false) {
+            if(!result.done) {
                 this._updateReportPendingArray(reportPendingArray, postValidated.length)
                 if(postValidated.length > 0) blockchain.receipt(JSON.stringify(postValidated))
-                return
+                return;
             }
-            
-            postValidated.push(postId)
+
+            if(result.done) {
+                postValidated.push(postId)
+            }
         }
 
         this._updateReportPendingArray(reportPendingArray, postValidated.length)
