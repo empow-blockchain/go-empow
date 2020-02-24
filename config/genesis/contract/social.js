@@ -594,7 +594,7 @@ class Social {
 
     _sendRewardToValidator (postId, validators) {
         for(let i = 0; i < validators.length; i++) {
-            blockchain.callWithAuth("token.empow", "transfer", ["em", blockchain.contractName(), validators[i], REPORT_VALIDATOR_REWARD, "validate reward of: " + postId])
+            blockchain.callWithAuth("token.empow", "transfer", ["em", blockchain.contractName(), validators[i], REPORT_VALIDATOR_REWARD.toString(), "validate reward of: " + postId])
         }
     }
 
