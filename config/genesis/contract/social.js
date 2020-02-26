@@ -408,7 +408,7 @@ class Social {
     }
 
     likeComment (address, postId, commentId) {
-        this._requireAuth(address)
+        this._requireAuth(address, "active")
         this._checkPostExist(postId)
         let commentObj = this._checkCommentExist(postId, commentId)
 
