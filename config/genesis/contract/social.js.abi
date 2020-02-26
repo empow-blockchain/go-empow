@@ -51,6 +51,22 @@
                 "string",
                 "string",
                 "string",
+                "string",
+                "json"
+            ]
+        },
+        {
+            "name": "likeComment",
+            "args": [
+                "string",
+                "string",
+                "string"
+            ]
+        },
+        {
+            "name": "likeCommentWithdraw",
+            "args": [
+                "string",
                 "string"
             ]
         },

@@ -1,6 +1,7 @@
 const POST_PREFIX = "p_"
 const POST_STATISTIC_PREFIX = "s_"
 const LIKE_PREFIX = "l_"
+const LIKE_COMMENT_PREFIX = "lc_"
 const COMMENT_PREFIX = "c_"
 const REPLY_COMMENT_PREFIX = "rc_"
 const LEVEL_PREFIX = "lv_"
@@ -132,6 +133,16 @@ class Social {
         }
 
         return postStatisticObj
+    }
+
+    _checkCommentExist (postId, commentId) {
+        let commentObj = storage.get(COMMENT_PREFIX + postId + "_" + commentId)
+
+        if(!commentObj) {
+            throw new Error("CommentId not exist > " + commentId)
+        }
+
+        return JSON.parse(commentObj)
     }
 
     post(address, title, content, tag) {
@@ -314,7 +325,7 @@ class Social {
             throw new Error("Amount EM can withdraw is zero")
         }
 
-        blockchain.withdraw(address, canWithdraw.toFixed(8), "like withdraw")
+        blockchain.withdraw(address, canWithdraw.toFixed(8), "like withdraw: " + postId)
 
         // save post statistic
         postStatisticObj.realLikeArray = postStatisticObj.realLikeArray.slice(totalDayLike, totalDayLike + 1)
@@ -328,7 +339,7 @@ class Social {
         blockchain.receipt(JSON.stringify([address, postId, canWithdraw.toFixed(8)]))
     }
 
-    comment(address, postId, type, parentId, content) {
+    comment(address, postId, type, parentId, content, attachment) {
         this._requireAuth(address, "active")
         // check exist post
         let postStatisticObj = this._checkPostExist(postId)
@@ -353,7 +364,12 @@ class Social {
                 commentId: postStatisticObj.totalComment,
                 parentId: -1,
                 totalReply: 0,
-                content: content
+                realLike: 0,
+                totalLike: 0,
+                realLikeArray: [0],
+                lastBlockWithdraw: block.number,
+                content: content,
+                attachment: attachment
             }
             storage.put(COMMENT_PREFIX + postId + "_" + postStatisticObj.totalComment, JSON.stringify(commentObj))
             postStatisticObj.totalComment++
@@ -378,7 +394,8 @@ class Social {
                 postId: postId,
                 commentId: subCommentId,
                 parentId: parentId,
-                content: content
+                content: content,
+                attachment: attachment
             }
             storage.put(REPLY_COMMENT_PREFIX + postId + "_" + parentId + "_" + commentObj.totalReply, JSON.stringify(subCommentObj))
             commentObj.totalReply++
@@ -388,6 +405,121 @@ class Social {
         }
 
         blockchain.receipt(JSON.stringify([type, postId, commentId, subCommentId]))
+    }
+
+    likeComment (address, postId, commentId) {
+        this._requireAuth(address)
+        this._checkPostExist(postId)
+        let commentObj = this._checkCommentExist(postId, commentId)
+
+        // check can't like own comment
+        if(commentObj.address === address) {
+            throw new Error("you can't like your comment > " + postId + "_" + commentId)
+        }
+        // check liked this comment
+        if(storage.mapHas(LIKE_COMMENT_PREFIX + postId + "_" + commentId, address)) {
+            throw new Error("you have been like this comment > " + postId + "_" + commentId)
+        }
+        // check level
+        let level = Math.floor(storage.get(LEVEL_PREFIX + address))
+
+        if (!level) {
+            storage.put(LEVEL_PREFIX + address, "1")
+            level = 1
+        }
+        // update commentObj
+        commentObj.totalLike++
+
+        let likeByLevel = JSON.parse(storage.get(LIKE_BY_LEVEL))
+        let amountLike = likeByLevel[level - 1]
+
+        if(amountLike > 0) {
+            let bn = block.number
+            let totalDayLike = Math.floor((bn - commentObj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
+
+            if (typeof commentObj.realLikeArray[totalDayLike] !== "number") {
+                commentObj.realLikeArray[totalDayLike] = 0
+            }
+
+            commentObj.realLikeArray[totalDayLike] += amountLike
+            commentObj.realLike += amountLike
+
+            // update total like today
+            this._updateTotalLike(new Float64(amountLike))
+        }
+
+        storage.put(COMMENT_PREFIX + postId + "_" + commentId, JSON.stringify(commentObj))
+        // update liked
+        storage.mapPut(LIKE_COMMENT_PREFIX + postId + "_" + commentId, address, JSON.stringify(amountLike))
+
+        blockchain.receipt(JSON.stringify([address, postId, commentId]))
+    }
+    
+    likeCommentWithdraw (postId, commentId) {
+        this._checkPostExist(postId)
+        let commentObj = this._checkCommentExist(postId, commentId)
+
+        this._requireAuth(commentObj.address, "active")
+        // calc
+        const bn = block.number
+        let totalDayLike = Math.floor((bn - commentObj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
+
+        if (totalDayLike === 0) {
+            throw new Error("You can withdraw like after 1 day")
+        }
+
+        if (typeof commentObj.realLikeArray[totalDayLike] !== "number") {
+            commentObj.realLikeArray[totalDayLike] = 0
+        }
+
+        let count = 2;
+        let canWithdraw = new Float64("0")
+        let maxiumWithdraw = new Float64("0")
+        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
+
+        for (let i = currentDay; i >= 0; i--) {
+            if (commentObj.realLikeArray.length - count < 0) {
+                break
+            }
+
+            let realLike = commentObj.realLikeArray[commentObj.realLikeArray.length - count]
+            if (typeof realLike !== "number") {
+                count++
+                continue
+            }
+            realLike = new Float64(realLike)
+
+            let amountEMPerLike = storage.get(INTEREST_PREEFIX + i)
+            if (!amountEMPerLike) continue
+
+            maxiumWithdraw = maxiumWithdraw.plus(realLike)
+            canWithdraw = canWithdraw.plus(realLike.multi(amountEMPerLike))
+
+            count++
+        }
+
+        if (canWithdraw.gt(maxiumWithdraw)) {
+            // update rest amount
+            this._updateRestAmount(canWithdraw.minus(maxiumWithdraw))
+            canWithdraw = maxiumWithdraw
+        }
+
+        if (canWithdraw.eq(0)) {
+            throw new Error("Amount EM can withdraw is zero")
+        }
+
+        blockchain.withdraw(address, canWithdraw.toFixed(8), "like comment withdraw: " + postId + "_" + commentId)
+
+        // save post statistic
+        commentId.realLikeArray = commentId.realLikeArray.slice(totalDayLike, totalDayLike + 1)
+        commentId.lastBlockWithdraw = block.number
+
+        // reward vote point
+        blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, canWithdraw.toFixed(8)])
+
+        storage.put(COMMENT_PREFIX + postId + "_" + commentId, JSON.stringify(commentObj))
+
+        blockchain.receipt(JSON.stringify([address, postId, commentId, canWithdraw.toFixed(8)]))
     }
 
     report(address, postId, tag) {
