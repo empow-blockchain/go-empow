@@ -110,14 +110,7 @@
             "name": "blockContent",
             "args": [
                 "string",
-                "string"
-            ]
-        },
-        {
-            "name": "unblockContent",
-            "args": [
-                "string",
-                "string"
+                "json"
             ]
         },
         {

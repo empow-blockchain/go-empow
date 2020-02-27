@@ -7,9 +7,11 @@ const REPLY_COMMENT_PREFIX = "rc_"
 const LEVEL_PREFIX = "lv_"
 const INTEREST_PREEFIX = "i_"
 const USER_PREFIX = "u_"
+const USER_LIKE_STATISTIC = "ul_"
 const USER_FOLLOW_PREFIX = "f_"
 const TOTAl_LIKE = "totalLike"
 const LIKE_BY_LEVEL = "likeByLevel"
+const LIKE_MAX_PER_DAY = "likeMaxPerDay"
 const REST_AMOUNT = "restAmount"
 const BLOCK_TAG_PREFIX = "bt_"
 const BLOCK_NUMBER_PER_DAY = 172800
@@ -18,15 +20,6 @@ const REPORT_PENDING_ARRAY = "reportPendingArray"
 const REPORT_VALIDATOR_PREFIX = "rp_"
 const REPORT_VALIDATOR_PER_POST = 9
 const REPORT_VALIDATOR_REWARD = 10
-
-/* rp_postId_tag = [
-    {
-        address: 
-        status:
-    }
-]
-
-*/
 
 class Social {
 
@@ -38,8 +31,10 @@ class Social {
     }
 
     initLevel() {
-        let likeAmount = [0, 10, 15, 18, 20, 25, 30]
+        let likeAmount = [0, 2, 15, 18, 20, 25, 30]
+        let likeMaxPerDay = [0, 20, 30, 40, 50, 60, 70]
         storage.put(LIKE_BY_LEVEL, JSON.stringify(likeAmount))
+        storage.put(LIKE_MAX_PER_DAY, JSON.stringify(likeMaxPerDay))
     }
 
     initAdmin(adminAddress) {
@@ -135,14 +130,154 @@ class Social {
         return postStatisticObj
     }
 
-    _checkCommentExist (postId, commentId) {
+    _checkCommentExist(postId, commentId) {
         let commentObj = storage.get(COMMENT_PREFIX + postId + "_" + commentId)
 
-        if(!commentObj) {
+        if (!commentObj) {
             throw new Error("CommentId not exist > " + commentId)
         }
 
         return JSON.parse(commentObj)
+    }
+
+    _checkTagExistInReportTagArray(tag) {
+        let reportTagArray = storage.get(REPORT_TAG_ARRAY)
+
+        if (!reportTagArray) throw new Error("report tag array not exist")
+
+        reportTagArray = JSON.parse(reportTagArray)
+
+        if (!reportTagArray.includes(tag)) {
+            throw new Error("block tag not exist > " + tag)
+        }
+    }
+
+    _getLevel(address) {
+        let level = storage.get(LEVEL_PREFIX + address)
+
+        if (!level) {
+            storage.put(LEVEL_PREFIX + address, "1")
+            level = 1
+        } else {
+            level = Math.floor(level)
+        }
+
+        return level
+    }
+
+    _getAmountLikeByLevel(level) {
+        let likeByLevel = JSON.parse(storage.get(LIKE_BY_LEVEL))
+        let amountLike = likeByLevel[level - 1]
+
+        return amountLike
+    }
+
+    _updateLikeReward(obj, amountLike) {
+        let bn = block.number
+        let totalDayLike = Math.floor((bn - obj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
+
+        if (typeof obj.realLikeArray[totalDayLike] !== "number") {
+            obj.realLikeArray[totalDayLike] = 0
+        }
+
+        obj.realLikeArray[totalDayLike] += amountLike
+        obj.realLike += amountLike
+
+        // update total like today
+        this._updateTotalLike(new Float64(amountLike))
+
+        return obj
+    }
+
+    _calcCanWithdraw(obj) {
+        const bn = block.number
+        let totalDayLike = Math.floor((bn - obj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
+
+        if (totalDayLike === 0) {
+            throw new Error("You can withdraw like after 1 day")
+        }
+
+        if (typeof obj.realLikeArray[totalDayLike] !== "number") {
+            obj.realLikeArray[totalDayLike] = 0
+        }
+
+        let count = 2;
+        let canWithdraw = new Float64("0")
+        let maxiumWithdraw = new Float64("0")
+        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
+
+        for (let i = currentDay; i >= 0; i--) {
+            if (obj.realLikeArray.length - count < 0) {
+                break
+            }
+
+            let realLike = obj.realLikeArray[obj.realLikeArray.length - count]
+            if (typeof realLike !== "number") {
+                count++
+                continue
+            }
+            realLike = new Float64(realLike)
+
+            let amountEMPerLike = storage.get(INTEREST_PREEFIX + i)
+            if (!amountEMPerLike) continue
+
+            maxiumWithdraw = maxiumWithdraw.plus(realLike)
+            canWithdraw = canWithdraw.plus(realLike.multi(amountEMPerLike))
+
+            count++
+        }
+
+        if (canWithdraw.gt(maxiumWithdraw)) {
+            // update rest amount
+            this._updateRestAmount(canWithdraw.minus(maxiumWithdraw))
+            canWithdraw = maxiumWithdraw
+        }
+
+        if (canWithdraw.eq(0)) {
+            throw new Error("Amount EM can withdraw is zero")
+        }
+
+        return { canWithdraw, totalDayLike }
+    }
+
+    _updateLikeStatisticForUser(address) {
+        const bn = block.number
+        let likeStatistic = storage.get(USER_LIKE_STATISTIC + address)
+
+        if (!likeStatistic) {
+            likeStatistic = {
+                lastLikeBlock: bn,
+                toDayLike: 1
+            }
+
+            storage.put(USER_LIKE_STATISTIC + address, JSON.stringify(likeStatistic))
+        } else {
+            likeStatistic = JSON.parse(likeStatistic)
+            const toDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
+            const lastLikeOnDay = Math.floor(likeStatistic.lastLikeBlock / BLOCK_NUMBER_PER_DAY)
+
+            if (toDay === lastLikeOnDay) {
+                likeStatistic.toDayLike++
+            }
+
+            storage.put(USER_LIKE_STATISTIC + address, JSON.stringify(likeStatistic))
+        }
+    }
+
+    _isMaxLikePerDay(address, level) {
+        let likeStatistic = storage.get(USER_LIKE_STATISTIC + address)
+        if (!likeStatistic) return;
+
+        likeStatistic = JSON.parse(likeStatistic)
+
+        let likeMaxPerDay = JSON.parse(storage.get(LIKE_MAX_PER_DAY))
+        let max = likeMaxPerDay[level - 1]
+
+        if(likeStatistic.toDayLike > max) {
+            return true
+        } else {
+            return false
+        }
     }
 
     post(address, title, content, tag) {
@@ -234,37 +369,24 @@ class Social {
             throw new Error("You have been like this postId > " + postId)
         }
 
-        // check level
-        let level = Math.floor(storage.get(LEVEL_PREFIX + address))
+        // get level of address
+        const level = this._getLevel(address)
 
-        if (!level) {
-            storage.put(LEVEL_PREFIX + address, "1")
-            level = 1
+        // check max like for premium user
+        if (level > 1) {
+            if(!this._isMaxLikePerDay(address, level)) {
+                let amountLike = this._getAmountLikeByLevel(level)
+                postStatisticObj = this._updateLikeReward(postStatisticObj, amountLike)
+            }
+
+            this._updateLikeStatisticForUser(address)
         }
 
         // update post statistic
         postStatisticObj.totalLike++
-
-        let likeByLevel = JSON.parse(storage.get(LIKE_BY_LEVEL))
-        let amountLike = likeByLevel[level - 1]
-        if (amountLike > 0) {
-            let bn = block.number
-            let totalDayLike = Math.floor((bn - postStatisticObj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
-
-            if (typeof postStatisticObj.realLikeArray[totalDayLike] !== "number") {
-                postStatisticObj.realLikeArray[totalDayLike] = 0
-            }
-
-            postStatisticObj.realLikeArray[totalDayLike] += amountLike
-            postStatisticObj.realLike += amountLike
-
-            // update total like today
-            this._updateTotalLike(new Float64(amountLike))
-        }
-
         storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
 
-        // like
+        // update liked
         storage.mapPut(LIKE_PREFIX + postId, address, JSON.stringify(amountLike))
 
         blockchain.receipt(JSON.stringify([address, postId]))
@@ -278,52 +400,9 @@ class Social {
         this._requireAuth(address, "active")
 
         // calc
-        const bn = block.number
-        let totalDayLike = Math.floor((bn - postStatisticObj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
-
-        if (totalDayLike === 0) {
-            throw new Error("You can withdraw like after 1 day")
-        }
-
-        if (typeof postStatisticObj.realLikeArray[totalDayLike] !== "number") {
-            postStatisticObj.realLikeArray[totalDayLike] = 0
-        }
-
-        let count = 2;
-        let canWithdraw = new Float64("0")
-        let maxiumWithdraw = new Float64("0")
-        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
-
-        for (let i = currentDay; i >= 0; i--) {
-            if (postStatisticObj.realLikeArray.length - count < 0) {
-                break
-            }
-
-            let realLike = postStatisticObj.realLikeArray[postStatisticObj.realLikeArray.length - count]
-            if (typeof realLike !== "number") {
-                count++
-                continue
-            }
-            realLike = new Float64(realLike)
-
-            let amountEMPerLike = storage.get(INTEREST_PREEFIX + i)
-            if (!amountEMPerLike) continue
-
-            maxiumWithdraw = maxiumWithdraw.plus(realLike)
-            canWithdraw = canWithdraw.plus(realLike.multi(amountEMPerLike))
-
-            count++
-        }
-
-        if (canWithdraw.gt(maxiumWithdraw)) {
-            // update rest amount
-            this._updateRestAmount(canWithdraw.minus(maxiumWithdraw))
-            canWithdraw = maxiumWithdraw
-        }
-
-        if (canWithdraw.eq(0)) {
-            throw new Error("Amount EM can withdraw is zero")
-        }
+        const result = this._calcCanWithdraw(postStatisticObj)
+        const canWithdraw = result.canWithdraw
+        const totalDayLike = result.totalDayLike
 
         blockchain.withdraw(address, canWithdraw.toFixed(8), "like withdraw: " + postId)
 
@@ -407,106 +486,53 @@ class Social {
         blockchain.receipt(JSON.stringify([type, postId, commentId, subCommentId]))
     }
 
-    likeComment (address, postId, commentId) {
+    likeComment(address, postId, commentId) {
         this._requireAuth(address, "active")
         this._checkPostExist(postId)
         let commentObj = this._checkCommentExist(postId, commentId)
 
         // check can't like own comment
-        if(commentObj.address === address) {
+        if (commentObj.address === address) {
             throw new Error("you can't like your comment > " + postId + "_" + commentId)
         }
         // check liked this comment
-        if(storage.mapHas(LIKE_COMMENT_PREFIX + postId + "_" + commentId, address)) {
+        if (storage.mapHas(LIKE_COMMENT_PREFIX + postId + "_" + commentId, address)) {
             throw new Error("you have been like this comment > " + postId + "_" + commentId)
         }
-        // check level
-        let level = Math.floor(storage.get(LEVEL_PREFIX + address))
 
-        if (!level) {
-            storage.put(LEVEL_PREFIX + address, "1")
-            level = 1
-        }
-        // update commentObj
-        commentObj.totalLike++
+        // get level of address
+        const level = this._getLevel(address)
 
-        let likeByLevel = JSON.parse(storage.get(LIKE_BY_LEVEL))
-        let amountLike = likeByLevel[level - 1]
-
-        if(amountLike > 0) {
-            let bn = block.number
-            let totalDayLike = Math.floor((bn - commentObj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
-
-            if (typeof commentObj.realLikeArray[totalDayLike] !== "number") {
-                commentObj.realLikeArray[totalDayLike] = 0
+        // check max like for premium user
+        if (level > 1) {
+            if(!this._isMaxLikePerDay(address, level)) {
+                let amountLike = this._getAmountLikeByLevel(level)
+                commentObj = this._updateLikeReward(commentObj, amountLike)
             }
 
-            commentObj.realLikeArray[totalDayLike] += amountLike
-            commentObj.realLike += amountLike
-
-            // update total like today
-            this._updateTotalLike(new Float64(amountLike))
+            this._updateLikeStatisticForUser(address)
         }
-
+  
+        // update commentObj
+        commentObj.totalLike++
         storage.put(COMMENT_PREFIX + postId + "_" + commentId, JSON.stringify(commentObj))
+
         // update liked
         storage.mapPut(LIKE_COMMENT_PREFIX + postId + "_" + commentId, address, JSON.stringify(amountLike))
 
         blockchain.receipt(JSON.stringify([address, postId, commentId]))
     }
-    
-    likeCommentWithdraw (postId, commentId) {
+
+    likeCommentWithdraw(postId, commentId) {
         this._checkPostExist(postId)
         let commentObj = this._checkCommentExist(postId, commentId)
 
         this._requireAuth(commentObj.address, "active")
         // calc
-        const bn = block.number
-        let totalDayLike = Math.floor((bn - commentObj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
 
-        if (totalDayLike === 0) {
-            throw new Error("You can withdraw like after 1 day")
-        }
-
-        if (typeof commentObj.realLikeArray[totalDayLike] !== "number") {
-            commentObj.realLikeArray[totalDayLike] = 0
-        }
-
-        let count = 2;
-        let canWithdraw = new Float64("0")
-        let maxiumWithdraw = new Float64("0")
-        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
-
-        for (let i = currentDay; i >= 0; i--) {
-            if (commentObj.realLikeArray.length - count < 0) {
-                break
-            }
-
-            let realLike = commentObj.realLikeArray[commentObj.realLikeArray.length - count]
-            if (typeof realLike !== "number") {
-                count++
-                continue
-            }
-            realLike = new Float64(realLike)
-
-            let amountEMPerLike = storage.get(INTEREST_PREEFIX + i)
-            if (!amountEMPerLike) continue
-
-            maxiumWithdraw = maxiumWithdraw.plus(realLike)
-            canWithdraw = canWithdraw.plus(realLike.multi(amountEMPerLike))
-
-            count++
-        }
-
-        if (canWithdraw.gt(maxiumWithdraw)) {
-            // update rest amount
-            this._updateRestAmount(canWithdraw.minus(maxiumWithdraw))
-            canWithdraw = maxiumWithdraw
-        }
-
-        if (canWithdraw.eq(0)) {
-            throw new Error("Amount EM can withdraw is zero")
-        }
+        const result = this._calcCanWithdraw(commentObj)
+        const canWithdraw = result.canWithdraw
+        const totalDayLike = result.totalDayLike
 
         blockchain.withdraw(address, canWithdraw.toFixed(8), "like comment withdraw: " + postId + "_" + commentId)
 
@@ -539,7 +565,7 @@ class Social {
         }
 
         // check post is exist on reportPendingArray
-        if(postStatisticObj.inReportPending) {
+        if (postStatisticObj.inReportPending) {
             throw new Error("this post in report pending > " + postId)
         }
 
@@ -574,24 +600,24 @@ class Social {
         this._requireAuth(address, "active")
         // check post exist
         let postStatisticObj = this._checkPostExist(postId)
-        if(!postStatisticObj.inReportPending) {
+        if (!postStatisticObj.inReportPending) {
             throw new Error("this post not in report pending")
         }
         // get validator info
         let reportValidator = storage.get(REPORT_VALIDATOR_PREFIX + postId + "_" + postStatisticObj.inReportPending)
 
-        if(!reportValidator) {
+        if (!reportValidator) {
             reportValidator = []
         } else {
             reportValidator = JSON.parse(reportValidator)
         }
 
-        if(reportValidator.length >= REPORT_VALIDATOR_PER_POST) {
+        if (reportValidator.length >= REPORT_VALIDATOR_PER_POST) {
             throw new Error("this post has enough validator")
         }
 
-        for(let i = 0; i < reportValidator.length; i++) {
-            if(reportValidator[i].address === address) {
+        for (let i = 0; i < reportValidator.length; i++) {
+            if (reportValidator[i].address === address) {
                 throw new Error("you have already validate this post")
             }
         }
@@ -679,46 +705,25 @@ class Social {
         blockchain.receipt(JSON.stringify([address, info]))
     }
 
-    blockContent(address, tag) {
+    blockContent(address, tagArray) {
         this._requireAuth(address, "active")
-        let reportTagArray = storage.get(REPORT_TAG_ARRAY)
 
-        if (!reportTagArray) throw new Error("report tag array not exist")
-
-        reportTagArray = JSON.parse(reportTagArray)
-
-        if (reportTagArray.indexOf(tag) === -1) {
-            throw new Error("block tag not exist > " + tag)
+        if (typeof tagArray.length !== "number") {
+            throw new Error("tagArray not correct > " + JSON.stringify(tagArray))
         }
 
-        storage.mapPut(BLOCK_TAG_PREFIX + address, tag, "true")
-
-        blockchain.receipt(JSON.stringify([address, tag]))
-    }
-
-    unblockContent(address, tag) {
-        this._requireAuth(address, "active")
-        let reportTagArray = storage.get(REPORT_TAG_ARRAY)
-
-        if (!reportTagArray) throw new Error("report tag array not exist")
-
-        reportTagArray = JSON.parse(reportTagArray)
-
-        if (reportTagArray.indexOf(tag) === -1) {
-            throw new Error("block tag not exist > " + tag)
+        for (let i = 0; i < tagArray.length; i++) {
+            const tag = tagArray[i]
+            this._checkTagExistInReportTagArray(tag)
         }
 
-        if (!storage.mapHas(BLOCK_TAG_PREFIX + address, tag)) {
-            throw new Error("you have not blocked this tag > " + tag)
-        }
+        storage.put(BLOCK_TAG_PREFIX + address, JSON.stringify(tagArray))
 
-        storage.mapDel(BLOCK_TAG_PREFIX + address, tag)
-
-        blockchain.receipt(JSON.stringify([address, tag]))
+        blockchain.receipt(JSON.stringify([address, tagArray]))
     }
 
     // admin only
-    _assignReportTag (postId, tag) {
+    _assignReportTag(postId, tag) {
         let postStatisticObj = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId))
         postStatisticObj[tag] = true
         delete postStatisticObj.inReportPending
@@ -731,28 +736,28 @@ class Social {
         storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
     }
 
-    _sendRewardToValidator (postId, validators) {
+    _sendRewardToValidator(postId, validators) {
         let balance = new Float64(blockchain.callWithAuth("token.empow", "balanceOf", ["em", blockchain.contractName()])[0])
 
-        if(balance.lt(REPORT_VALIDATOR_REWARD * validators.length)) return
+        if (balance.lt(REPORT_VALIDATOR_REWARD * validators.length)) return
 
-        for(let i = 0; i < validators.length; i++) {
+        for (let i = 0; i < validators.length; i++) {
             blockchain.callWithAuth("token.empow", "transfer", ["em", blockchain.contractName(), validators[i], REPORT_VALIDATOR_REWARD.toString(), "validate reward of: " + postId])
         }
     }
 
-    _checkValidate (postId, tag) {
+    _checkValidate(postId, tag) {
         let validator = storage.get(REPORT_VALIDATOR_PREFIX + postId + "_" + tag)
-        if(!validator) return {done: false, status: false}
+        if (!validator) return { done: false, status: false }
         validator = JSON.parse(validator)
-        if(validator.length < REPORT_VALIDATOR_PER_POST) return {done: false, status: false};
+        if (validator.length < REPORT_VALIDATOR_PER_POST) return { done: false, status: false };
 
         let countTrue = 0
         let validatorTrue = []
         let validatorFalse = []
-        
-        for(let i = 0; i < validator.length; i++) {
-            if(validator[i].status === true) {
+
+        for (let i = 0; i < validator.length; i++) {
+            if (validator[i].status === true) {
                 countTrue++
                 validatorTrue.push(validator[i].address)
             } else {
@@ -760,23 +765,23 @@ class Social {
             }
         }
 
-        if(countTrue >= Math.round(REPORT_VALIDATOR_PER_POST / 2)) {
+        if (countTrue >= Math.round(REPORT_VALIDATOR_PER_POST / 2)) {
             // assign tag for post
             this._assignReportTag(postId, tag)
             // send reward for validator
             this._sendRewardToValidator(postId, validatorTrue)
-            return {done: true, status: true}
+            return { done: true, status: true }
         } else {
             this._removeInReportPending(postId)
             this._sendRewardToValidator(postId, validatorFalse)
-            return {done: true, status: false}
+            return { done: true, status: false }
         }
     }
 
     _updateReportPendingArray(reportPendingArray, validatedCount) {
-        if(validatedCount === 0) return;
+        if (validatedCount === 0) return;
 
-        for(let i = 0; i < validatedCount; i++) {
+        for (let i = 0; i < validatedCount; i++) {
             reportPendingArray.shift()
         }
 
@@ -799,16 +804,16 @@ class Social {
 
         // get report pending array
         let reportPendingArray = storage.get(REPORT_PENDING_ARRAY)
-        if(!reportPendingArray) return
+        if (!reportPendingArray) return
         reportPendingArray = JSON.parse(reportPendingArray)
 
         let postValidated = []
 
-        for(let i = 0; i < reportPendingArray.length; i++) {
+        for (let i = 0; i < reportPendingArray.length; i++) {
             const postId = reportPendingArray[i].postId
             const postStatisticObj = JSON.parse(storage.get(POST_STATISTIC_PREFIX + postId))
 
-            if(postStatisticObj.deleted) {
+            if (postStatisticObj.deleted) {
                 postValidated.push(postId)
                 continue
             }
@@ -816,19 +821,19 @@ class Social {
             const tag = postStatisticObj.inReportPending
             const result = this._checkValidate(postId, tag)
 
-            if(!result.done) {
+            if (!result.done) {
                 this._updateReportPendingArray(reportPendingArray, postValidated.length)
-                if(postValidated.length > 0) blockchain.receipt(JSON.stringify(postValidated))
+                if (postValidated.length > 0) blockchain.receipt(JSON.stringify(postValidated))
                 return;
             }
 
-            if(result.done) {
+            if (result.done) {
                 postValidated.push(postId)
             }
         }
 
         this._updateReportPendingArray(reportPendingArray, postValidated.length)
-        if(postValidated.length > 0) blockchain.receipt(JSON.stringify(postValidated))
+        if (postValidated.length > 0) blockchain.receipt(JSON.stringify(postValidated))
     }
 
     topup(amount) {
