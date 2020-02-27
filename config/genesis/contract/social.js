@@ -257,7 +257,11 @@ class Social {
             const lastLikeOnDay = Math.floor(likeStatistic.lastLikeBlock / BLOCK_NUMBER_PER_DAY)
 
             if (toDay === lastLikeOnDay) {
+                likeStatistic.lastLikeBlock = bn
                 likeStatistic.toDayLike++
+            } else {
+                likeStatistic.lastLikeBlock = bn
+                likeStatistic.toDayLike = 1
             }
 
             storage.put(USER_LIKE_STATISTIC + address, JSON.stringify(likeStatistic))
@@ -371,11 +375,12 @@ class Social {
 
         // get level of address
         const level = this._getLevel(address)
+        let amountLike = 0
 
         // check max like for premium user
         if (level > 1) {
             if(!this._isMaxLikePerDay(address, level)) {
-                let amountLike = this._getAmountLikeByLevel(level)
+                amountLike = this._getAmountLikeByLevel(level)
                 postStatisticObj = this._updateLikeReward(postStatisticObj, amountLike)
             }
 
@@ -502,11 +507,12 @@ class Social {
 
         // get level of address
         const level = this._getLevel(address)
+        let amountLike = 0
 
         // check max like for premium user
         if (level > 1) {
             if(!this._isMaxLikePerDay(address, level)) {
-                let amountLike = this._getAmountLikeByLevel(level)
+                amountLike = this._getAmountLikeByLevel(level)
                 commentObj = this._updateLikeReward(commentObj, amountLike)
             }
 
