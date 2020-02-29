@@ -1,11 +1,12 @@
-const COUNT_PACKAGE_PREFIX = 'c_'                               // c_address
 const PACKAGE_INFO_PREFIX = 'p_'                                // p_address_count
 const INTEREST_PREFIX = 'i_'                                    // i_day
+const USER_STATISTIC = 'u_'                                     // u_address
 const TOTAL_STAKE_AMOUNT = 'totalStakeAmount'
 const REST_AMOUNT = "restAmount"
 const MAXIMUM_PERCENT_PER_DAY = new Float64("0.000833333333")   // 30%/year
 const BLOCK_NUMBER_PER_DAY = 172800
 const THREE_DAY_NANO = 259200*1e9
+const MINIMUM_STAKE = 1                                          // 1 EM
 
 class Stake {
     init() {
@@ -33,44 +34,14 @@ class Stake {
         storage.put(TOTAL_STAKE_AMOUNT, totalStakeAmount.plus(amount).toString())
     }
 
-    _getAddressCountPackage(address) {
-        let countPackage = storage.get(COUNT_PACKAGE_PREFIX + address)
-        if(!countPackage) return new Int64("0")
-        else return new Int64(countPackage)
-    }
-
-    _updateAddressCountPackage(address, amount) {
-        let countPackage = storage.get(COUNT_PACKAGE_PREFIX + address)
-        if(!countPackage) {
-            storage.put(COUNT_PACKAGE_PREFIX + address, "1")
-        } else {
-            countPackage = new Int64(countPackage)
-            storage.put(COUNT_PACKAGE_PREFIX + address, countPackage.plus(amount).toString())
-        }
-    }
-
     _updateRestAmount(amount) {
         let restAmount = storage.get(REST_AMOUNT)
         storage.put(REST_AMOUNT, amount.plus(restAmount).toString())
     }
 
-    _updatePackageInfo(address, packageNumber, data) {
-        const prefix = PACKAGE_INFO_PREFIX + address + "_" + packageNumber
+    _updatePackageInfo(address, packageId, data) {
+        const prefix = PACKAGE_INFO_PREFIX + address + "_" + packageId
         storage.put(prefix, JSON.stringify(data))
-    }
-
-    _addNewPackage(address, data) {
-        let countPackage = storage.get(COUNT_PACKAGE_PREFIX + address)
-        let packageId = 0
-
-        if(countPackage) {
-            packageId = countPackage
-        }
-        
-        this._updatePackageInfo(address, packageId, data)
-        this._updateAddressCountPackage(address, 1)
-        
-        return packageId
     }
 
     _fixAmount(amount) {
@@ -110,8 +81,43 @@ class Stake {
         return packageAmount.multi(MAXIMUM_PERCENT_PER_DAY).multi(totalDayStake)
     }
 
+    _updateUserStatistic(address, type, amount) {
+
+        let userStatisticObj = storage.get(USER_STATISTIC + address)
+
+        if(!userStatisticObj) {
+            userStatisticObj = {
+                countPackage: 1,
+                staking: amount
+            }
+
+            storage.put(USER_STATISTIC + address, JSON.stringify(userStatisticObj))
+
+            return 0
+        }
+
+        userStatisticObj = JSON.parse(userStatisticObj)
+
+        if(type === "stake") {
+            userStatisticObj.countPackage++
+            userStatisticObj.staking += amount
+        }
+
+        if(type === "unstake") {
+            userStatisticObj.staking -= amount
+        }
+
+        storage.put(USER_STATISTIC + address, JSON.stringify(userStatisticObj))
+
+        return userStatisticObj.countPackage - 1;
+    }
+
     stake(address, amount) {
         this._requireAuth(address, "active")
+        let amountObj = new Float64(amount)
+        if(amountObj.lt(MINIMUM_STAKE)) {
+            throw new Error("minimum stake " + MINIMUM_STAKE + " EM")
+        }
         // send EM to stake.empow
         blockchain.callWithAuth("token.empow", "transfer", ["em", address, blockchain.contractName(), amount, "stake EM"])
         // create package info
@@ -123,7 +129,8 @@ class Stake {
             startTime: tx.time,
             lastWithdrawTime: tx.time
         }
-        const packageId = this._addNewPackage(address, packageInfo)
+        const packageId = this._updateUserStatistic(address, "stake", amount)
+        this._updatePackageInfo(address, packageId, packageInfo)
         this._updateTotalStakeAmount(amount)
 
         blockchain.receipt(JSON.stringify([address, amount, packageId]))
@@ -183,50 +190,6 @@ class Stake {
         blockchain.receipt(JSON.stringify([address, amountCanWithdraw.toFixed(8), packageId]))
     }
 
-    withdrawAll(address) {
-        this._requireAuth(address, "active")
-        // get count package
-        let countPackage = storage.get(COUNT_PACKAGE_PREFIX + address)
-        if(!countPackage) {
-            throw new Error("Not found any package")
-        }
-
-        countPackage = Math.floor(countPackage)
-        if(countPackage <= 0) {
-            throw new Error("Not found any package")
-        }
-        // calc interest
-        let amountCanWithdraw = new Float64("0")
-        let maxAmountCanWithdraw = new Float64("0")
-        const bn = block.number
-        for(let i = 0; i < countPackage; i++) {
-            const packageInfo = JSON.parse(storage.get(PACKAGE_INFO_PREFIX + address + "_" + i))
-            const totalDayStake = Math.floor((bn - packageInfo.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
-
-            if(totalDayStake <= 0) continue
-            if(packageInfo.unstake) continue
-
-            amountCanWithdraw = amountCanWithdraw.plus(this._calcInterest(packageInfo.amount, totalDayStake))
-            maxAmountCanWithdraw = maxAmountCanWithdraw.plus(this._calcMaxInterest(packageInfo.amount, totalDayStake))
-            // update package info
-            packageInfo.lastBlockWithdraw = bn
-            packageInfo.lastWithdrawTime = tx.time
-            this._updatePackageInfo(address, i, packageInfo)
-        }
-
-        if(amountCanWithdraw.eq(0)) {
-            throw new Error("All package can't withdraw")
-        }
-
-        if(amountCanWithdraw.gt(maxAmountCanWithdraw)) {
-            this._updateRestAmount(amountCanWithdraw.minus(maxAmountCanWithdraw))
-            amountCanWithdraw = maxAmountCanWithdraw
-        }
-
-        blockchain.withdraw(address, amountCanWithdraw.toFixed(8), "withdraw all stake")
-        blockchain.receipt(JSON.stringify([address, amountCanWithdraw.toFixed(8)]))
-    }
-
     unstake (address, packageId) {
         this._requireAuth(address, "active")
 
@@ -268,6 +231,7 @@ class Stake {
         this._updateTotalStakeAmount(stakeAmount.negated())
         packageInfo.unstake = true
         this._updatePackageInfo(address, packageId, packageInfo)
+        this._updateUserStatistic(address, "unstake", packageInfo.amount)
 
         blockchain.receipt(JSON.stringify([address, packageInfo.amount, packageId]))
     }

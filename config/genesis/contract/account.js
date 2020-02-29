@@ -1,10 +1,9 @@
-const premiumUsernamePriceUSD = 10 // $10/premium username
+const PREMIUM_USERNAME_PRICE = "1000" // 1000 EM
 const USERNAME_ARRAY_PREFIX = "u_"
 const SELECTED_USERNAME_PREFIX = "s_"
 
 class Account {
     init() {
-        storage.put('EMPrice', "0.001")
     }
     initAdmin(adminAddress) {
         const bn = block.number;
@@ -231,19 +230,12 @@ class Account {
         this._checkPremiumUsername(username)
         // require auth address
         this._ra(address, "active")
-        const EMPrice = storage.get('EMPrice')
-        const EMneedToPay = new Float64(premiumUsernamePriceUSD).div(EMPrice)
-        blockchain.callWithAuth("token.empow", "transfer", ["em", address, "deadaddr", EMneedToPay.toFixed(), "pay premium username"]);
-        // pledge gas and buy ram
-        const halfEMAmount = EMneedToPay.div(2).toFixed(8)
-        const ramPrice = blockchain.callWithAuth("ram.empow", "getPrice", [])
-        const ramAmount = new Float64(halfEMAmount).div(ramPrice).toFixed(0)
-        blockchain.callWithAuth("gas.empow", "pledge", [blockchain.contractName(), address, halfEMAmount]);
-        blockchain.callWithAuth("ram.empow", "buy", [blockchain.contractName(), address, ramAmount * 1.00]);
-        // update level
-        blockchain.callWithAuth("social.empow", "upLevel", [address, "2"])
+        blockchain.callWithAuth("token.empow", "transfer", ["em", address, "deadaddr", PREMIUM_USERNAME_PRICE, "pay premium username"]);
+        // pledge more gas
+        const gasReward = "10"
+        blockchain.callWithAuth("gas.empow", "pledge", [blockchain.contractName(), address, gasReward]);
         // reward vote point
-        blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, "1000"])
+        blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, PREMIUM_USERNAME_PRICE])
         // save to storage
         storage.mapPut("username",username, address);
         // add username to array

@@ -79,7 +79,7 @@
             ]
         },
         {
-            "name": "validatePost",
+            "name": "verifyPost",
             "args": [
                 "string",
                 "string",
@@ -133,13 +133,6 @@
                 "token": "em",
                 "val": "unlimited"
             }]
-        },
-        {
-            "name": "upLevel",
-            "args": [
-                "string",
-                "string"
-            ]
         },
         {
             "name": "addReportTag",

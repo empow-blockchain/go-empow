@@ -4,14 +4,15 @@ const LIKE_PREFIX = "l_"
 const LIKE_COMMENT_PREFIX = "lc_"
 const COMMENT_PREFIX = "c_"
 const REPLY_COMMENT_PREFIX = "rc_"
-const LEVEL_PREFIX = "lv_"
 const INTEREST_PREEFIX = "i_"
 const USER_PREFIX = "u_"
 const USER_LIKE_STATISTIC = "ul_"
 const USER_FOLLOW_PREFIX = "f_"
+const STAKE_USER_STATISTIC = "u_"
 const TOTAl_LIKE = "totalLike"
-const LIKE_BY_LEVEL = "likeByLevel"
-const LIKE_MAX_PER_DAY = "likeMaxPerDay"
+const LIKE_RATIO = 0.00025          // Staking 1 EM -> 1 Like = 0.25 EM, 
+const LIKE_MAX = 50                 // Staking 1,000,000 EM -> 1 Like = 250 EM > LIKE_MAX -> 1 Like = 50 EM
+const LIKE_MAX_PER_DAY = 10
 const REST_AMOUNT = "restAmount"
 const BLOCK_TAG_PREFIX = "bt_"
 const BLOCK_NUMBER_PER_DAY = 172800
@@ -20,6 +21,7 @@ const REPORT_PENDING_ARRAY = "reportPendingArray"
 const REPORT_VALIDATOR_PREFIX = "rp_"
 const REPORT_VALIDATOR_PER_POST = 9
 const REPORT_VALIDATOR_REWARD = 10
+const REPORT_VALIDATOR_MINIMUM_STAKING = 10000
 
 class Social {
 
@@ -27,14 +29,6 @@ class Social {
         storage.put(TOTAl_LIKE, "0")
         storage.put(REST_AMOUNT, "0")
         storage.put(REPORT_TAG_ARRAY, "[]")
-        this.initLevel()
-    }
-
-    initLevel() {
-        let likeAmount = [0, 2, 15, 18, 20, 25, 30]
-        let likeMaxPerDay = [0, 20, 30, 40, 50, 60, 70]
-        storage.put(LIKE_BY_LEVEL, JSON.stringify(likeAmount))
-        storage.put(LIKE_MAX_PER_DAY, JSON.stringify(likeMaxPerDay))
     }
 
     initAdmin(adminAddress) {
@@ -49,16 +43,6 @@ class Social {
         const admin = storage.get("adminAddress");
         this._requireAuth(admin, "active");
         return true;
-    }
-
-    _postValidate(title, content, tag) {
-        if (tag.length === undefined || tag.length === 0) {
-            throw new Error("Tag is not correct format")
-        }
-
-        if (title.length > 255) {
-            throw new Error("Title is greater than 255 characters")
-        }
     }
 
     _titleValidate(title) {
@@ -98,10 +82,6 @@ class Social {
 
     _resetTotalLike() {
         storage.put(TOTAl_LIKE, "0")
-    }
-
-    _updateLevel(address, level) {
-        storage.put(LEVEL_PREFIX + address, level)
     }
 
     _requireAuth(address, permission) {
@@ -150,26 +130,6 @@ class Social {
         if (!reportTagArray.includes(tag)) {
             throw new Error("block tag not exist > " + tag)
         }
-    }
-
-    _getLevel(address) {
-        let level = storage.get(LEVEL_PREFIX + address)
-
-        if (!level) {
-            storage.put(LEVEL_PREFIX + address, "1")
-            level = 1
-        } else {
-            level = Math.floor(level)
-        }
-
-        return level
-    }
-
-    _getAmountLikeByLevel(level) {
-        let likeByLevel = JSON.parse(storage.get(LIKE_BY_LEVEL))
-        let amountLike = likeByLevel[level - 1]
-
-        return amountLike
     }
 
     _updateLikeReward(obj, amountLike) {
@@ -268,20 +228,33 @@ class Social {
         }
     }
 
-    _isMaxLikePerDay(address, level) {
+    _isMaxLikePerDay(address) {
         let likeStatistic = storage.get(USER_LIKE_STATISTIC + address)
-        if (!likeStatistic) return;
+        if (!likeStatistic) return false;
 
         likeStatistic = JSON.parse(likeStatistic)
 
-        let likeMaxPerDay = JSON.parse(storage.get(LIKE_MAX_PER_DAY))
-        let max = likeMaxPerDay[level - 1]
-
-        if(likeStatistic.toDayLike > max) {
+        if(likeStatistic.toDayLike > LIKE_MAX_PER_DAY) {
             return true
         } else {
             return false
         }
+    }
+
+    _getStaking(address) {
+        let userStatisticObj = storage.globalGet("stake.empow", STAKE_USER_STATISTIC + address)
+        if(!userStatisticObj) return 0
+        userStatisticObj = JSON.parse(userStatisticObj)
+        return userStatisticObj.staking
+    }
+
+    _getAmountLike (address) {
+        // get staking amount
+        const staking = this._getStaking(address)
+        const amountLike = staking * LIKE_RATIO
+        if(amountLike > LIKE_MAX) return LIKE_MAX
+        if(this._isMaxLikePerDay(address)) return 0
+        return amountLike
     }
 
     post(address, title, content, tag) {
@@ -373,17 +346,11 @@ class Social {
             throw new Error("You have been like this postId > " + postId)
         }
 
-        // get level of address
-        const level = this._getLevel(address)
-        let amountLike = 0
+        // get amount like by staking in stake.empow
+        const amountLike = this._getAmountLike(address)
 
-        // check max like for premium user
-        if (level > 1) {
-            if(!this._isMaxLikePerDay(address, level)) {
-                amountLike = this._getAmountLikeByLevel(level)
-                postStatisticObj = this._updateLikeReward(postStatisticObj, amountLike)
-            }
-
+        if(amountLike > 0) {
+            postStatisticObj = this._updateLikeReward(postStatisticObj, amountLike)
             this._updateLikeStatisticForUser(address)
         }
 
@@ -505,20 +472,14 @@ class Social {
             throw new Error("you have been like this comment > " + postId + "_" + commentId)
         }
 
-        // get level of address
-        const level = this._getLevel(address)
-        let amountLike = 0
+        // get amount like by staking in stake.empow
+        const amountLike = this._getAmountLike(address)
 
-        // check max like for premium user
-        if (level > 1) {
-            if(!this._isMaxLikePerDay(address, level)) {
-                amountLike = this._getAmountLikeByLevel(level)
-                commentObj = this._updateLikeReward(commentObj, amountLike)
-            }
-
+        if(amountLike > 0) {
+            commentObj = this._updateLikeReward(commentObj, amountLike)
             this._updateLikeStatisticForUser(address)
         }
-  
+
         // update commentObj
         commentObj.totalLike++
         storage.put(COMMENT_PREFIX + postId + "_" + commentId, JSON.stringify(commentObj))
@@ -575,6 +536,12 @@ class Social {
             throw new Error("this post in report pending > " + postId)
         }
 
+        // clear old validators
+        const isExistOldValidators = storage.get(REPORT_VALIDATOR_PREFIX + postId + "_" + tag)
+        if(isExistOldValidators) {
+            storage.del(REPORT_VALIDATOR_PREFIX + postId + "_" + tag)
+        }
+
         // push to reportPendingArray
         let reportObj = {
             address: address,
@@ -602,13 +569,20 @@ class Social {
         blockchain.receipt(JSON.stringify([address, postId, tag]))
     }
 
-    validatePost(address, postId, status) {
+    verifyPost(address, postId, status) {
         this._requireAuth(address, "active")
         // check post exist
         let postStatisticObj = this._checkPostExist(postId)
         if (!postStatisticObj.inReportPending) {
             throw new Error("this post not in report pending")
         }
+
+        // check minimum staking
+        const staking = this._getStaking(address)
+        if(staking < REPORT_VALIDATOR_MINIMUM_STAKING) {
+            throw new Error("you need staking 10000 EM to become verifier")
+        }
+
         // get validator info
         let reportValidator = storage.get(REPORT_VALIDATOR_PREFIX + postId + "_" + postStatisticObj.inReportPending)
 
@@ -619,12 +593,12 @@ class Social {
         }
 
         if (reportValidator.length >= REPORT_VALIDATOR_PER_POST) {
-            throw new Error("this post has enough validator")
+            throw new Error("this post has enough verifier")
         }
 
         for (let i = 0; i < reportValidator.length; i++) {
             if (reportValidator[i].address === address) {
-                throw new Error("you have already validate this post")
+                throw new Error("you have already verify this post")
             }
         }
 
@@ -748,7 +722,7 @@ class Social {
         if (balance.lt(REPORT_VALIDATOR_REWARD * validators.length)) return
 
         for (let i = 0; i < validators.length; i++) {
-            blockchain.callWithAuth("token.empow", "transfer", ["em", blockchain.contractName(), validators[i], REPORT_VALIDATOR_REWARD.toString(), "validate reward of: " + postId])
+            blockchain.callWithAuth("token.empow", "transfer", ["em", blockchain.contractName(), validators[i], REPORT_VALIDATOR_REWARD.toString(), "verify reward: " + postId])
         }
     }
 
@@ -863,32 +837,6 @@ class Social {
 
         // reset total like
         this._resetTotalLike()
-    }
-
-    upLevel(address, level) {
-        const admin = storage.get("adminAddress");
-        const whitelist = ["auth.empow", admin];
-        let auth = false;
-        for (const c of whitelist) {
-            if (blockchain.requireAuth(c, "active")) {
-                auth = true;
-                break;
-            }
-        }
-        if (!auth) {
-            throw new Error("permission denied");
-        }
-
-        let currentLevel = Math.floor(storage.get(LEVEL_PREFIX + address))
-
-        if (!currentLevel) {
-            currentLevel = 1
-        }
-
-        if (!currentLevel || level <= currentLevel) return true;
-
-        this._updateLevel(address, level)
-        blockchain.receipt(JSON.stringify([address, level]))
     }
 
     addReportTag(tag) {
