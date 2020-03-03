@@ -9,6 +9,8 @@ const USER_PREFIX = "u_"
 const USER_LIKE_STATISTIC = "ul_"
 const USER_FOLLOW_PREFIX = "f_"
 const STAKE_USER_STATISTIC = "u_"
+const USERNAME_ARRAY_PREFIX = "u_"
+const USERNAME_PREMIUM_PRICE = 1000 // 1000 EM
 const TOTAl_LIKE = "totalLike"
 const LIKE_RATIO = 0.00025          // Staking 1 EM -> 1 Like = 0.25 EM, 
 const LIKE_MAX = 50                 // Staking 1,000,000 EM -> 1 Like = 250 EM > LIKE_MAX -> 1 Like = 50 EM
@@ -241,6 +243,21 @@ class Social {
         }
     }
 
+    _isBoughtPremiumUsername (address) {
+        let usernameArray = storage.globalGet("auth.empow", USERNAME_ARRAY_PREFIX + address)
+        if(!usernameArray) return false
+        usernameArray = JSON.parse(usernameArray)
+
+        for(let i = 0; i < usernameArray.length; i++) {
+            let username = usernameArray[i]
+            if(!username.includes("newbie.")) {
+                return true
+            }
+        }
+
+        return false
+    }
+
     _getStaking(address) {
         let userStatisticObj = storage.globalGet("stake.empow", STAKE_USER_STATISTIC + address)
         if(!userStatisticObj) return 0
@@ -249,13 +266,18 @@ class Social {
     }
 
     _getAmountLike (address) {
-        // get staking amount
-        const staking = this._getStaking(address)
+        if(this._isMaxLikePerDay(address)) return 0
+
+        const staking = new Float64(this._getStaking(address))
+        if(this._isBoughtPremiumUsername(address) && staking.lt(USERNAME_PREMIUM_PRICE)) {
+            return USERNAME_PREMIUM_PRICE * LIKE_RATIO
+        }
+        
         const amountLike = staking * LIKE_RATIO
         if(amountLike > LIKE_MAX) return LIKE_MAX
-        if(this._isMaxLikePerDay(address)) return 0
         return amountLike
     }
+    
 
     post(address, title, content, tag) {
 
@@ -578,8 +600,8 @@ class Social {
         }
 
         // check minimum staking
-        const staking = this._getStaking(address)
-        if(staking < REPORT_VALIDATOR_MINIMUM_STAKING) {
+        const staking = new Float64(this._getStaking(address))
+        if(staking.lt(REPORT_VALIDATOR_MINIMUM_STAKING)) {
             throw new Error("you need staking 10000 EM to become verifier")
         }
 

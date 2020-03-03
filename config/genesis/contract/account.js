@@ -189,9 +189,9 @@ class Account {
         this._saveAccount(account);
         if (block.number !== 0) {
             const defaultGasPledge = "15";
-            // const defaultRamBuy = 200; // 200 bytes
+            const defaultRamBuy = 1000; // 1000 bytes
             blockchain.callWithAuth("gas.empow", "pledge", [blockchain.contractName(), address, defaultGasPledge]);
-            // blockchain.callWithAuth("ram.empow", "buy", [blockchain.contractName(), address, defaultRamBuy]);
+            blockchain.callWithAuth("ram.empow", "buy", [blockchain.contractName(), address, defaultRamBuy]);
         }
 
         blockchain.receipt(JSON.stringify([address, owner, active]));

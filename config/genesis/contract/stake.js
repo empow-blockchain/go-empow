@@ -82,13 +82,12 @@ class Stake {
     }
 
     _updateUserStatistic(address, type, amount) {
-
         let userStatisticObj = storage.get(USER_STATISTIC + address)
 
         if(!userStatisticObj) {
             userStatisticObj = {
                 countPackage: 1,
-                staking: amount
+                staking: amount.toString()
             }
 
             storage.put(USER_STATISTIC + address, JSON.stringify(userStatisticObj))
@@ -97,14 +96,15 @@ class Stake {
         }
 
         userStatisticObj = JSON.parse(userStatisticObj)
+        const staking = new Float64(userStatisticObj.staking)
 
         if(type === "stake") {
             userStatisticObj.countPackage++
-            userStatisticObj.staking += amount
+            userStatisticObj.staking = staking.plus(amount).toString()
         }
 
         if(type === "unstake") {
-            userStatisticObj.staking -= amount
+            userStatisticObj.staking = staking.minus(amount).toString()
         }
 
         storage.put(USER_STATISTIC + address, JSON.stringify(userStatisticObj))
