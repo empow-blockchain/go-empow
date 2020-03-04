@@ -515,6 +515,7 @@ class Social {
     likeCommentWithdraw(postId, commentId) {
         this._checkPostExist(postId)
         let commentObj = this._checkCommentExist(postId, commentId)
+        let address = commentObj.address
 
         this._requireAuth(commentObj.address, "active")
         // calc
@@ -526,8 +527,8 @@ class Social {
         blockchain.withdraw(address, canWithdraw.toFixed(8), "like comment withdraw: " + postId + "_" + commentId)
 
         // save post statistic
-        commentId.realLikeArray = commentId.realLikeArray.slice(totalDayLike, totalDayLike + 1)
-        commentId.lastBlockWithdraw = block.number
+        commentObj.realLikeArray = commentObj.realLikeArray.slice(totalDayLike, totalDayLike + 1)
+        commentObj.lastBlockWithdraw = block.number
 
         // reward vote point
         blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, canWithdraw.toFixed(8)])
