@@ -266,8 +266,6 @@ class Social {
     }
 
     _getAmountLike (address) {
-        if(this._isMaxLikePerDay(address)) return 0
-
         const staking = new Float64(this._getStaking(address))
         if(this._isBoughtPremiumUsername(address) && staking.lt(USERNAME_PREMIUM_PRICE)) {
             return USERNAME_PREMIUM_PRICE * LIKE_RATIO
@@ -369,11 +367,15 @@ class Social {
         }
 
         // get amount like by staking in stake.empow
-        const amountLike = this._getAmountLike(address)
+        let amountLike = this._getAmountLike(address)
 
         if(amountLike > 0) {
-            postStatisticObj = this._updateLikeReward(postStatisticObj, amountLike)
             this._updateLikeStatisticForUser(address)
+            if(this._isMaxLikePerDay(address)) {
+                amountLike = 0
+            } else {
+                postStatisticObj = this._updateLikeReward(postStatisticObj, amountLike)
+            }
         }
 
         // update post statistic
@@ -495,11 +497,15 @@ class Social {
         }
 
         // get amount like by staking in stake.empow
-        const amountLike = this._getAmountLike(address)
+        let amountLike = this._getAmountLike(address)
 
         if(amountLike > 0) {
-            commentObj = this._updateLikeReward(commentObj, amountLike)
             this._updateLikeStatisticForUser(address)
+            if(this._isMaxLikePerDay(address)) {
+                amountLike = 0
+            } else {
+                commentObj = this._updateLikeReward(commentObj, amountLike)
+            }
         }
 
         // update commentObj
