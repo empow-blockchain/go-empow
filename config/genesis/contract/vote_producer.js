@@ -839,6 +839,23 @@ class VoteContract {
 
         this._put("producerNumber", producerNumber);
     }
+
+
+    removeWitnessPenality(address) {
+        const admin = storage.get("adminAddress");
+        this._requireAuth(admin, ADMIN_PERMISSION);
+
+        const witnessPenality = this._get("witnessPenality") || {};
+        for (const witness in witnessPenality) {
+
+            if(witness === address) {
+                delete(witnessPenality[witness])
+                this._put("witnessPenality", witnessPenality)
+                return true
+            }
+        }
+        return false
+    }
 }
 
 module.exports = VoteContract;

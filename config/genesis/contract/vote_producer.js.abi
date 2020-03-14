@@ -152,6 +152,12 @@
             "args": [
                 "string"
             ]
+        },
+        {
+            "name": "removeWitnessPenality",
+            "args": [
+                "string"
+            ]
         }
     ]
 }
