@@ -193,7 +193,7 @@ docker-compose pull
 $CURL "https://empow.io/$INET/genesis.tgz" | tar zxC $PREFIX
 $CURL "https://empow.io/$INET/iserver.yml" -o $PREFIX/iserver.yml
 >&2 printf 'Download Block...'
-$CURL "http://140.82.46.108/storage.tar.gz" | tar zxC $PREFIX
+$CURL "http://140.82.46.108/storage.tar.gz" --progress-bar | tar zxC $PREFIX
 
 #
 # Config producer
