@@ -193,8 +193,9 @@ docker-compose pull
 
 $CURL "https://empow.io/$INET/genesis.tgz" | tar zxC $PREFIX
 $CURL "https://empow.io/$INET/iserver.yml" -o $PREFIX/iserver.yml
->&2 printf 'Downloading Block ...'
-$CURL_WITH_PROGRESS_BAR "http://140.82.46.108/storage.tar.gz" | tar zxC $PREFIX
+>&2 printf 'Downloading Genesis Block ...'
+DOWNLOAD_BLOCK_HOST=$($CURL "https://empow.io/ping")
+$CURL_WITH_PROGRESS_BAR "http://$DOWNLOAD_BLOCK_HOST/storage.tar.gz" | tar zxC $PREFIX
 
 #
 # Config producer
