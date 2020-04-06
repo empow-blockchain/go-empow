@@ -1,6 +1,6 @@
 creategenesis: true
 tokeninfo:
-  foundationaccount: foundation
+  foundationaccount: EM2ZsFENubSHxLVjCkuFAmiG5reWvd8oXi29vErvjDVnazwmC
   EMTotalSupply: 90000000000
   EMDecimal: 8
 witnessinfo:

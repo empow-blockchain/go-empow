@@ -93,6 +93,13 @@ class IssueContract {
         blockchain.callWithAuth("token.empow", "issue", args);
     }
 
+    fixFoundation(address) {
+        const admin = storage.get("adminAddress");
+        this._requireAuth(admin, activePermission);
+
+        storage.put("FoundationAccount", address);
+    }
+
     issueEMToSell(amount) {
         const admin = storage.get("adminAddress");
         if(!blockchain.requireAuth(admin, "active")) {
