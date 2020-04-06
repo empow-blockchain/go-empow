@@ -12,8 +12,8 @@ INET=${INET:="mainnet"}
 VERSION=${VERSION:="0.1.2"}
 
 PRODUCER_KEY_FILE=keypair
-CURL="curl -fsSL --progress-bar"
-CURL_WITH_PROGRESS_BAR="curl -fSL --progress-bar"
+CURL="curl -fsSL"
+CURL_FULL_INFO="curl -fSL"
 PYTHON=${PYTHON:=python}
 
 USR_LOCAL_BIN=${USR_LOCAL_BIN:=/usr/local/bin}
@@ -162,7 +162,6 @@ download_genesis_block() {
         # access each element  
         # as $i
         res_time=$(ping -c 1 $host | tail -1| awk '{print $4}' | cut -d '/' -f 2)
-        echo $res_time
 
         if (( $(echo "$res_time < $minTime" |bc -l) )); then
             minTime=$res_time
@@ -172,7 +171,7 @@ download_genesis_block() {
 
     echo "Host: $select_host"
 
-    $CURL_WITH_PROGRESS_BAR "http://$select_host/storage.tar.gz" | tar zxC $PREFIX
+    $CURL_FULL_INFO "http://$select_host/storage.tar.gz" | tar zxC $PREFIX
 }
 
 #
