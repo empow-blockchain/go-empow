@@ -161,10 +161,10 @@ download_genesis_block() {
     do
         # access each element  
         # as $i
-        echo $host
         res_time=$(ping -c 1 $host | tail -1| awk '{print $4}' | cut -d '/' -f 2)
+        echo $res_time
 
-        if [$res_time -lt $minTime]; then
+        if [ $res_time -lt $minTime ]; then
             minTime=$res_time
             select_host=$host
         fi
