@@ -13,7 +13,7 @@ VERSION=${VERSION:="0.1.2"}
 
 PRODUCER_KEY_FILE=keypair
 CURL="curl -fsSL"
-CURL_FULL_INFO="curl -fSL"
+CURL_WITH_PROGRESS_BAR="curl -fSL --progress-bar"
 PYTHON=${PYTHON:=python}
 
 USR_LOCAL_BIN=${USR_LOCAL_BIN:=/usr/local/bin}
@@ -171,7 +171,7 @@ download_genesis_block() {
 
     echo "Host: $select_host"
 
-    $CURL_FULL_INFO "http://$select_host/storage.tar.gz" | tar zxC $PREFIX
+    $CURL_WITH_PROGRESS_BAR "http://$select_host/storage.tar.gz" | tar zxC $PREFIX
 }
 
 #
