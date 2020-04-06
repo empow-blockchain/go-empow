@@ -164,16 +164,15 @@ download_genesis_block() {
         res_time=$(ping -c 1 $host | tail -1| awk '{print $4}' | cut -d '/' -f 2)
         echo $res_time
 
-        if [ $res_time -lt $minTime ]; then
+        if (( $(echo "$res_time < $minTime" |bc -l) )); then
             minTime=$res_time
             select_host=$host
         fi
     done
 
-    echo "select host: $select_host"
+    echo "Host: $select_host"
 
-    # >&2 printf "$DOWNLOAD_BLOCK_HOST"
-    # $CURL_WITH_PROGRESS_BAR "http://$DOWNLOAD_BLOCK_HOST/storage.tar.gz" | tar zxC $PREFIX
+    $CURL_WITH_PROGRESS_BAR "http://$select_host/storage.tar.gz" | tar zxC $PREFIX
 }
 
 #
