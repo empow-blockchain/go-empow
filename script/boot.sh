@@ -151,6 +151,31 @@ print_bye() {
     }>&2
 }
 
+download_genesis_block() {
+    echo 'Downloading Genesis Block ...'
+
+    hosts=("149.28.145.11" "140.82.46.108" "45.77.66.34")
+    minTime=999999
+    select_host=""
+    for host in "${hosts[@]}"
+    do
+        # access each element  
+        # as $i
+        echo $host
+        res_time=$(ping -c 1 $host | tail -1| awk '{print $4}' | cut -d '/' -f 2)
+
+        if [$res_time -lt $minTime]; then
+            minTime=$res_time
+            select_host=$host
+        fi
+    done
+
+    echo "select host: $select_host"
+
+    # >&2 printf "$DOWNLOAD_BLOCK_HOST"
+    # $CURL_WITH_PROGRESS_BAR "http://$DOWNLOAD_BLOCK_HOST/storage.tar.gz" | tar zxC $PREFIX
+}
+
 #
 # main
 #
@@ -193,10 +218,7 @@ docker-compose pull
 
 $CURL "https://empow.io/$INET/genesis.tgz" | tar zxC $PREFIX
 $CURL "https://empow.io/$INET/iserver.yml" -o $PREFIX/iserver.yml
->&2 printf 'Downloading Genesis Block ...'
-DOWNLOAD_BLOCK_HOST=$($CURL "https://api.empow.io/ping")
->&2 printf "$DOWNLOAD_BLOCK_HOST"
-$CURL_WITH_PROGRESS_BAR "http://$DOWNLOAD_BLOCK_HOST/storage.tar.gz" | tar zxC $PREFIX
+download_genesis_block
 
 #
 # Config producer
