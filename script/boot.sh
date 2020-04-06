@@ -12,7 +12,8 @@ INET=${INET:="mainnet"}
 VERSION=${VERSION:="0.1.2"}
 
 PRODUCER_KEY_FILE=keypair
-CURL="curl -fsSL"
+CURL="curl -fsSL --progress-bar"
+CURL_WITH_PROGRESS_BAR="curl -fSL --progress-bar"
 PYTHON=${PYTHON:=python}
 
 USR_LOCAL_BIN=${USR_LOCAL_BIN:=/usr/local/bin}
@@ -192,8 +193,8 @@ docker-compose pull
 
 $CURL "https://empow.io/$INET/genesis.tgz" | tar zxC $PREFIX
 $CURL "https://empow.io/$INET/iserver.yml" -o $PREFIX/iserver.yml
->&2 printf 'Download Block...'
-$CURL "http://140.82.46.108/storage.tar.gz" --progress-bar | tar zxC $PREFIX
+>&2 printf 'Downloading Block ...'
+$CURL_WITH_PROGRESS_BAR "http://140.82.46.108/storage.tar.gz" | tar zxC $PREFIX
 
 #
 # Config producer
