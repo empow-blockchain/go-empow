@@ -154,7 +154,7 @@ print_bye() {
 download_genesis_block() {
     echo 'Downloading Genesis Block ...'
 
-    hosts=("149.28.145.11" "140.82.46.108" "45.77.66.34")
+    hosts=("149.28.145.11" "155.138.174.46" "45.77.66.34")
     minTime=999999
     select_host=""
     for host in "${hosts[@]}"
