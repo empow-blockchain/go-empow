@@ -13,7 +13,7 @@ VERSION=${VERSION:="0.1.2"}
 
 PRODUCER_KEY_FILE=keypair
 CURL="curl -fsSL"
-CURL_WITH_PROGRESS_BAR="curl -fSL --progress-bar"
+CURL_WITH_PROGRESS_BAR="curl -fSL --progress-bar --output /data/iserver/storage.tar.gz"
 PYTHON=${PYTHON:=python}
 
 USR_LOCAL_BIN=${USR_LOCAL_BIN:=/usr/local/bin}
