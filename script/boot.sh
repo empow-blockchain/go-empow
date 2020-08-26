@@ -171,8 +171,7 @@ download_genesis_block() {
 
     echo "Host: $select_host"
 
-    $CURL_WITH_PROGRESS_BAR --output $PREFIX/storage.tar.gz "http://$select_host/storage.tar.gz"
-    tar -vf $PREFIX/storage.tar.gz
+    $CURL_WITH_PROGRESS_BAR "http://$select_host/storage.tar.gz" | tar zxC $PREFIX
 }
 
 #
