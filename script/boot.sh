@@ -22,7 +22,7 @@ export PATH=$PATH:$USR_LOCAL_BIN
 # function
 #
 
-_SYS_MIN_CPU=4          # 3 cpu
+_SYS_MIN_CPU=4          # 4 cpu
 _SYS_REC_CPU=8          # 8 cpu
 _SYS_MIN_MEM=8          # 8G ram
 _SYS_REC_MEM=16         # 16G ram
@@ -154,7 +154,7 @@ print_bye() {
 download_genesis_block() {
     echo 'Downloading Genesis Block ...'
 
-    hosts=("172.104.53.254")
+    hosts=("172.104.164.141")
     minTime=999999
     select_host=""
     for host in "${hosts[@]}"
