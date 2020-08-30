@@ -24,14 +24,6 @@
             ]
         },
         {
-            "name": "share",
-            "args": [
-                "string",
-                "string",
-                "string"
-            ]
-        },
-        {
             "name": "like",
             "args": [
                 "string",

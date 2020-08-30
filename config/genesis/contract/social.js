@@ -17,7 +17,8 @@ const LIKE_MAX = 50                 // Staking 1,000,000 EM -> 1 Like = 250 EM >
 const LIKE_MAX_PER_DAY = 10
 const REST_AMOUNT = "restAmount"
 const BLOCK_TAG_PREFIX = "bt_"
-const BLOCK_NUMBER_PER_DAY = 172800
+const GENESIS_TIME = 1582358166747846100
+const ONE_DAY_NANO = 86400 * 1e9
 const REPORT_TAG_ARRAY = "reportTagArray"
 const REPORT_PENDING_ARRAY = "reportPendingArray"
 const REPORT_VALIDATOR_PREFIX = "rp_"
@@ -135,8 +136,10 @@ class Social {
     }
 
     _updateLikeReward(obj, amountLike) {
-        let bn = block.number
-        let totalDayLike = Math.floor((bn - obj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
+        if(!obj.lastTimeWithdraw) return obj
+
+        let now = tx.time
+        let totalDayLike = Math.floor((now - obj.lastTimeWithdraw) / ONE_DAY_NANO)
 
         if (typeof obj.realLikeArray[totalDayLike] !== "number") {
             obj.realLikeArray[totalDayLike] = 0
@@ -152,8 +155,8 @@ class Social {
     }
 
     _calcCanWithdraw(obj) {
-        const bn = block.number
-        let totalDayLike = Math.floor((bn - obj.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
+        const now = tx.time
+        let totalDayLike = Math.floor((now - obj.lastTimeWithdraw) / ONE_DAY_NANO)
 
         if (totalDayLike === 0) {
             throw new Error("You can withdraw like after 1 day")
@@ -166,7 +169,7 @@ class Social {
         let count = 2;
         let canWithdraw = new Float64("0")
         let maxiumWithdraw = new Float64("0")
-        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
+        const currentDay = Math.floor((now - GENESIS_TIME) / ONE_DAY_NANO)
 
         for (let i = currentDay; i >= 0; i--) {
             if (obj.realLikeArray.length - count < 0) {
@@ -203,26 +206,26 @@ class Social {
     }
 
     _updateLikeStatisticForUser(address) {
-        const bn = block.number
+        const now = tx.time
         let likeStatistic = storage.get(USER_LIKE_STATISTIC + address)
 
         if (!likeStatistic) {
             likeStatistic = {
-                lastLikeBlock: bn,
+                lastLikeTime: now,
                 toDayLike: 1
             }
 
             storage.put(USER_LIKE_STATISTIC + address, JSON.stringify(likeStatistic))
         } else {
             likeStatistic = JSON.parse(likeStatistic)
-            const toDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
-            const lastLikeOnDay = Math.floor(likeStatistic.lastLikeBlock / BLOCK_NUMBER_PER_DAY)
+            const toDay = Math.floor(now / ONE_DAY_NANO)
+            const lastLikeOnDay = Math.floor(likeStatistic.lastLikeTime / ONE_DAY_NANO)
 
             if (toDay === lastLikeOnDay) {
-                likeStatistic.lastLikeBlock = bn
+                likeStatistic.lastLikeTime = now
                 likeStatistic.toDayLike++
             } else {
-                likeStatistic.lastLikeBlock = bn
+                likeStatistic.lastLikeTime = now
                 likeStatistic.toDayLike = 1
             }
 
@@ -300,56 +303,14 @@ class Social {
             totalCommentAndReply: 0,
             totalShare: 0,
             realLikeArray: [0],
-            lastBlockWithdraw: block.number
+            lastBlockWithdraw: block.number,
+            lastTimeWithdraw: id
         }
 
         storage.put(POST_PREFIX + id, JSON.stringify(postObj))
         storage.put(POST_STATISTIC_PREFIX + id, JSON.stringify(postStatisticObj))
 
         blockchain.receipt(JSON.stringify([id.toString()]))
-    }
-
-    share(address, postId, title) {
-        this._requireAuth(address, "active")
-        this._titleValidate(title)
-        // check exist post
-        let postStatisticObj = this._checkPostExist(postId)
-        let postObj = JSON.parse(storage.get(POST_PREFIX + postId))
-        // check postId is share post
-        if (postObj.content.type === "share") {
-            postId = postObj.content.data
-        }
-        // +1 share to postId
-        postStatisticObj.totalShare++
-        storage.put(POST_STATISTIC_PREFIX + postId, JSON.stringify(postStatisticObj))
-        // post
-        let id = tx.time
-        postObj = {
-            postId: id.toString(),
-            time: id,
-            title: title,
-            content: {
-                type: "share",
-                data: postId
-            },
-            tag: [],
-        }
-
-        postStatisticObj = {
-            author: address,
-            totalLike: 0,
-            realLike: 0,
-            totalComment: 0,
-            totalCommentAndReply: 0,
-            totalShare: 0,
-            realLikeArray: [0],
-            lastBlockWithdraw: block.number
-        }
-
-        storage.put(POST_PREFIX + id, JSON.stringify(postObj))
-        storage.put(POST_STATISTIC_PREFIX + id, JSON.stringify(postStatisticObj))
-
-        blockchain.receipt(JSON.stringify([id.toString(), postId]))
     }
 
     like(address, postId) {
@@ -405,6 +366,7 @@ class Social {
         // save post statistic
         postStatisticObj.realLikeArray = postStatisticObj.realLikeArray.slice(totalDayLike, totalDayLike + 1)
         postStatisticObj.lastBlockWithdraw = block.number
+        postStatisticObj.lastTimeWithdraw = tx.time
 
         // reward vote point
         blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, canWithdraw.toFixed(8)])
@@ -443,6 +405,7 @@ class Social {
                 totalLike: 0,
                 realLikeArray: [0],
                 lastBlockWithdraw: block.number,
+                lastTimeWithdraw: tx.time,
                 content: content,
                 attachment: attachment
             }
@@ -535,6 +498,7 @@ class Social {
         // save post statistic
         commentObj.realLikeArray = commentObj.realLikeArray.slice(totalDayLike, totalDayLike + 1)
         commentObj.lastBlockWithdraw = block.number
+        commentObj.lastTimeWithdraw = tx.time
 
         // reward vote point
         blockchain.callWithAuth("vote.empow", "issueVotePoint", [address, canWithdraw.toFixed(8)])
@@ -860,8 +824,8 @@ class Social {
         }
 
         // update interest
-        const bn = block.number
-        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
+        const now = tx.time
+        const currentDay = Math.floor((now - GENESIS_TIME) / ONE_DAY_NANO)
         storage.put(INTEREST_PREEFIX + currentDay, interest.toFixed(8))
 
         // reset total like
