@@ -4,7 +4,7 @@ const USER_STATISTIC = 'u_'                                     // u_address
 const TOTAL_STAKE_AMOUNT = 'totalStakeAmount'
 const REST_AMOUNT = "restAmount"
 const MAXIMUM_PERCENT_PER_DAY = new Float64("0.000833333333")   // 30%/year
-const BLOCK_NUMBER_PER_DAY = 172800
+const ONE_DAY_NANO = 86400 * 1e9
 const THREE_DAY_NANO = 259200*1e9
 const MINIMUM_STAKE = 1                                          // 1 EM
 
@@ -60,8 +60,8 @@ class Stake {
     }
 
     _calcInterest(stakeAmount, totalDayStake) {
-        const bn = block.number
-        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
+        const now = tx.time
+        const currentDay = Math.floor(now / ONE_DAY_NANO)
         const stopWithdrawDay = currentDay - totalDayStake
 
         let amountCanWithdraw = new Float64("0")
@@ -148,8 +148,8 @@ class Stake {
         }
 
         // insert interest to array
-        const bn = block.number
-        const currentDay = Math.floor(bn / BLOCK_NUMBER_PER_DAY)
+        const now = tx.time
+        const currentDay = Math.floor(now / ONE_DAY_NANO)
         storage.put(INTEREST_PREFIX + currentDay, interest.toFixed(8))
 
         return true
@@ -168,8 +168,8 @@ class Stake {
             throw new Error("package has been unstake > " + packageId)
         }
         // calc interest
-        const bn = block.number
-        const totalDayStake = Math.floor((bn - packageInfo.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
+        const now = tx.time
+        const totalDayStake = Math.floor((now - packageInfo.lastWithdrawTime) / ONE_DAY_NANO)
 
         if(totalDayStake <= 0) {
             throw new Error("package withdraw less than 1 day > " + packageId)
@@ -184,8 +184,8 @@ class Stake {
         }
 
         blockchain.withdraw(address, amountCanWithdraw.toFixed(8), "withdraw stake")
-        packageInfo.lastBlockWithdraw = bn
-        packageInfo.lastWithdrawTime = tx.time
+        packageInfo.lastBlockWithdraw = block.number
+        packageInfo.lastWithdrawTime = now
         this._updatePackageInfo(address, packageId, packageInfo)
         blockchain.receipt(JSON.stringify([address, amountCanWithdraw.toFixed(8), packageId]))
     }
@@ -204,8 +204,8 @@ class Stake {
         }
 
         // check remain interest
-        const bn = block.number
-        const totalDayStake = Math.floor((bn - packageInfo.lastBlockWithdraw) / BLOCK_NUMBER_PER_DAY)
+        const now = tx.time
+        const totalDayStake = Math.floor((now - packageInfo.lastWithdrawTime) / ONE_DAY_NANO)
 
         if(totalDayStake > 0) {
             let amountCanWithdraw = this._calcInterest(packageInfo.amount, totalDayStake)
@@ -217,8 +217,8 @@ class Stake {
             }
 
             blockchain.withdraw(address, amountCanWithdraw.toFixed(8), "withdraw stake")
-            packageInfo.lastBlockWithdraw = bn
-            packageInfo.lastWithdrawTime = tx.time
+            packageInfo.lastBlockWithdraw = block.number
+            packageInfo.lastWithdrawTime = now
             this._updatePackageInfo(address, packageId, packageInfo)
             blockchain.receipt(JSON.stringify([address, amountCanWithdraw.toFixed(8)]))
         }
