@@ -4,6 +4,7 @@ const USER_STATISTIC = 'u_'                                     // u_address
 const TOTAL_STAKE_AMOUNT = 'totalStakeAmount'
 const REST_AMOUNT = "restAmount"
 const MAXIMUM_PERCENT_PER_DAY = new Float64("0.000833333333")   // 30%/year
+const GENESIS_TIME = 1582358166747846100
 const ONE_DAY_NANO = 86400 * 1e9
 const THREE_DAY_NANO = 259200*1e9
 const MINIMUM_STAKE = 1                                          // 1 EM
@@ -61,7 +62,7 @@ class Stake {
 
     _calcInterest(stakeAmount, totalDayStake) {
         const now = tx.time
-        const currentDay = Math.floor(now / ONE_DAY_NANO)
+        const currentDay = Math.floor((now - GENESIS_TIME) / ONE_DAY_NANO)
         const stopWithdrawDay = currentDay - totalDayStake
 
         let amountCanWithdraw = new Float64("0")
@@ -149,7 +150,7 @@ class Stake {
 
         // insert interest to array
         const now = tx.time
-        const currentDay = Math.floor(now / ONE_DAY_NANO)
+        const currentDay = Math.floor((now - GENESIS_TIME) / ONE_DAY_NANO)
         storage.put(INTEREST_PREFIX + currentDay, interest.toFixed(8))
 
         return true
